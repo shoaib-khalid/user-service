@@ -27,31 +27,37 @@ public class HttpReponse {
     private String message;
     private Object data;
     private String path;
-    
-    /***
+
+    /**
+     * *
      * Sets success and message as reason phrase of provided status.
-     * @param status 
+     *
+     * @param status
      */
-    public void setSuccessStatus(HttpStatus status){
+    public void setSuccessStatus(HttpStatus status) {
         this.status = status.value();
         this.message = status.getReasonPhrase();
     }
-    
-    /***
+
+    /**
+     * *
      * Sets status and custom message.
+     *
      * @param status
      */
-    public void setErrorStatus(HttpStatus status){
+    public void setErrorStatus(HttpStatus status) {
         this.status = status.value();
         this.error = status.getReasonPhrase();
     }
-    
-    /***
+
+    /**
+     * *
      * Sets status and custom message.
+     *
      * @param status
      * @param message
      */
-    public void setErrorStatus(HttpStatus status, String message){
+    public void setErrorStatus(HttpStatus status, String message) {
         this.status = status.value();
         this.error = message;
     }

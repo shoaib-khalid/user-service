@@ -42,7 +42,5 @@ public class RoleAuthorityIdentity implements Serializable {
         }
         return true;
     }
-    
-    
 
 }

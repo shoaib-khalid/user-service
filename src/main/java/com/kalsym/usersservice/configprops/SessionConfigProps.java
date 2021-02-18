@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-
 /**
  *
  * @author Sarosh
@@ -21,7 +20,7 @@ public class SessionConfigProps {
     @NotNull
     @Min(600)
     private long expiry;
-    
+
     @NotNull
     private String key;
 

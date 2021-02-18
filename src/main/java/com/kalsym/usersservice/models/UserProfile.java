@@ -1,8 +1,7 @@
 package com.kalsym.usersservice.models;
 
-
 import com.kalsym.usersservice.models.daos.RoleAuthority;
-import com.kalsym.usersservice.models.daos.User;
+import com.kalsym.usersservice.models.daos.Client;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,7 +19,7 @@ import org.springframework.security.core.GrantedAuthority;
 @ToString
 public class UserProfile {
 
-    private User userProfile;
+    private Client userProfile;
     List<RoleAuthority> roleList;
 
     private List<GrantedAuthority> grantedAuthorities;
@@ -28,9 +27,9 @@ public class UserProfile {
     public UserProfile() {
     }
 
-    public UserProfile(User user, List<RoleAuthority> auths) {
+    public UserProfile(Client user, List<RoleAuthority> auths) {
         this.userProfile = user;
-        this.roleList = auths;        
+        this.roleList = auths;
     }
-  
+
 }

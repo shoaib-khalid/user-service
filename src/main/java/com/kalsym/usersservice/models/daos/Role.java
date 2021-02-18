@@ -17,7 +17,7 @@ import lombok.Setter;
  * @author Sarosh
  */
 @Entity
-@Table(name = "roles")
+@Table(name = "role")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,15 +28,14 @@ public class Role implements Serializable {
     @Column(name = "id")
     @NotBlank(message = "id is required")
     private String id;
-    
+
     @NotBlank(message = "name is required")
     private String name;
 
     @NotBlank(message = "simoultaneousLogins is required")
     private Integer simoultaneousSesions;
-    
+
     private String description;
-    
 
     private String parentRoleId;
 
@@ -54,7 +53,6 @@ public class Role implements Serializable {
         }
 
     }
-
 
     @Override
     public boolean equals(Object obj) {
@@ -75,7 +73,5 @@ public class Role implements Serializable {
     public String toString() {
         return "Role{" + "id=" + id + ", name=" + name + ", simoultaneousSesions=" + simoultaneousSesions + ", description=" + description + ", parentRoleId=" + parentRoleId + '}';
     }
-    
-    
 
 }

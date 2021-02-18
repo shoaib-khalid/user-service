@@ -12,7 +12,7 @@ import lombok.ToString;
 @ToString
 @Getter
 @Setter
-public class UserAuthenticationBody {
+public class AuthenticationBody {
 
     @NotBlank(message = "username is required")
     private String username;

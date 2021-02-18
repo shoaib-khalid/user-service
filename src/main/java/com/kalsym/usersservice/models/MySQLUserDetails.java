@@ -1,8 +1,9 @@
 package com.kalsym.usersservice.models;
 
-
 import com.kalsym.usersservice.models.daos.RoleAuthority;
-import com.kalsym.usersservice.models.daos.User;
+import com.kalsym.usersservice.models.daos.Client;
+import com.kalsym.usersservice.models.daos.Customer;
+import com.kalsym.usersservice.models.daos.Administrator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +32,35 @@ public class MySQLUserDetails implements UserDetails {
         this.userName = username;
     }
 
-    public MySQLUserDetails(User user, List auths) {
+    public MySQLUserDetails(Client user, List auths) {
+        this.userName = user.getUsername();
+        this.password = user.getPassword();
+        this.locked = user.getLocked();
+        this.expired = user.getDeactivated();
+        this.role = user.getRoleId();
+        grantedAuthorities = new ArrayList<>();
+
+        List<RoleAuthority> userAuths = auths;
+        userAuths.stream().forEach((userAuth) -> {
+            grantedAuthorities.add(new SimpleGrantedAuthority(userAuth.getAuthorityId()));
+        });
+    }
+
+    public MySQLUserDetails(Customer user, List auths) {
+        this.userName = user.getUsername();
+        this.password = user.getPassword();
+        this.locked = user.getLocked();
+        this.expired = user.getDeactivated();
+        this.role = user.getRoleId();
+        grantedAuthorities = new ArrayList<>();
+
+        List<RoleAuthority> userAuths = auths;
+        userAuths.stream().forEach((userAuth) -> {
+            grantedAuthorities.add(new SimpleGrantedAuthority(userAuth.getAuthorityId()));
+        });
+    }
+
+    public MySQLUserDetails(Administrator user, List auths) {
         this.userName = user.getUsername();
         this.password = user.getPassword();
         this.locked = user.getLocked();

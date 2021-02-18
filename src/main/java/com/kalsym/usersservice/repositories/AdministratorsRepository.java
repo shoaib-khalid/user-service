@@ -1,6 +1,6 @@
 package com.kalsym.usersservice.repositories;
 
-import com.kalsym.usersservice.models.daos.User;
+import com.kalsym.usersservice.models.daos.Administrator;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
  * @author Sarosh
  */
 @Repository
-public interface UsersRepository extends PagingAndSortingRepository<User, String>, JpaRepository<User, String> {
+public interface AdministratorsRepository extends PagingAndSortingRepository<Administrator, String>, JpaRepository<Administrator, String> {
 
-    User findByUsername(String userName);
+    Administrator findByUsername(String userName);
 }

@@ -19,12 +19,12 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Sarosh
  */
 @Entity
-@Table(name = "customer")
+@Table(name = "administrator")
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Customer implements Serializable {
+public class Administrator implements Serializable {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -51,7 +51,7 @@ public class Customer implements Serializable {
     @NotBlank(message = "role is required")
     private String roleId;
 
-    public void update(Customer user) {
+    public void update(Administrator user) {
         if (null != user.getEmail()) {
             email = user.getEmail();
         }
@@ -89,7 +89,7 @@ public class Customer implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Customer other = (Customer) obj;
+        final Administrator other = (Administrator) obj;
         return Objects.equals(this.id, other.getId());
     }
 

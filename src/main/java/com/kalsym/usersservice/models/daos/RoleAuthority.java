@@ -16,7 +16,7 @@ import lombok.Setter;
  * @author Sarosh
  */
 @Entity
-@Table(name = "role_authorities")
+@Table(name = "role_authority")
 @IdClass(RoleAuthorityIdentity.class)
 @Getter
 @Setter

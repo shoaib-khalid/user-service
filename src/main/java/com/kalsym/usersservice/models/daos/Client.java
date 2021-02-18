@@ -1,16 +1,12 @@
 package com.kalsym.usersservice.models.daos;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -23,13 +19,12 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Sarosh
  */
 @Entity
-@Table(name = "users")
+@Table(name = "client")
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-//@JsonIgnoreProperties(value = {"password"})
-public class User implements Serializable {
+public class Client implements Serializable {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -39,7 +34,7 @@ public class User implements Serializable {
     @NotBlank(message = "username is required")
     private String username;
 
-    @JsonProperty(access = Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @NotBlank(message = "name is required")
@@ -52,16 +47,11 @@ public class User implements Serializable {
     private Boolean deactivated;
     String created;
     String updated;
-    
-    //FOR QUERY DATA
-    @OneToOne()
-    @JoinColumn(name="id", insertable=false, updatable=false)
-    private Customer customer;
-    
+
     @NotBlank(message = "role is required")
     private String roleId;
 
-    public void updateUser(User user) {
+    public void update(Client user) {
         if (null != user.getEmail()) {
             email = user.getEmail();
         }
@@ -99,16 +89,12 @@ public class User implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final User other = (User) obj;
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
-        return true;
+        final Client other = (Client) obj;
+        return Objects.equals(this.id, other.getId());
     }
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", username=" + username + ", password=" + password + ", name=" + name + ", email=" + email + ", locked=" + locked + ", deactivated=" + deactivated + ", created=" + created + ", updated=" + updated + ", roleId=" + roleId + '}';
+        return "UserEntity{" + "id=" + id + ", username=" + username + ", password=" + password + ", name=" + name + ", email=" + email + ", locked=" + locked + ", deactivated=" + deactivated + ", created=" + created + ", updated=" + updated + ", roleId=" + roleId + '}';
     }
-
 }

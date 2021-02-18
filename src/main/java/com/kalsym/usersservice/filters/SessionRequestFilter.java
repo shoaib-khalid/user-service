@@ -1,11 +1,12 @@
 package com.kalsym.usersservice.filters;
 
+import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.MySQLUserDetails;
 import com.kalsym.usersservice.models.daos.Session;
 import com.kalsym.usersservice.repositories.SessionsRepository;
 import com.kalsym.usersservice.services.MySQLUserDetailsService;
 import com.kalsym.usersservice.utils.DateTimeUtil;
-import com.kalsym.usersservice.utils.LogUtil;
+import com.kalsym.usersservice.utils.Logger;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,26 +40,26 @@ public class SessionRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String logprefix = request.getRequestURI() + " ";
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
-        LogUtil.info("", "", "----------" + logprefix + "----------", "");
+
+        Logger.application.warn(Logger.pattern, VersionHolder.VERSION, "-------------" + logprefix + "-------------", "", "");
 
         final String requestTokenHeader = request.getHeader("Authorization");
 
-        //LogUtil.info(logprefix, location, "requestTokenHeader: " + requestTokenHeader, "");
+        //Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "requestTokenHeader: " + requestTokenHeader, "");
         String sessionId = null;
 
         // Token is in the form "Bearer token". Remove Bearer word and get only the Token
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             sessionId = requestTokenHeader.substring(7);
         } else {
-            LogUtil.warn(logprefix, location, "token does not begin with Bearer String", "");
+            Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "token does not begin with Bearer String", "");
         }
 
         if (sessionId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            //LogUtil.info(logprefix, location, "sessionId: " + sessionId, "");
+            //Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId: " + sessionId, "");
             Optional<Session> optSession = sessionRepository.findById(sessionId);
             if (optSession.isPresent()) {
-                LogUtil.info(logprefix, location, "sessionId valid", "");
+                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId valid", "");
                 Session session = optSession.get();
                 long diff = 0;
                 try {
@@ -66,14 +67,14 @@ public class SessionRequestFilter extends OncePerRequestFilter {
                     Date expiryTime = sdf.parse(session.getExpiry());
                     Date currentTime = sdf.parse(DateTimeUtil.currentTimestamp());
 
-                    //LogUtil.info(logprefix, location, "currentTime: " + currentTime.getTime() + " expiryTime: " + expiryTime.getTime(), "");
+                    //Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "currentTime: " + currentTime.getTime() + " expiryTime: " + expiryTime.getTime(), "");
                     diff = expiryTime.getTime() - currentTime.getTime();
                 } catch (Exception e) {
-                    LogUtil.warn(logprefix, location, "error calculating time to session expiry", "");
+                    Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "error calculating time to session expiry", "");
                 }
-                LogUtil.info(logprefix, location, "time to session expiry: " + diff + "ms", "");
+                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "time to session expiry: " + diff + "ms", "");
                 if (0 < diff) {
-                    MySQLUserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(session.getUser().getUsername());
+                    MySQLUserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(session.getUsername());
 
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
@@ -82,11 +83,11 @@ public class SessionRequestFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 } else {
-                    LogUtil.warn(logprefix, location, "session expired", "");
+                    Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "session expired", "");
                 }
 
             } else {
-                LogUtil.warn(logprefix, location, "sessionId not valid", "");
+                Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId not valid", "");
             }
 
         }

@@ -1,9 +1,8 @@
 package com.kalsym.usersservice;
 
-
 import com.kalsym.usersservice.models.daos.Authority;
 import com.kalsym.usersservice.repositories.AuthoritiesRepository;
-import com.kalsym.usersservice.utils.LogUtil;
+import com.kalsym.usersservice.utils.Logger;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -29,22 +28,32 @@ public class ListenerBean {
 
         if (event instanceof ContextRefreshedEvent) {
             ApplicationContext applicationContext = ((ContextRefreshedEvent) event).getApplicationContext();
-            Map<RequestMappingInfo, HandlerMethod> map1 = applicationContext.getBean(RequestMappingHandlerMapping.class).getHandlerMethods();
+            Map<RequestMappingInfo, HandlerMethod> map = applicationContext.getBean(RequestMappingHandlerMapping.class).getHandlerMethods();
 
-            map1.forEach((RequestMappingInfo requestMappingInfo, HandlerMethod handlerMethod) -> {
+            map.forEach((RequestMappingInfo requestMappingInfo, HandlerMethod handlerMethod) -> {
                 try {
                     if (!handlerMethod.getMethod().getName().equalsIgnoreCase("error")
                             && !handlerMethod.getMethod().getName().equalsIgnoreCase("errorHtml")) {
+                        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "", "name: " + requestMappingInfo.getName());
+                        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "", "method: " + handlerMethod.getMethod().getName());
+                        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "", "description: " + requestMappingInfo.toString());
+
                         Authority authority = new Authority();
                         authority.setId(requestMappingInfo.getName());
                         authority.setName(handlerMethod.getMethod().getName());
                         authority.setDescription(requestMappingInfo.toString());
-                        authoritiesRepository.save(authority);
+                        authority.setServiceId("users-service");
+
+                        if (null != authority.getId()) {
+                            authoritiesRepository.save(authority);
+
+                        }
+                        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "", "inserted authority", "");
 
                     }
 
                 } catch (Exception e) {
-                    LogUtil.warn("", "handleEvent", "error inserting authority", "");
+                    Logger.application.warn(Logger.pattern, VersionHolder.VERSION, "error inserting authority", e.getMessage());
                 }
 
             });

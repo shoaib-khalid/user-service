@@ -16,7 +16,7 @@ import lombok.Setter;
  * @author Sarosh
  */
 @Entity
-@Table(name = "authorities")
+@Table(name = "authority")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,10 +27,10 @@ public class Authority implements Serializable {
     @Column(name = "id")
     @NotBlank(message = "id is required")
     private String id;
-    
+
     @NotBlank(message = "serviceId is required")
     private String serviceId;
-    
+
     @NotBlank(message = "name is required")
     private String name;
 
@@ -41,7 +41,7 @@ public class Authority implements Serializable {
         if (null != authority.getId()) {
             id = authority.getId();
         }
-        
+
         if (null != authority.getServiceId()) {
             serviceId = authority.getServiceId();
         }

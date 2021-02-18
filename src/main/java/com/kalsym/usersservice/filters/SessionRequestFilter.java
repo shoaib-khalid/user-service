@@ -8,6 +8,7 @@ import com.kalsym.usersservice.services.MySQLUserDetailsService;
 import com.kalsym.usersservice.utils.DateTimeUtil;
 import com.kalsym.usersservice.utils.Logger;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -45,7 +46,6 @@ public class SessionRequestFilter extends OncePerRequestFilter {
 
         final String requestTokenHeader = request.getHeader("Authorization");
 
-        //Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "requestTokenHeader: " + requestTokenHeader, "");
         String sessionId = null;
 
         // Token is in the form "Bearer token". Remove Bearer word and get only the Token
@@ -66,10 +66,8 @@ public class SessionRequestFilter extends OncePerRequestFilter {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date expiryTime = sdf.parse(session.getExpiry());
                     Date currentTime = sdf.parse(DateTimeUtil.currentTimestamp());
-
-                    //Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "currentTime: " + currentTime.getTime() + " expiryTime: " + expiryTime.getTime(), "");
                     diff = expiryTime.getTime() - currentTime.getTime();
-                } catch (Exception e) {
+                } catch (ParseException e) {
                     Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "error calculating time to session expiry", "");
                 }
                 Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "time to session expiry: " + diff + "ms", "");

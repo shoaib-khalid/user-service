@@ -222,8 +222,8 @@ public class CustomersController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
-    @PostMapping(name = "customers-post")
-    @PreAuthorize("hasAnyAuthority('customers-post', 'all')")
+    @PostMapping(path = "/register", name = "customers-post")
+    //@PreAuthorize("hasAnyAuthority('customers-post', 'all')")
     public ResponseEntity<HttpReponse> postCustomer(HttpServletRequest request, @Valid @RequestBody Customer body) throws Exception {
         String logprefix = request.getRequestURI() + " ";
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();

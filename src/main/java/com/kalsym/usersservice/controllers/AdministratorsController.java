@@ -222,7 +222,7 @@ public class AdministratorsController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
-    @PostMapping(name = "administrators-post")
+    @PostMapping(path = "/register", name = "administrators-post")
     @PreAuthorize("hasAnyAuthority('administrators-post', 'all')")
     public ResponseEntity<HttpReponse> postAdministrator(HttpServletRequest request, @Valid @RequestBody Administrator body) throws Exception {
         String logprefix = request.getRequestURI() + " ";

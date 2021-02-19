@@ -2,8 +2,10 @@ package com.kalsym.usersservice.filters;
 
 import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.MySQLUserDetails;
-import com.kalsym.usersservice.models.daos.Session;
-import com.kalsym.usersservice.repositories.SessionsRepository;
+import com.kalsym.usersservice.models.daos.*;
+import com.kalsym.usersservice.repositories.AdministratorSessionsRepository;
+import com.kalsym.usersservice.repositories.ClientSessionsRepository;
+import com.kalsym.usersservice.repositories.CustomerSessionsRepository;
 import com.kalsym.usersservice.services.MySQLUserDetailsService;
 import com.kalsym.usersservice.utils.DateTimeUtil;
 import com.kalsym.usersservice.utils.Logger;
@@ -34,7 +36,13 @@ public class SessionRequestFilter extends OncePerRequestFilter {
     private MySQLUserDetailsService jwtUserDetailsService;
 
     @Autowired
-    SessionsRepository sessionRepository;
+    AdministratorSessionsRepository administratorSessionsRepository;
+
+    @Autowired
+    ClientSessionsRepository clientSessionsRepository;
+
+    @Autowired
+    CustomerSessionsRepository customerSessionsRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -57,14 +65,38 @@ public class SessionRequestFilter extends OncePerRequestFilter {
 
         if (sessionId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             //Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId: " + sessionId, "");
-            Optional<Session> optSession = sessionRepository.findById(sessionId);
-            if (optSession.isPresent()) {
-                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId valid", "");
-                Session session = optSession.get();
+            Optional<AdministratorSession> optAdminSession = administratorSessionsRepository.findById(sessionId);
+            Optional<ClientSession> optClientSession = clientSessionsRepository.findById(sessionId);
+            Optional<CustomerSession> optCustomerSession = customerSessionsRepository.findById(sessionId);
+
+            Date expiryTime = null;
+
+            String username = null;
+            if (!optAdminSession.isPresent()
+                    && !optClientSession.isPresent()
+                    && !optCustomerSession.isPresent()) {
+                Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId not valid", "");
+
+            } else if (optAdminSession.isPresent()) {
+                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId valid for admin_session", "");
+                //Session session = optSession.get();
+
+                AdministratorSession admin = optAdminSession.get();
+
+                expiryTime = optAdminSession.get().getExpiry();
+
+                username = optAdminSession.get().getUsername();
+
+            } else if (optClientSession.isPresent()) {
+
+            } else if (optCustomerSession.isPresent()) {
+
+            }
+
+            if (null != expiryTime && null != username) {
                 long diff = 0;
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date expiryTime = sdf.parse(session.getExpiry());
                     Date currentTime = sdf.parse(DateTimeUtil.currentTimestamp());
                     diff = expiryTime.getTime() - currentTime.getTime();
                 } catch (ParseException e) {
@@ -72,7 +104,7 @@ public class SessionRequestFilter extends OncePerRequestFilter {
                 }
                 Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "time to session expiry: " + diff + "ms", "");
                 if (0 < diff) {
-                    MySQLUserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(session.getUsername());
+                    MySQLUserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
 
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
@@ -83,11 +115,7 @@ public class SessionRequestFilter extends OncePerRequestFilter {
                 } else {
                     Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "session expired", "");
                 }
-
-            } else {
-                Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId not valid", "");
             }
-
         }
         chain.doFilter(request, response);
     }

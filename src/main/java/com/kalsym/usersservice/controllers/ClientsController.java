@@ -4,11 +4,11 @@ import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.AuthenticationReponse;
 import com.kalsym.usersservice.models.HttpReponse;
 import com.kalsym.usersservice.models.daos.RoleAuthority;
-import com.kalsym.usersservice.models.daos.Session;
+import com.kalsym.usersservice.models.daos.ClientSession;
 import com.kalsym.usersservice.models.daos.Client;
 import com.kalsym.usersservice.models.requestbodies.AuthenticationBody;
 import com.kalsym.usersservice.repositories.RoleAuthoritiesRepository;
-import com.kalsym.usersservice.repositories.SessionsRepository;
+import com.kalsym.usersservice.repositories.ClientSessionsRepository;
 import com.kalsym.usersservice.repositories.ClientsRepository;
 import com.kalsym.usersservice.utils.DateTimeUtil;
 import com.kalsym.usersservice.utils.Logger;
@@ -62,7 +62,7 @@ public class ClientsController {
     RoleAuthoritiesRepository roleAuthoritiesRepository;
 
     @Autowired
-    SessionsRepository sessionsRepository;
+    ClientSessionsRepository clientSessionsRepository;
 
     @Autowired
     private PasswordEncoder bcryptEncoder;
@@ -279,19 +279,19 @@ public class ClientsController {
             HttpServletRequest request) throws Exception {
         String logprefix = request.getRequestURI() + " ";
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "queryString: " + request.getQueryString());
+        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "body: " + body);
 
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
             );
         } catch (BadCredentialsException e) {
-            Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "error validating client");
+            Logger.application.error(Logger.pattern, VersionHolder.VERSION, logprefix, "error validating client Bad Credentiails", e);
             response.setErrorStatus(HttpStatus.UNAUTHORIZED, "Bad Credentiails");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (AuthenticationException e) {
-            Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "error validating client");
-            response.setErrorStatus(HttpStatus.UNAUTHORIZED, e.getMessage());
+            Logger.application.error(Logger.pattern, VersionHolder.VERSION, logprefix, "error validating client " + e.getMessage(), e);
+            response.setErrorStatus(HttpStatus.UNAUTHORIZED, e.getLocalizedMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
@@ -308,7 +308,7 @@ public class ClientsController {
             }
         }
 
-        Session session = new Session();
+        ClientSession session = new ClientSession();
         session.setRemoteAddress(request.getRemoteAddr());
         session.setOwnerId(client.getId());
         session.setUsername(client.getUsername());
@@ -316,7 +316,7 @@ public class ClientsController {
         session.setUpdated(DateTimeUtil.currentTimestamp());
         session.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
         session.setStatus("ACTIVE");
-        session = sessionsRepository.save(session);
+        session = clientSessionsRepository.save(session);
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "session created with id: " + session.getId(), "");
 
         session.setOwnerId(null);

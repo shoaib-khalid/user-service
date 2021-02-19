@@ -4,11 +4,11 @@ import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.AuthenticationReponse;
 import com.kalsym.usersservice.models.HttpReponse;
 import com.kalsym.usersservice.models.daos.RoleAuthority;
-import com.kalsym.usersservice.models.daos.Session;
+import com.kalsym.usersservice.models.daos.CustomerSession;
 import com.kalsym.usersservice.models.daos.Customer;
 import com.kalsym.usersservice.models.requestbodies.AuthenticationBody;
 import com.kalsym.usersservice.repositories.RoleAuthoritiesRepository;
-import com.kalsym.usersservice.repositories.SessionsRepository;
+import com.kalsym.usersservice.repositories.CustomerSessionsRepository;
 import com.kalsym.usersservice.repositories.CustomersRepository;
 import com.kalsym.usersservice.utils.DateTimeUtil;
 import com.kalsym.usersservice.utils.Logger;
@@ -61,7 +61,7 @@ public class CustomersController {
     RoleAuthoritiesRepository roleAuthoritiesRepository;
 
     @Autowired
-    SessionsRepository sessionsRepository;
+    CustomerSessionsRepository customerSessionsRepository;
 
     @Autowired
     private PasswordEncoder bcryptEncoder;
@@ -309,7 +309,7 @@ public class CustomersController {
             }
         }
 
-        Session session = new Session();
+        CustomerSession session = new CustomerSession();
         session.setRemoteAddress(request.getRemoteAddr());
         session.setOwnerId(user.getId());
         session.setUsername(user.getUsername());
@@ -317,7 +317,7 @@ public class CustomersController {
         session.setUpdated(DateTimeUtil.currentTimestamp());
         session.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
         session.setStatus("ACTIVE");
-        session = sessionsRepository.save(session);
+        session = customerSessionsRepository.save(session);
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "session created with id: " + session.getId(), "");
 
         session.setOwnerId(null);

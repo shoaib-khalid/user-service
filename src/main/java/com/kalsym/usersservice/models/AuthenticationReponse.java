@@ -1,6 +1,5 @@
 package com.kalsym.usersservice.models;
 
-import com.kalsym.usersservice.models.daos.Session;
 import java.util.List;
 
 /**
@@ -9,16 +8,17 @@ import java.util.List;
  */
 public class AuthenticationReponse {
 
-    private Session session;
+    private Object session;
     private List<String> authorities;
 
-    public Session getSession() {
+    public Object getSession() {
         return session;
     }
 
-    public void setSession(Session session) {
+    public void setSession(Object session) {
         this.session = session;
     }
+
 
     public List<String> getAuthorities() {
         return authorities;

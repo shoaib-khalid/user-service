@@ -2,6 +2,7 @@ package com.kalsym.usersservice.models.daos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -16,12 +17,12 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Sarosh
  */
 @Entity
-@Table(name = "session")
+@Table(name = "customer_session")
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Session implements Serializable {
+public class CustomerSession implements Serializable {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -32,7 +33,7 @@ public class Session implements Serializable {
     private String username;
     private String remoteAddress;
     private String status;
-    private String expiry;
+    private Date expiry;
     private String created;
     private String updated;
 

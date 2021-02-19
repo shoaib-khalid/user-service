@@ -31,13 +31,13 @@ public class DateTimeUtil {
      * @param seconds
      * @return
      */
-    public static String expiryTimestamp(int seconds) {
+    public static Date expiryTimestamp(int seconds) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Date currentDate = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(currentDate);
         c.add(Calendar.SECOND, seconds);
         Date expiryDate = c.getTime();
-        return dateFormat.format(expiryDate);
+        return expiryDate;
     }
 }

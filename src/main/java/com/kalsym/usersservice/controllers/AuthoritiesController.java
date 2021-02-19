@@ -173,6 +173,28 @@ public class AuthoritiesController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping(path = "/bulk", name = "authorities-post")
+    @PreAuthorize("hasAnyAuthority('authorities-post', 'all')")
+    public ResponseEntity<HttpReponse> postAuthority(HttpServletRequest request,
+            @RequestBody List<Authority> body) throws Exception {
+        String logprefix = request.getRequestURI() + " ";
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, body.toString(), "");
+
+        List<Authority> newAuthorities = new ArrayList<>();
+
+        body.forEach(bodyAuthority -> {
+            newAuthorities.add(bodyAuthority);
+        });
+
+        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authorities created count: " + body.size(), "");
+        response.setSuccessStatus(HttpStatus.CREATED);
+        response.setData(newAuthorities);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
         String logprefix = request.getRequestURI() + " ";

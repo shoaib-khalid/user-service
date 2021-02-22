@@ -1,9 +1,11 @@
 package com.kalsym.usersservice.models;
 
+import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.daos.RoleAuthority;
 import com.kalsym.usersservice.models.daos.Client;
 import com.kalsym.usersservice.models.daos.Customer;
 import com.kalsym.usersservice.models.daos.Administrator;
+import com.kalsym.usersservice.utils.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,6 +38,8 @@ public class MySQLUserDetails implements UserDetails {
         this.userName = user.getUsername();
         this.password = user.getPassword();
         this.locked = user.getLocked();
+        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "user: ", user, "");
+
         this.expired = user.getDeactivated();
         this.role = user.getRoleId();
         grantedAuthorities = new ArrayList<>();

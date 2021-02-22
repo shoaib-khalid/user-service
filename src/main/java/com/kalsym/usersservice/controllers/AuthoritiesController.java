@@ -174,7 +174,7 @@ public class AuthoritiesController {
     }
 
     @PostMapping(path = "/bulk", name = "authorities-post")
-    @PreAuthorize("hasAnyAuthority('authorities-post', 'all')")
+    @PreAuthorize("hasAnyAuthority('authorities-post-bulk', 'all')")
     public ResponseEntity<HttpReponse> postAuthority(HttpServletRequest request,
             @RequestBody List<Authority> body) throws Exception {
         String logprefix = request.getRequestURI() + " ";

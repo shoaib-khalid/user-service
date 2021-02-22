@@ -17,12 +17,10 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Sarosh
  */
 @Entity
-@Table(name = "client_session")
 @Getter
 @Setter
-@NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ClientSession implements Serializable {
+@Table(name = "client_session")
+public class ClientSession extends Session implements Serializable {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -30,11 +28,5 @@ public class ClientSession implements Serializable {
     private String id;
 
     private String ownerId;
-    private String username;
-    private String remoteAddress;
-    private String status;
-    private Date expiry;
-    private String created;
-    private String updated;
 
 }

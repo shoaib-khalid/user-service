@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface AdministratorSessionsRepository extends JpaRepository<AdministratorSession, String> {
 
+    AdministratorSession findByAccessToken(String accessToken);
+
 }

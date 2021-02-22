@@ -9,7 +9,12 @@ import java.util.List;
 public class AuthenticationReponse {
 
     private Object session;
+
+    private String role;
     private List<String> authorities;
+    
+    
+    
 
     public Object getSession() {
         return session;
@@ -19,7 +24,6 @@ public class AuthenticationReponse {
         this.session = session;
     }
 
-
     public List<String> getAuthorities() {
         return authorities;
     }
@@ -27,5 +31,15 @@ public class AuthenticationReponse {
     public void setAuthorities(List<String> authorities) {
         this.authorities = authorities;
     }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+    
+    
 
 }

@@ -317,6 +317,8 @@ public class CustomersController {
         session.setUpdated(DateTimeUtil.currentTimestamp());
         session.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
         session.setStatus("ACTIVE");
+        session.generateTokens();
+
         session = customerSessionsRepository.save(session);
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "session created with id: " + session.getId(), "");
 
@@ -324,10 +326,13 @@ public class CustomersController {
         session.setUpdated(null);
         session.setStatus(null);
         session.setRemoteAddress(null);
+        session.setUsername(null);
+        session.setId(null);
 
         AuthenticationReponse authReponse = new AuthenticationReponse();
         authReponse.setSession(session);
         authReponse.setAuthorities(authorities);
+        authReponse.setRole(user.getRoleId());
 
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "generated token", "");
 
@@ -335,6 +340,9 @@ public class CustomersController {
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
+    
+    
+    
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {

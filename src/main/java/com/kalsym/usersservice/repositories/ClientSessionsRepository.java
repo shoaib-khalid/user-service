@@ -8,5 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Sarosh
  */
 public interface ClientSessionsRepository extends JpaRepository<ClientSession, String> {
+    ClientSession findByAccessToken(String accessToken);
 
 }

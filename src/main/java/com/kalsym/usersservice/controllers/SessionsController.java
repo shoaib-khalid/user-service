@@ -3,7 +3,6 @@ package com.kalsym.usersservice.controllers;
 import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.AuthenticationReponse;
 import com.kalsym.usersservice.models.HttpReponse;
-import com.kalsym.usersservice.models.daos.Authority;
 import com.kalsym.usersservice.models.daos.Client;
 import com.kalsym.usersservice.models.daos.Customer;
 import com.kalsym.usersservice.models.daos.Administrator;
@@ -38,6 +37,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -72,6 +72,7 @@ public class SessionsController {
     @PostMapping(path = "details/client", name = "session-details-client")
     @PreAuthorize("hasAnyAuthority('session-details-client', 'all')")
     public ResponseEntity<HttpReponse> getSessionDetailsClient(HttpServletRequest request,
+            @RequestParam(required = false) String serviceId,
             @RequestBody String accessToken) throws Exception {
         String logprefix = request.getRequestURI() + " ";
         HttpReponse response = new HttpReponse(request.getRequestURI());
@@ -95,7 +96,12 @@ public class SessionsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(optClient.get().getRoleId());
+        List<RoleAuthority> roleAuthories = null;
+        if (null != serviceId) {
+            roleAuthories = roleAuthoritiesRepository.findByRoleIdAndServiceId(optClient.get().getRoleId(), serviceId);
+        } else {
+            roleAuthories = roleAuthoritiesRepository.findByRoleId(optClient.get().getRoleId());
+        }
         ArrayList<String> authorities = new ArrayList<>();
         if (null != roleAuthories) {
             for (RoleAuthority roleAuthority : roleAuthories) {
@@ -120,6 +126,7 @@ public class SessionsController {
     @PostMapping(path = "details/customer", name = "session-details-customer")
     @PreAuthorize("hasAnyAuthority('session-details-customer', 'all')")
     public ResponseEntity<HttpReponse> getSessionDetailsCustomer(HttpServletRequest request,
+            @RequestParam(required = false) String serviceId,
             @RequestBody String accessToken) throws Exception {
         String logprefix = request.getRequestURI() + " ";
         HttpReponse response = new HttpReponse(request.getRequestURI());
@@ -143,7 +150,12 @@ public class SessionsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(optCustomer.get().getRoleId());
+        List<RoleAuthority> roleAuthories = null;
+        if (null != serviceId) {
+            roleAuthories = roleAuthoritiesRepository.findByRoleIdAndServiceId(optCustomer.get().getRoleId(), serviceId);
+        } else {
+            roleAuthories = roleAuthoritiesRepository.findByRoleId(optCustomer.get().getRoleId());
+        }
         ArrayList<String> authorities = new ArrayList<>();
         if (null != roleAuthories) {
             for (RoleAuthority roleAuthority : roleAuthories) {
@@ -168,6 +180,7 @@ public class SessionsController {
     @PostMapping(path = "details/administrator", name = "session-details-administrator")
     @PreAuthorize("hasAnyAuthority('session-details-administrator', 'all')")
     public ResponseEntity<HttpReponse> getSessionDetailsAdministrator(HttpServletRequest request,
+            @RequestParam(required = false) String serviceId,
             @RequestBody String accessToken) throws Exception {
         String logprefix = request.getRequestURI() + " ";
         HttpReponse response = new HttpReponse(request.getRequestURI());
@@ -191,7 +204,12 @@ public class SessionsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(optAdministrator.get().getRoleId());
+        List<RoleAuthority> roleAuthories = null;
+        if (null != serviceId) {
+            roleAuthories = roleAuthoritiesRepository.findByRoleIdAndServiceId(optAdministrator.get().getRoleId(), serviceId);
+        } else {
+            roleAuthories = roleAuthoritiesRepository.findByRoleId(optAdministrator.get().getRoleId());
+        }
         ArrayList<String> authorities = new ArrayList<>();
         if (null != roleAuthories) {
             for (RoleAuthority roleAuthority : roleAuthories) {

@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -17,6 +18,7 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "authority")
+@IdClass(AuthorityIdentity.class)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,6 +30,8 @@ public class Authority implements Serializable {
     @NotBlank(message = "id is required")
     private String id;
 
+    @Id
+    @Column(name = "serviceId")
     @NotBlank(message = "serviceId is required")
     private String serviceId;
 

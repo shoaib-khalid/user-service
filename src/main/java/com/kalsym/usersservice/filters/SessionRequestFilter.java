@@ -50,46 +50,55 @@ public class SessionRequestFilter extends OncePerRequestFilter {
 
         String logprefix = request.getRequestURI() + " ";
 
-        Logger.application.warn(Logger.pattern, VersionHolder.VERSION, "-------------" + logprefix + "-------------", "", "");
+        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "-------------" + logprefix + "-------------", "", "");
 
-        final String requestTokenHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader("Authorization");
+        Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "Authorization: " + authHeader, "");
 
-        String sessionId = null;
+        String accessToken = null;
 
         // Token is in the form "Bearer token". Remove Bearer word and get only the Token
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            sessionId = requestTokenHeader.substring(7);
+        if (null != authHeader && authHeader.startsWith("Bearer ")) {
+            accessToken = authHeader.replace("Bearer ", "");
+            Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "token: " + accessToken, "");
+            Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "token length: " + accessToken.length(), "");
+
         } else {
             Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "token does not begin with Bearer String", "");
         }
 
-        if (sessionId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (accessToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             //Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId: " + sessionId, "");
-            Optional<AdministratorSession> optAdminSession = administratorSessionsRepository.findById(sessionId);
-            Optional<ClientSession> optClientSession = clientSessionsRepository.findById(sessionId);
-            Optional<CustomerSession> optCustomerSession = customerSessionsRepository.findById(sessionId);
+            AdministratorSession adminSesion = administratorSessionsRepository.findByAccessToken(accessToken);
+            ClientSession clientSession = clientSessionsRepository.findByAccessToken(accessToken);
+            CustomerSession customerSession = customerSessionsRepository.findByAccessToken(accessToken);
 
             Date expiryTime = null;
 
             String username = null;
-            if (!optAdminSession.isPresent()
-                    && !optClientSession.isPresent()
-                    && !optCustomerSession.isPresent()) {
+            if (null == adminSesion
+                    && null == clientSession
+                    && null == customerSession) {
                 Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId not valid", "");
 
-            } else if (optAdminSession.isPresent()) {
+            } else if (null != adminSesion) {
                 Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId valid for admin_session", "");
-                //Session session = optSession.get();
 
-                AdministratorSession admin = optAdminSession.get();
+                expiryTime = adminSesion.getExpiry();
 
-                expiryTime = optAdminSession.get().getExpiry();
+                username = adminSesion.getUsername();
 
-                username = optAdminSession.get().getUsername();
+            } else if (null != clientSession) {
+                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId valid for client_session", "");
+                expiryTime = clientSession.getExpiry();
 
-            } else if (optClientSession.isPresent()) {
+                username = clientSession.getUsername();
 
-            } else if (optCustomerSession.isPresent()) {
+            } else if (null != customerSession) {
+                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId valid for customer_session", "");
+                expiryTime = customerSession.getExpiry();
+
+                username = customerSession.getUsername();
 
             }
 

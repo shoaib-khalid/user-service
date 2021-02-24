@@ -30,4 +30,8 @@ public class RoleAuthority implements Serializable {
     @Id
     @NotBlank(message = "authorityId is required")
     private String authorityId;
+    
+    @Id
+    @NotBlank(message = "serviceId is required")
+    private String serviceId;
 }

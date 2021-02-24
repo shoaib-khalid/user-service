@@ -15,4 +15,7 @@ import org.springframework.stereotype.Repository;
 public interface RoleAuthoritiesRepository extends JpaRepository<RoleAuthority, RoleAuthorityIdentity>, PagingAndSortingRepository<RoleAuthority, RoleAuthorityIdentity> {
 
     public List<RoleAuthority> findByRoleId(String roleId);
+
+    public List<RoleAuthority> findByRoleIdAndServiceId(String roleId, String serviceId);
+
 }

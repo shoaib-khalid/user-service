@@ -341,18 +341,18 @@ public class ClientsController {
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
-    
-     @PostMapping(path = "client/details", name = "clients-session-details")
-    @PreAuthorize("hasAnyAuthority('session-setails', 'all')")
-    public ResponseEntity<HttpReponse> getSessionDetails(HttpServletRequest request,
-            @RequestBody String accessToken) throws Exception {
+
+    @PostMapping(path = "session/refresh", name = "clients-session-refresh")
+    public ResponseEntity refreshSession(@Valid @RequestBody String refreshToken,
+            HttpServletRequest request) throws Exception {
         String logprefix = request.getRequestURI() + " ";
         HttpReponse response = new HttpReponse(request.getRequestURI());
+        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "refreshToken: " + refreshToken);
 
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, accessToken, "");
+        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, refreshToken, "");
 
-        ClientSession session = clientSessionsRepository.findByAccessToken(accessToken);
+        ClientSession session = clientSessionsRepository.findByRefreshToken(refreshToken);
 
         if (null == session) {
             Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "session not found", "");
@@ -371,25 +371,45 @@ public class ClientsController {
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(optClient.get().getRoleId());
         ArrayList<String> authorities = new ArrayList<>();
         if (null != roleAuthories) {
+
             for (RoleAuthority roleAuthority : roleAuthories) {
                 authorities.add(roleAuthority.getAuthorityId());
             }
         }
-        session.setOwnerId(null);
-        session.setUpdated(null);
-        session.setStatus(null);
-        session.setRemoteAddress(null);
-        session.setUsername(null);
-        session.setId(null);
+
+        ClientSession newSession = new ClientSession();
+        newSession.setRemoteAddress(request.getRemoteAddr());
+        newSession.setOwnerId(optClient.get().getId());
+        newSession.setUsername(optClient.get().getUsername());
+        newSession.setCreated(DateTimeUtil.currentTimestamp());
+        newSession.setUpdated(DateTimeUtil.currentTimestamp());
+        newSession.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
+        newSession.setStatus("ACTIVE");
+        newSession.generateTokens();
+
+        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "session: " + newSession, "");
+
+        newSession = clientSessionsRepository.save(newSession);
+        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "session created with id: " + newSession.getId(), "");
+
+        newSession.setOwnerId(null);
+        newSession.setUpdated(null);
+        newSession.setStatus(null);
+        newSession.setRemoteAddress(null);
+        newSession.setUsername(null);
+        newSession.setId(null);
 
         AuthenticationReponse authReponse = new AuthenticationReponse();
-        authReponse.setSession(session);
+        authReponse.setSession(newSession);
         authReponse.setAuthorities(authorities);
         authReponse.setRole(optClient.get().getRoleId());
+
+        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "generated token", "");
+
         response.setSuccessStatus(HttpStatus.ACCEPTED);
+        response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
-
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {

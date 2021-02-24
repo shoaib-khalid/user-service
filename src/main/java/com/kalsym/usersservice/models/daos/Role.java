@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  *
@@ -22,6 +23,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString
 public class Role implements Serializable {
 
     @Id
@@ -33,7 +35,7 @@ public class Role implements Serializable {
     private String name;
 
     @NotBlank(message = "simoultaneousLogins is required")
-    private Integer simoultaneousSesions;
+    private Integer allowedSimoultaneousSessions;
 
     private String description;
 
@@ -48,8 +50,8 @@ public class Role implements Serializable {
             description = role.getDescription();
         }
 
-        if (0 != role.getSimoultaneousSesions()) {
-            simoultaneousSesions = role.getSimoultaneousSesions();
+        if (0 != role.getAllowedSimoultaneousSessions()) {
+            allowedSimoultaneousSessions = role.getAllowedSimoultaneousSessions();
         }
 
     }
@@ -69,9 +71,6 @@ public class Role implements Serializable {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "Role{" + "id=" + id + ", name=" + name + ", simoultaneousSesions=" + simoultaneousSesions + ", description=" + description + ", parentRoleId=" + parentRoleId + '}';
-    }
+   
 
 }

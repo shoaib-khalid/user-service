@@ -90,7 +90,6 @@ public class RolesController {
     @PreAuthorize("hasAnyAuthority('roles-get-by-id', 'all')")
     public ResponseEntity<HttpReponse> getRoleById(HttpServletRequest request, @PathVariable String id) {
         String logprefix = request.getRequestURI() + " ";
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
@@ -189,7 +188,6 @@ public class RolesController {
     @PreAuthorize("hasAnyAuthority('roles-post', 'all')")
     public ResponseEntity<HttpReponse> postRole(HttpServletRequest request, @Valid @RequestBody Role body) throws Exception {
         String logprefix = request.getRequestURI() + " ";
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
@@ -226,7 +224,6 @@ public class RolesController {
     public ResponseEntity<HttpReponse> getRoleAuthoritiesByRoleId(HttpServletRequest request,
             @PathVariable String roleId) {
         String logprefix = request.getRequestURI() + " ";
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
@@ -246,17 +243,18 @@ public class RolesController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping(path = {"/{roleId}/authorities/{authorityId}"}, name = "roles-delete-authorities-by-id")
+    @DeleteMapping(path = {"/{roleId}/authorities/{authorityId}{serviceId}"}, name = "roles-delete-authorities-by-id")
     @PreAuthorize("hasAnyAuthority('roles-delete-authorities-by-id', 'all')")
     public ResponseEntity<HttpReponse> deleteRoleAuthority(HttpServletRequest request,
-            @PathVariable String roleId, @PathVariable String authorityId) {
+            @PathVariable String roleId, 
+            @PathVariable String authorityId,
+            @PathVariable String serviceId) {
         String logprefix = request.getRequestURI() + " ";
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
 
-        RoleAuthorityIdentity roleAuthoritiyIdentity = new RoleAuthorityIdentity(roleId, authorityId);
+        RoleAuthorityIdentity roleAuthoritiyIdentity = new RoleAuthorityIdentity(roleId, authorityId, serviceId);
         Optional<RoleAuthority> optRoleAuthority = roleAuthoritiesRepository.findById(roleAuthoritiyIdentity);
 
         if (!optRoleAuthority.isPresent()) {
@@ -279,7 +277,6 @@ public class RolesController {
             @RequestBody List<Authority> body,
             @PathVariable String roleId) throws Exception {
         String logprefix = request.getRequestURI() + " ";
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");

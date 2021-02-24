@@ -15,23 +15,20 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RoleAuthorityIdentity implements Serializable {
+public class AuthorityIdentity implements Serializable {
 
-    private String roleId;
-    private String authorityId;
+    private String id;
     private String serviceId;
 
-    public RoleAuthorityIdentity(String roleId, String authorityId, String serviceId) {
-        this.roleId = roleId;
-        this.authorityId = authorityId;
+    public AuthorityIdentity(String id, String serviceId) {
+        this.id = id;
         this.serviceId = serviceId;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 23 * hash + Objects.hashCode(this.roleId);
-        hash = 23 * hash + Objects.hashCode(this.authorityId);
+        hash = 23 * hash + Objects.hashCode(this.id);
         hash = 23 * hash + Objects.hashCode(this.serviceId);
         return hash;
     }
@@ -47,11 +44,8 @@ public class RoleAuthorityIdentity implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final RoleAuthorityIdentity other = (RoleAuthorityIdentity) obj;
-        if (!Objects.equals(this.roleId, other.roleId)) {
-            return false;
-        }
-        if (!Objects.equals(this.authorityId, other.authorityId)) {
+        final AuthorityIdentity other = (AuthorityIdentity) obj;
+        if (!Objects.equals(this.id, other.id)) {
             return false;
         }
         if (!Objects.equals(this.serviceId, other.serviceId)) {

@@ -323,11 +323,9 @@ public class ClientsController {
         session = clientSessionsRepository.save(session);
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "session created with id: " + session.getId(), "");
 
-        session.setOwnerId(null);
         session.setUpdated(null);
         session.setStatus(null);
         session.setRemoteAddress(null);
-        session.setUsername(null);
         session.setId(null);
 
         Auth authReponse = new Auth();

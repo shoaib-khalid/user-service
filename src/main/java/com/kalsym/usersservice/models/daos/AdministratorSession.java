@@ -21,11 +21,6 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "administrator_session")
 public class AdministratorSession extends Session implements Serializable {
 
-    @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    private String id;
-
-    private String ownerId;
+   
 
 }

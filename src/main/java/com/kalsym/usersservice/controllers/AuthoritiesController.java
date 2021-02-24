@@ -173,8 +173,8 @@ public class AuthoritiesController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping(path = "/bulk", name = "authorities-post")
-    @PreAuthorize("hasAnyAuthority('authorities-post-bulk', 'all')")
+    @PostMapping(path = "/bulk", name = "authorities-post-bulk")
+//    @PreAuthorize("hasAnyAuthority('authorities-post-bulk', 'all')")
     public ResponseEntity<HttpReponse> postAuthority(HttpServletRequest request,
             @RequestBody List<Authority> body) throws Exception {
         String logprefix = request.getRequestURI() + " ";
@@ -186,7 +186,9 @@ public class AuthoritiesController {
         List<Authority> newAuthorities = new ArrayList<>();
 
         body.forEach(bodyAuthority -> {
-            newAuthorities.add(bodyAuthority);
+            newAuthorities.add(authoritiesRepository.save(bodyAuthority));
+            Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "saved authrity: " + bodyAuthority.getId(), "");
+
         });
 
         Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authorities created count: " + body.size(), "");

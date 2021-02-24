@@ -1,7 +1,7 @@
 package com.kalsym.usersservice.controllers;
 
 import com.kalsym.usersservice.VersionHolder;
-import com.kalsym.usersservice.models.AuthenticationReponse;
+import com.kalsym.usersservice.models.Auth;
 import com.kalsym.usersservice.models.HttpReponse;
 import com.kalsym.usersservice.models.daos.RoleAuthority;
 import com.kalsym.usersservice.models.daos.CustomerSession;
@@ -329,7 +329,7 @@ public class CustomersController {
         session.setUsername(null);
         session.setId(null);
 
-        AuthenticationReponse authReponse = new AuthenticationReponse();
+        Auth authReponse = new Auth();
         authReponse.setSession(session);
         authReponse.setAuthorities(authorities);
         authReponse.setRole(user.getRoleId());

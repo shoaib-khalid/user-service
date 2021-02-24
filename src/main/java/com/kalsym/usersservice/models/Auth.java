@@ -6,7 +6,7 @@ import java.util.List;
  *
  * @author Sarosh
  */
-public class AuthenticationReponse {
+public class Auth {
 
     private Object session;
 

@@ -33,6 +33,11 @@ import org.hibernate.annotations.GenericGenerator;
 @MappedSuperclass
 public class Session {
 
+    @Id
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
+    private String id;
+
     private String username;
     private String remoteAddress;
     private String status;
@@ -42,6 +47,8 @@ public class Session {
 
     private String accessToken;
     private String refreshToken;
+
+    private String ownerId;
 
     public void generateTokens() throws Exception {
         String accessTokenKey = UUID.randomUUID().toString();

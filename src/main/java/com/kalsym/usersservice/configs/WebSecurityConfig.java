@@ -63,6 +63,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/customers/register",
                         "/administrators/authenticate",
                         "/administrators/register",
+                        "/authorities/bulk",
+                        "/sessions/details",
                         "/error",
                         "/v2/api-docs",
                         "/configuration/ui",

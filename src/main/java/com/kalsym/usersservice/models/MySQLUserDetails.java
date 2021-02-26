@@ -1,5 +1,6 @@
 package com.kalsym.usersservice.models;
 
+import com.kalsym.usersservice.UsersServiceApplication;
 import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.daos.RoleAuthority;
 import com.kalsym.usersservice.models.daos.Client;
@@ -38,7 +39,7 @@ public class MySQLUserDetails implements UserDetails {
         this.userName = user.getUsername();
         this.password = user.getPassword();
         this.locked = user.getLocked();
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "user: ", user, "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "user: ", user, "");
 
         this.expired = user.getDeactivated();
         this.role = user.getRoleId();

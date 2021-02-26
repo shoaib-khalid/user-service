@@ -1,5 +1,6 @@
 package com.kalsym.usersservice.controllers;
 
+import com.kalsym.usersservice.UsersServiceApplication;
 import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.HttpReponse;
 import com.kalsym.usersservice.models.daos.Authority;
@@ -40,10 +41,10 @@ public class AuthoritiesController {
     @GetMapping(path = {"/"}, name = "authorities-get")
     @PreAuthorize("hasAnyAuthority('authorities-get', 'all')")
     public ResponseEntity<HttpReponse> getAuthorities(HttpServletRequest request) {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
 
         response.setSuccessStatus(HttpStatus.OK);
         response.setData(authoritiesRepository.findAll());
@@ -53,20 +54,20 @@ public class AuthoritiesController {
     @GetMapping(path = {"/{id}"}, name = "authorities-get-by-id")
     @PreAuthorize("hasAnyAuthority('authorities-get-by-id', 'all')")
     public ResponseEntity<HttpReponse> getAuthorityById(HttpServletRequest request, @PathVariable String id) {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
 
         Optional<Authority> optAuthority = authoritiesRepository.findById(id);
 
         if (!optAuthority.isPresent()) {
-            Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authority not found", "");
+            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authority not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authority found", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authority found", "");
         response.setSuccessStatus(HttpStatus.OK);
         response.setData(optAuthority.get());
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -75,24 +76,24 @@ public class AuthoritiesController {
     @DeleteMapping(path = {"/{id}"}, name = "authorities-delete-by-id")
     @PreAuthorize("hasAnyAuthority('authorities-delete-by-id', 'all')")
     public ResponseEntity<HttpReponse> deleteAuthorityById(HttpServletRequest request, @PathVariable String id) {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
 
         Optional<Authority> optAuthority = authoritiesRepository.findById(id);
 
         if (!optAuthority.isPresent()) {
-            Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authority not found", "");
+            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authority not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authority found", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authority found", "");
         authoritiesRepository.delete(optAuthority.get());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authority deleted", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authority deleted", "");
         response.setSuccessStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -101,22 +102,22 @@ public class AuthoritiesController {
     @PreAuthorize("hasAnyAuthority('authorities-put-by-id', 'all')")
     public ResponseEntity<HttpReponse> putAuthorityById(HttpServletRequest request, @PathVariable String id,
             @RequestBody Authority body) {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
 
         Optional<Authority> optAuthority = authoritiesRepository.findById(id);
 
         if (!optAuthority.isPresent()) {
-            Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authority not found", "");
+            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authority not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authority found", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authority found", "");
         Authority authority = optAuthority.get();
         List<String> errors = new ArrayList<>();
 
@@ -125,7 +126,7 @@ public class AuthoritiesController {
         for (Authority existingAuthority : authorities) {
             if (!authority.equals(existingAuthority)) {
                 if (existingAuthority.getId().equals(body.getId())) {
-                    Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authorityId already exists", "");
+                    Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authorityId already exists", "");
                     response.setErrorStatus(HttpStatus.CONFLICT);
                     errors.add("authorityId already exists");
                     response.setData(errors);
@@ -136,7 +137,7 @@ public class AuthoritiesController {
         }
         authority.updateAuthority(body);
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authority updated for id: " + body.getId(), "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authority updated for id: " + body.getId(), "");
         response.setSuccessStatus(HttpStatus.ACCEPTED);
         response.setData(authoritiesRepository.save(authority));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
@@ -146,18 +147,18 @@ public class AuthoritiesController {
     @PreAuthorize("hasAnyAuthority('authorities-post', 'all')")
     public ResponseEntity<HttpReponse> postAuthority(HttpServletRequest request,
             @Valid @RequestBody Authority body) throws Exception {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
 
         List<Authority> authorities = authoritiesRepository.findAll();
         List<String> errors = new ArrayList<>();
 
         for (Authority existingAuthority : authorities) {
             if (existingAuthority.getId().equals(body.getId())) {
-                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authorityId already exists", "");
+                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authorityId already exists", "");
                 response.setErrorStatus(HttpStatus.CONFLICT);
                 errors.add("authorityId already exists");
                 response.setData(errors);
@@ -167,7 +168,7 @@ public class AuthoritiesController {
 
         body = authoritiesRepository.save(body);
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authority created with id: " + body.getId(), "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authority created with id: " + body.getId(), "");
         response.setSuccessStatus(HttpStatus.CREATED);
         response.setData(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -177,21 +178,21 @@ public class AuthoritiesController {
 //    @PreAuthorize("hasAnyAuthority('authorities-post-bulk', 'all')")
     public ResponseEntity<HttpReponse> postAuthority(HttpServletRequest request,
             @RequestBody List<Authority> body) throws Exception {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
 
         List<Authority> newAuthorities = new ArrayList<>();
 
         body.forEach(bodyAuthority -> {
             newAuthorities.add(authoritiesRepository.save(bodyAuthority));
-            Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "saved authrity: " + bodyAuthority.getId(), "");
+            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "saved authrity: " + bodyAuthority.getId(), "");
 
         });
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authorities created count: " + body.size(), "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authorities created count: " + body.size(), "");
         response.setSuccessStatus(HttpStatus.CREATED);
         response.setData(newAuthorities);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -199,8 +200,8 @@ public class AuthoritiesController {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
-        String logprefix = request.getRequestURI() + " ";
-        Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "validation failed", "");
+        String logprefix = request.getRequestURI();
+        Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "validation failed", "");
         List<String> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());

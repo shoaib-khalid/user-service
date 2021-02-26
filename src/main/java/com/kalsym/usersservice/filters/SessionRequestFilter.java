@@ -1,5 +1,6 @@
 package com.kalsym.usersservice.filters;
 
+import com.kalsym.usersservice.UsersServiceApplication;
 import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.MySQLUserDetails;
 import com.kalsym.usersservice.models.daos.*;
@@ -48,27 +49,27 @@ public class SessionRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "-------------" + logprefix + "-------------", "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "-------------" + logprefix + "-------------", "", "");
 
         final String authHeader = request.getHeader("Authorization");
-        Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "Authorization: " + authHeader, "");
+        Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "Authorization: " + authHeader, "");
 
         String accessToken = null;
 
         // Token is in the form "Bearer token". Remove Bearer word and get only the Token
         if (null != authHeader && authHeader.startsWith("Bearer ")) {
             accessToken = authHeader.replace("Bearer ", "");
-            Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "token: " + accessToken, "");
-            Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "token length: " + accessToken.length(), "");
+            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "token: " + accessToken, "");
+            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "token length: " + accessToken.length(), "");
 
         } else {
-            Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "token does not begin with Bearer String", "");
+            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "token does not begin with Bearer String", "");
         }
 
         if (accessToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            //Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId: " + sessionId, "");
+            //Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "sessionId: " + sessionId, "");
             AdministratorSession adminSesion = administratorSessionsRepository.findByAccessToken(accessToken);
             ClientSession clientSession = clientSessionsRepository.findByAccessToken(accessToken);
             CustomerSession customerSession = customerSessionsRepository.findByAccessToken(accessToken);
@@ -79,23 +80,23 @@ public class SessionRequestFilter extends OncePerRequestFilter {
             if (null == adminSesion
                     && null == clientSession
                     && null == customerSession) {
-                Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId not valid", "");
+                Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "sessionId not valid", "");
 
             } else if (null != adminSesion) {
-                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId valid for admin_session", "");
+                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "sessionId valid for admin_session", "");
 
                 expiryTime = adminSesion.getExpiry();
 
                 username = adminSesion.getUsername();
 
             } else if (null != clientSession) {
-                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId valid for client_session", "");
+                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "sessionId valid for client_session", "");
                 expiryTime = clientSession.getExpiry();
 
                 username = clientSession.getUsername();
 
             } else if (null != customerSession) {
-                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "sessionId valid for customer_session", "");
+                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "sessionId valid for customer_session", "");
                 expiryTime = customerSession.getExpiry();
 
                 username = customerSession.getUsername();
@@ -109,9 +110,9 @@ public class SessionRequestFilter extends OncePerRequestFilter {
                     Date currentTime = sdf.parse(DateTimeUtil.currentTimestamp());
                     diff = expiryTime.getTime() - currentTime.getTime();
                 } catch (ParseException e) {
-                    Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "error calculating time to session expiry", "");
+                    Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "error calculating time to session expiry", "");
                 }
-                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "time to session expiry: " + diff + "ms", "");
+                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "time to session expiry: " + diff + "ms", "");
                 if (0 < diff) {
                     MySQLUserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
 
@@ -122,7 +123,7 @@ public class SessionRequestFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 } else {
-                    Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "session expired", "");
+                    Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "session expired", "");
                 }
             }
         }

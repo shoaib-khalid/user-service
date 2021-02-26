@@ -1,5 +1,6 @@
 package com.kalsym.usersservice.controllers;
 
+import com.kalsym.usersservice.UsersServiceApplication;
 import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.HttpReponse;
 import com.kalsym.usersservice.models.daos.Authority;
@@ -61,24 +62,24 @@ public class RolesController {
             @RequestParam(required = false) String parentRoleId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int pageSize) {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
 
         Role role = new Role();
         role.setId(id);
         role.setName(name);
         role.setParentRoleId(parentRoleId);
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, role + "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, role + "", "");
         ExampleMatcher matcher = ExampleMatcher
                 .matchingAll()
                 .withIgnoreCase()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
         Example<Role> example = Example.of(role, matcher);
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
         Pageable pageable = PageRequest.of(page, pageSize);
 
         response.setSuccessStatus(HttpStatus.OK);
@@ -89,20 +90,20 @@ public class RolesController {
     @GetMapping(path = {"/{id}"}, name = "roles-get-by-id")
     @PreAuthorize("hasAnyAuthority('roles-get-by-id', 'all')")
     public ResponseEntity<HttpReponse> getRoleById(HttpServletRequest request, @PathVariable String id) {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
 
         Optional<Role> optRole = rolesRepository.findById(id);
 
         if (!optRole.isPresent()) {
-            Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role not found", "");
+            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role found", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role found", "");
         response.setSuccessStatus(HttpStatus.OK);
         response.setData(optRole.get());
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -111,24 +112,24 @@ public class RolesController {
     @DeleteMapping(path = {"/{id}"}, name = "roles-delete-by-id")
     @PreAuthorize("hasAnyAuthority('roles-delete-by-id', 'all')")
     public ResponseEntity<HttpReponse> deleteRoleById(HttpServletRequest request, @PathVariable String id) {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
 
         Optional<Role> optRole = rolesRepository.findById(id);
 
         if (!optRole.isPresent()) {
-            Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role not found", "");
+            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role found", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role found", "");
         rolesRepository.delete(optRole.get());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role deleted", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role deleted", "");
         response.setSuccessStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -136,22 +137,22 @@ public class RolesController {
     @PutMapping(path = {"/{id}"}, name = "roles-put-by-id")
     @PreAuthorize("hasAnyAuthority('roles-put-by-id', 'all')")
     public ResponseEntity<HttpReponse> putRoleById(HttpServletRequest request, @PathVariable String id, @RequestBody Role body) {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
 
         Optional<Role> optRole = rolesRepository.findById(id);
 
         if (!optRole.isPresent()) {
-            Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role not found", "");
+            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role found", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role found", "");
         Role role = optRole.get();
         List<String> errors = new ArrayList<>();
 
@@ -160,14 +161,14 @@ public class RolesController {
         for (Role existingRole : roles) {
             if (!role.equals(existingRole)) {
                 if (existingRole.getId().equals(body.getId())) {
-                    Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "roleId already exists", "");
+                    Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "roleId already exists", "");
                     response.setErrorStatus(HttpStatus.CONFLICT);
                     errors.add("roleId already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
                 }
                 if (existingRole.getName().equals(body.getName())) {
-                    Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "name already exists", "");
+                    Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "name already exists", "");
                     response.setErrorStatus(HttpStatus.CONFLICT);
                     errors.add("name already exists");
                     response.setData(errors);
@@ -178,7 +179,7 @@ public class RolesController {
         }
         role.updateRole(body);
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role updated for id: " + id, "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role updated for id: " + id, "");
         response.setSuccessStatus(HttpStatus.ACCEPTED);
         response.setData(rolesRepository.save(role));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
@@ -187,25 +188,25 @@ public class RolesController {
     @PostMapping(name = "roles-post")
     @PreAuthorize("hasAnyAuthority('roles-post', 'all')")
     public ResponseEntity<HttpReponse> postRole(HttpServletRequest request, @Valid @RequestBody Role body) throws Exception {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
 
         List<Role> roles = rolesRepository.findAll();
         List<String> errors = new ArrayList<>();
 
         for (Role existingRole : roles) {
             if (existingRole.getId().equals(body.getId())) {
-                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "roleId already exists", "");
+                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "roleId already exists", "");
                 response.setErrorStatus(HttpStatus.CONFLICT);
                 errors.add("roleId already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
             if (existingRole.getName().equals(body.getName())) {
-                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "name already exists", "");
+                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "name already exists", "");
                 response.setErrorStatus(HttpStatus.CONFLICT);
                 errors.add("name already exists");
                 response.setData(errors);
@@ -213,7 +214,7 @@ public class RolesController {
             }
         }
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role created with id: " + body.getId(), "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role created with id: " + body.getId(), "");
         response.setSuccessStatus(HttpStatus.CREATED);
         response.setData(rolesRepository.save(body));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -223,20 +224,20 @@ public class RolesController {
     @PreAuthorize("hasAnyAuthority('roles-get-authorities-by-roleId', 'all')")
     public ResponseEntity<HttpReponse> getRoleAuthoritiesByRoleId(HttpServletRequest request,
             @PathVariable String roleId) {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
 
         Optional<Role> optRole = rolesRepository.findById(roleId);
 
         if (!optRole.isPresent()) {
-            Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role not found", "");
+            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND, "role not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role found", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role found", "");
 
         response.setSuccessStatus(HttpStatus.OK);
         response.setData(roleAuthoritiesRepository.findByRoleId(roleId));
@@ -249,24 +250,24 @@ public class RolesController {
             @PathVariable String roleId, 
             @PathVariable String authorityId,
             @PathVariable String serviceId) {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
 
         RoleAuthorityIdentity roleAuthoritiyIdentity = new RoleAuthorityIdentity(roleId, authorityId, serviceId);
         Optional<RoleAuthority> optRoleAuthority = roleAuthoritiesRepository.findById(roleAuthoritiyIdentity);
 
         if (!optRoleAuthority.isPresent()) {
-            Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role_authority not found", "");
+            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role_authority not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND, "role_authority not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role_authority found", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role_authority found", "");
         roleAuthoritiesRepository.delete(optRoleAuthority.get());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role_authority deleted", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role_authority deleted", "");
         response.setSuccessStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -276,21 +277,21 @@ public class RolesController {
     public ResponseEntity<HttpReponse> postRoleAuthority(HttpServletRequest request,
             @RequestBody List<Authority> body,
             @PathVariable String roleId) throws Exception {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
 
         Optional<Role> optRole = rolesRepository.findById(roleId);
 
         if (!optRole.isPresent()) {
-            Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role not found", "");
+            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND, "role not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "role found", "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role found", "");
 
         RoleAuthority[] roleAuthorities = new RoleAuthority[body.size()];
         int i = 0;
@@ -298,7 +299,7 @@ public class RolesController {
 
             Optional optAuthority = authoritiesRepository.findById(authority.getId());
             if (!optAuthority.isPresent()) {
-                Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, "authority " + authority.getId() + " not found", "");
+                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "authority " + authority.getId() + " not found", "");
                 response.setErrorStatus(HttpStatus.NOT_FOUND, "authority " + authority.getId() + " not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
@@ -311,7 +312,7 @@ public class RolesController {
             i = i++;
         }
 
-        Logger.application.info(Logger.pattern, VersionHolder.VERSION, logprefix, i + "role_authorities created for roleId: " + roleId, "");
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, i + "role_authorities created for roleId: " + roleId, "");
         response.setSuccessStatus(HttpStatus.CREATED);
         response.setData(roleAuthorities);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -319,9 +320,9 @@ public class RolesController {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
-        String logprefix = request.getRequestURI() + " ";
+        String logprefix = request.getRequestURI();
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
-        Logger.application.warn(Logger.pattern, VersionHolder.VERSION, logprefix, "validation failed", "");
+        Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "validation failed", "");
         List<String> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());

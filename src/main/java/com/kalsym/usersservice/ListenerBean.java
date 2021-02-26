@@ -34,10 +34,10 @@ public class ListenerBean {
                 try {
                     if (!handlerMethod.getMethod().getName().equalsIgnoreCase("error")
                             && !handlerMethod.getMethod().getName().equalsIgnoreCase("errorHtml")) {
-                        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "", "name: " + requestMappingInfo.getName());
-                        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "", "method: " + handlerMethod.getMethod().getName());
-                        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "", "description: " + requestMappingInfo.toString());
 
+                        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "", "name: " + requestMappingInfo.getName());
+                        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "", "method: " + handlerMethod.getMethod().getName());
+                        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "", "description: " + requestMappingInfo.toString());
                         Authority authority = new Authority();
                         authority.setId(requestMappingInfo.getName());
                         authority.setName(handlerMethod.getMethod().getName());
@@ -45,15 +45,15 @@ public class ListenerBean {
                         authority.setServiceId("users-service");
 
                         if (null != authority.getId()) {
-                            authoritiesRepository.save(authority);
 
+                            authoritiesRepository.save(authority);
+                            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "", "inserted authority", "");
                         }
-                        Logger.application.info(Logger.pattern, VersionHolder.VERSION, "", "inserted authority", "");
 
                     }
 
                 } catch (Exception e) {
-                    Logger.application.warn(Logger.pattern, VersionHolder.VERSION, "error inserting authority", e.getMessage());
+                    Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, "error inserting authority", e.getMessage());
                 }
 
             });

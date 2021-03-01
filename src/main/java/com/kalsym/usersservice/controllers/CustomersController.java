@@ -265,6 +265,8 @@ public class CustomersController {
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
         body.setLocked(false);
+        body.setDeactivated(false);
+
         body = customersRepository.save(body);
         body.setPassword(null);
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");
@@ -323,7 +325,7 @@ public class CustomersController {
         session = customerSessionsRepository.save(session);
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "session created with id: " + session.getId(), "");
 
-         session.setUpdated(null);
+        session.setUpdated(null);
         session.setStatus(null);
         session.setRemoteAddress(null);
         session.setId(null);

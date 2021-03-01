@@ -1,8 +1,6 @@
 package com.kalsym.usersservice.models.daos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.io.Serializable;
-import static java.lang.Math.random;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.util.Date;
@@ -12,14 +10,12 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Table;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -31,6 +27,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @MappedSuperclass
+@ToString
 public class Session {
 
     @Id

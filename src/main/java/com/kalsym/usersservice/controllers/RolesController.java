@@ -54,7 +54,7 @@ public class RolesController {
     @Autowired
     RoleAuthoritiesRepository roleAuthoritiesRepository;
 
-    @GetMapping(path = {"/"}, name = "roles-get")
+    @GetMapping(path = {""}, name = "roles-get")
     @PreAuthorize("hasAnyAuthority('roles-get', 'all')")
     public ResponseEntity<HttpReponse> getRoles(HttpServletRequest request,
             @RequestParam(required = false) String id,
@@ -177,7 +177,7 @@ public class RolesController {
             }
 
         }
-        role.updateRole(body);
+        role.update(body);
 
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "role updated for id: " + id, "");
         response.setSuccessStatus(HttpStatus.ACCEPTED);

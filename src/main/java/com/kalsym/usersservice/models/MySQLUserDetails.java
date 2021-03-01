@@ -39,8 +39,6 @@ public class MySQLUserDetails implements UserDetails {
         this.userName = user.getUsername();
         this.password = user.getPassword();
         this.locked = user.getLocked();
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "user: ", user, "");
-
         this.expired = user.getDeactivated();
         this.role = user.getRoleId();
         grantedAuthorities = new ArrayList<>();

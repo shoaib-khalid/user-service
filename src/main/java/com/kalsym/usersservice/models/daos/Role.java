@@ -41,7 +41,7 @@ public class Role implements Serializable {
 
     private String parentRoleId;
 
-    public void updateRole(Role role) {
+    public void update(Role role) {
         if (null != role.getId()) {
             id = role.getId();
         }

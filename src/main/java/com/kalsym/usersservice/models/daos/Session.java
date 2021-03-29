@@ -3,6 +3,7 @@ package com.kalsym.usersservice.models.daos;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
+import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 import javax.crypto.Cipher;
@@ -39,8 +40,8 @@ public class Session {
     private String remoteAddress;
     private String status;
     private Date expiry;
-    private String created;
-    private String updated;
+    private Date created;
+    private Date updated;
 
     private String accessToken;
     private String refreshToken;

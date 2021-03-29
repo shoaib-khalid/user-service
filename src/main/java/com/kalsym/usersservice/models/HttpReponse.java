@@ -3,6 +3,7 @@ package com.kalsym.usersservice.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.kalsym.usersservice.utils.DateTimeUtil;
+import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class HttpReponse {
         this.path = requestUri;
     }
 
-    private String timestamp;
+    private Date timestamp;
     private int status;
     private String error;
     private String message;

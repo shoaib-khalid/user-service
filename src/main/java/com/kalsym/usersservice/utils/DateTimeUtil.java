@@ -1,6 +1,7 @@
 package com.kalsym.usersservice.utils;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -16,28 +17,20 @@ public class DateTimeUtil {
      *
      * @return
      */
-    public static String currentTimestamp() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        Date currentDate = new Date();
-        String currentTimeStamp = sdf.format(currentDate);
-        return currentTimeStamp;
+    public static Date currentTimestamp() {
+        Date currentDate = Date.from(Instant.now());
+        return currentDate;
     }
 
     /**
      * *
-     * Generate expiry time by adding seconds, hours or minutes with format
-     * 'yyyy-MM-dd HH:mm:ss'
+     * Generate expiry time by adding seconds
      *
      * @param seconds
      * @return
      */
     public static Date expiryTimestamp(int seconds) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        Date currentDate = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(currentDate);
-        c.add(Calendar.SECOND, seconds);
-        Date expiryDate = c.getTime();
+        Date expiryDate = Date.from(Instant.now().plusSeconds(seconds));
         return expiryDate;
     }
 }

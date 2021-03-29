@@ -3,6 +3,7 @@ package com.kalsym.usersservice.models.daos;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -47,8 +48,8 @@ public class Client implements Serializable {
 
     private Boolean locked;
     private Boolean deactivated;
-    String created;
-    String updated;
+    Date created;
+    Date updated;
 
     @NotBlank(message = "role is required")
     private String roleId;

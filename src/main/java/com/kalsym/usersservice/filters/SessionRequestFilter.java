@@ -105,13 +105,8 @@ public class SessionRequestFilter extends OncePerRequestFilter {
 
             if (null != expiryTime && null != username) {
                 long diff = 0;
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date currentTime = sdf.parse(DateTimeUtil.currentTimestamp());
-                    diff = expiryTime.getTime() - currentTime.getTime();
-                } catch (ParseException e) {
-                    Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "error calculating time to session expiry", "");
-                }
+                Date currentTime = DateTimeUtil.currentTimestamp();
+                diff = expiryTime.getTime() - currentTime.getTime();
                 Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "time to session expiry: " + diff + "ms", "");
                 if (0 < diff) {
                     MySQLUserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);

@@ -58,16 +58,19 @@ public class SessionRequestFilter extends OncePerRequestFilter {
 
         String accessToken = null;
 
+        boolean tokenPresent = false;
+
         // Token is in the form "Bearer token". Remove Bearer word and get only the Token
         if (null != authHeader && authHeader.startsWith("Bearer ")) {
             accessToken = authHeader.replace("Bearer ", "");
             Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "token: " + accessToken, "");
             Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "token length: " + accessToken.length(), "");
-
+            tokenPresent = true;
         } else {
             Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "token does not begin with Bearer String", "");
         }
 
+        boolean authorized = false;
         if (accessToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             //Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "sessionId: " + sessionId, "");
             AdministratorSession adminSesion = administratorSessionsRepository.findByAccessToken(accessToken);
@@ -117,11 +120,15 @@ public class SessionRequestFilter extends OncePerRequestFilter {
                             .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    authorized = true;
                 } else {
                     Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "session expired", "");
                 }
             }
         }
+
+        Logger.cdr.info(request.getRemoteAddr() + "," + request.getMethod() + "," + request.getRequestURI() + "," + tokenPresent + "," + authorized);
+
         chain.doFilter(request, response);
     }
 }

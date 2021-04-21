@@ -1,5 +1,6 @@
 package com.kalsym.usersservice.models.daos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
@@ -14,7 +15,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  *
@@ -46,9 +49,17 @@ public class Client implements Serializable {
     @NotBlank(message = "email is required")
     private String email;
 
+    private String storeId;
+
+    private String liveChatAgentId;
+
     private Boolean locked;
     private Boolean deactivated;
+
+    @CreationTimestamp
     Date created;
+
+    @UpdateTimestamp
     Date updated;
 
     @NotBlank(message = "role is required")
@@ -98,6 +109,6 @@ public class Client implements Serializable {
 
     @Override
     public String toString() {
-        return "UserEntity{" + "id=" + id + ", username=" + username + ", password=" + password + ", name=" + name + ", email=" + email + ", locked=" + locked + ", deactivated=" + deactivated + ", created=" + created + ", updated=" + updated + ", roleId=" + roleId + '}';
+        return "Client{" + "id=" + id + ", username=" + username + ", password=" + password + ", name=" + name + ", email=" + email + ", locked=" + locked + ", deactivated=" + deactivated + ", created=" + created + ", updated=" + updated + ", roleId=" + roleId + '}';
     }
 }

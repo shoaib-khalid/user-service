@@ -85,11 +85,16 @@ public class SessionsController {
         Session session = getSession(accessToken, logprefix);
 
         if (null == session) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "session not found", "");
+            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "session not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
+        if (session.getOwnerId() == null) {
+            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "session owner NOT_ACCEPTABLE", "");
+            response.setErrorStatus(HttpStatus.NOT_ACCEPTABLE);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
+        }
         String roleId = getRoleId(session.getOwnerId(), logprefix);
         List<RoleAuthority> roleAuthories = null;
         if (null != serviceId) {

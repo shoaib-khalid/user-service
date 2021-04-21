@@ -1,5 +1,6 @@
 package com.kalsym.usersservice;
 
+import com.kalsym.usersservice.services.EmaiVerificationlHandler;
 import com.kalsym.usersservice.utils.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -32,7 +33,7 @@ public class UsersServiceApplication {
     String description;
 
     @Bean
-    CommandLineRunner lookup(ApplicationContext context) {
+    CommandLineRunner lookup(ApplicationContext context, EmaiVerificationlHandler emailHandler) {
         return args -> {
             UsersServiceApplication.VERSION = version;
             VERSION = version;
@@ -48,7 +49,11 @@ public class UsersServiceApplication {
                     + "  \\__,_|___/\\___|_|         |___/\\___|_|    \\_/ |_|\\___\\___|\n"
                     + "                                                            \n"
                     + " :: com.kalsym ::              (v" + UsersServiceApplication.VERSION + ")");
+
+            String[] recipients = {"sarosh.tariq@kalsym.com", "shoaib@kalsym.com"};
+            //emailHandler.sendEmail(recipients, "no-reply@symplified.biz", "Email Subject", "Email Body");
         };
+
     }
 
     @Bean

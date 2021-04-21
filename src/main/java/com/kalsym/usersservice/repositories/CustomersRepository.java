@@ -1,6 +1,7 @@
 package com.kalsym.usersservice.repositories;
 
 import com.kalsym.usersservice.models.daos.Customer;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,10 @@ import org.springframework.stereotype.Repository;
 public interface CustomersRepository extends JpaRepository<Customer, String>, PagingAndSortingRepository<Customer, String> {
 
     Customer findByUsername(String userName);
+
+    Customer findByUsernameOrEmail(String userName, String email);
+
+    List<Customer> findByStoreId(String storeId);
+
+    Customer findByUsernameAndStoreId(String username, String storeId);
 }

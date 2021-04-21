@@ -39,11 +39,13 @@ public class MySQLUserDetailsService implements UserDetailsService {
     @Override
     public MySQLUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Client client = clientsRepository.findByUsername(username);
+        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "", "username: " + username, "");
 
-        Customer customer = customersRepository.findByUsername(username);
+        Client client = clientsRepository.findByUsernameOrEmail(username, username);
 
-        Administrator administrator = administratorsRepository.findByUsername(username);
+        Customer customer = customersRepository.findByUsernameOrEmail(username, username);
+
+        Administrator administrator = administratorsRepository.findByUsernameOrEmail(username, username);
 
         String roleId = null;
         MySQLUserDetails mud = null;

@@ -1,7 +1,6 @@
 package com.kalsym.usersservice.controllers;
 
 import com.kalsym.usersservice.UsersServiceApplication;
-import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.Auth;
 import com.kalsym.usersservice.models.HttpReponse;
 import com.kalsym.usersservice.models.daos.RoleAuthority;
@@ -52,8 +51,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Sarosh
  */
 @RestController()
-@RequestMapping("/customers")
-public class CustomersController {
+@RequestMapping("/stores/{storeId}/customers")
+public class StoreCustomersController {
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -76,9 +75,10 @@ public class CustomersController {
     @Value("${session.expiry:3600}")
     private int expiry;
 
-    @GetMapping(path = {"/"}, name = "customers-get")
-    @PreAuthorize("hasAnyAuthority('customers-get', 'all')")
+    @GetMapping(path = {"/"}, name = "store-customers-get")
+    @PreAuthorize("hasAnyAuthority('store-customers-get', 'all')")
     public ResponseEntity<HttpReponse> getCustomers(HttpServletRequest request,
+            @PathVariable String storeId,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String roleId,
@@ -86,7 +86,7 @@ public class CustomersController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int pageSize) {
         String logprefix = request.getRequestURI();
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
+
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
@@ -96,6 +96,7 @@ public class CustomersController {
         user.setEmail(email);
         user.setRoleId(roleId);
         user.setLocked(locked);
+        user.setStoreId(storeId);
 
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, user + "", "");
         ExampleMatcher matcher = ExampleMatcher
@@ -113,11 +114,13 @@ public class CustomersController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping(path = {"/{id}"}, name = "customers-get-by-id")
-    @PreAuthorize("hasAnyAuthority('customers-get-by-id', 'all')")
-    public ResponseEntity<HttpReponse> getCustomerById(HttpServletRequest request, @PathVariable String id) {
+    @GetMapping(path = {"/{id}"}, name = "store-customers-get-by-id")
+    @PreAuthorize("hasAnyAuthority('store-customers-get-by-id', 'all')")
+    public ResponseEntity<HttpReponse> getCustomerById(HttpServletRequest request,
+            @PathVariable String storeId,
+            @PathVariable String id) {
         String logprefix = request.getRequestURI();
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
+
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
@@ -136,11 +139,13 @@ public class CustomersController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping(path = {"/{id}"}, name = "customers-delete-by-id")
-    @PreAuthorize("hasAnyAuthority('customers-delete-by-id', 'all')")
-    public ResponseEntity<HttpReponse> deleteCustomerById(HttpServletRequest request, @PathVariable String id) {
+    @DeleteMapping(path = {"/{id}"}, name = "store-customers-delete-by-id")
+    @PreAuthorize("hasAnyAuthority('store-customers-delete-by-id', 'all')")
+    public ResponseEntity<HttpReponse> deleteCustomerById(HttpServletRequest request,
+            @PathVariable String storeId,
+            @PathVariable String id) {
         String logprefix = request.getRequestURI();
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
+
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
@@ -161,11 +166,13 @@ public class CustomersController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PutMapping(path = {"/{id}"}, name = "customers-put-by-id")
-    @PreAuthorize("hasAnyAuthority('customers-put-by-id', 'all')")
-    public ResponseEntity<HttpReponse> putCustomerById(HttpServletRequest request, @PathVariable String id, @RequestBody Customer body) {
+    @PutMapping(path = {"/{id}"}, name = "store-customers-put-by-id")
+    @PreAuthorize("hasAnyAuthority('store-customers-put-by-id', 'all')")
+    public ResponseEntity<HttpReponse> putCustomerById(HttpServletRequest request,
+            @PathVariable String storeId,
+            @PathVariable String id, @RequestBody Customer body) {
         String logprefix = request.getRequestURI();
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
+
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
@@ -229,9 +236,11 @@ public class CustomersController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
-    @PostMapping(path = "/register", name = "customers-post")
-    //@PreAuthorize("hasAnyAuthority('customers-post', 'all')")
-    public ResponseEntity<HttpReponse> postCustomer(HttpServletRequest request, @Valid @RequestBody Customer body) throws Exception {
+    @PostMapping(path = "/register", name = "store-customers-post")
+    //@PreAuthorize("hasAnyAuthority('store-customers-post', 'all')")
+    public ResponseEntity<HttpReponse> postCustomer(HttpServletRequest request,
+            @PathVariable String storeId,
+            @Valid @RequestBody Customer body) throws Exception {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
@@ -247,7 +256,7 @@ public class CustomersController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
-        List<Customer> customers = customersRepository.findAll();
+        List<Customer> customers = customersRepository.findByStoreId(storeId);
 
         for (Customer existingCustomer : customers) {
             if (existingCustomer.getUsername().equals(body.getUsername())) {
@@ -282,8 +291,9 @@ public class CustomersController {
     }
 
     //authentication
-    @PostMapping(path = "/authenticate", name = "customers-authenticate")
+    @PostMapping(path = "/authenticate", name = "store-customers-authenticate")
     public ResponseEntity authenticateCustomer(@Valid @RequestBody AuthenticationBody body,
+            @PathVariable String storeId,
             HttpServletRequest request) throws Exception {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
@@ -291,10 +301,21 @@ public class CustomersController {
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
 
         Authentication auth = null;
+        Customer user = null;
         try {
-            auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
-            );
+
+            user = customersRepository.findByUsernameAndStoreId(body.getUsername(), storeId);
+//            auth = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
+//            );
+
+            boolean match = bcryptEncoder.matches(body.getPassword(), user.getPassword());
+
+            if (!match) {
+                Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user password not valid");
+                response.setErrorStatus(HttpStatus.UNAUTHORIZED, "Bad Craedentiails");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
 
         } catch (BadCredentialsException e) {
             Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "error validating user", "", e);
@@ -308,7 +329,7 @@ public class CustomersController {
 
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user authenticated", "");
 
-        Customer user = customersRepository.findByUsernameOrEmail(body.getUsername(), body.getUsername());
+//        Customer user = customersRepository.findByUsernameOrEmail(body.getUsername(), body.getUsername());
 
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(user.getRoleId());
         ArrayList<String> authorities = new ArrayList<>();
@@ -352,7 +373,7 @@ public class CustomersController {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
         String logprefix = request.getRequestURI();
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
+
         Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "validation failed", "");
         List<String> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(x -> x.getDefaultMessage())

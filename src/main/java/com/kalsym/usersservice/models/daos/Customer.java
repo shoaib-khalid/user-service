@@ -1,5 +1,6 @@
 package com.kalsym.usersservice.models.daos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
@@ -37,7 +38,7 @@ public class Customer implements Serializable {
     @NotBlank(message = "username is required")
     private String username;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    
     private String password;
 
     @NotBlank(message = "name is required")
@@ -46,6 +47,10 @@ public class Customer implements Serializable {
     @NotBlank(message = "email is required")
     private String email;
 
+    private String facebookId;
+
+    private String phoneNumber;
+
     private Boolean locked;
     private Boolean deactivated;
     Date created;
@@ -53,6 +58,8 @@ public class Customer implements Serializable {
 
     @NotBlank(message = "role is required")
     private String roleId;
+    
+    private String storeId;
 
     public void update(Customer user) {
         if (null != user.getEmail()) {

@@ -1,7 +1,6 @@
 package com.kalsym.usersservice.controllers;
 
 import com.kalsym.usersservice.UsersServiceApplication;
-import com.kalsym.usersservice.VersionHolder;
 import com.kalsym.usersservice.models.Auth;
 import com.kalsym.usersservice.models.HttpReponse;
 import com.kalsym.usersservice.models.daos.AdministratorSession;
@@ -81,7 +80,6 @@ public class AdministratorsController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int pageSize) {
         String logprefix = request.getRequestURI();
-        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
@@ -300,7 +298,7 @@ public class AdministratorsController {
 
         Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user authenticated", "");
 
-        Administrator user = administratorsRepository.findByUsername(body.getUsername());
+        Administrator user = administratorsRepository.findByUsernameOrEmail(body.getUsername(), body.getUsername());
 
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(user.getRoleId());
         ArrayList<String> authorities = new ArrayList<>();

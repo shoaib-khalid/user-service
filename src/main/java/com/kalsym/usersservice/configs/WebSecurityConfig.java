@@ -57,10 +57,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeRequests().antMatchers(
+                        "/clients/session/refresh",
                         "/clients/authenticate",
+                        "/clients/authenticate",
+                        "/clients/**/email-verification/**/verify",
                         "/clients/register",
+                        "/customers/session/refresh",
                         "/customers/authenticate",
                         "/customers/register",
+                        "/customers/{id}/email-verification/{code}/verify",
+                        "/administrators/session/refresh",
                         "/administrators/authenticate",
                         "/administrators/register",
                         "/authorities/bulk",

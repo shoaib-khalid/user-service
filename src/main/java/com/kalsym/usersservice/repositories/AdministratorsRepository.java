@@ -13,4 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface AdministratorsRepository extends PagingAndSortingRepository<Administrator, String>, JpaRepository<Administrator, String> {
 
     Administrator findByUsername(String userName);
+    
+    Administrator findByUsernameOrEmail(String userName, String email);
 }

@@ -13,4 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface ClientsRepository extends PagingAndSortingRepository<Client, String>, JpaRepository<Client, String> {
 
     Client findByUsername(String userName);
+    
+    Client findByUsernameOrEmail(String userName, String email);
 }

@@ -9,10 +9,10 @@
         <relativePath/>
     </parent>
     <groupId>com.kalsym</groupId>
-    <artifactId>users-service</artifactId>
+    <artifactId>user-service</artifactId>
     <version>1.0-Final</version>
-    <name>users-service</name>
-    <description>Users authentication service</description>
+    <name>user-service</name>
+    <description>Users auth service</description>
 
     <properties>
         <java.version>1.8</java.version>

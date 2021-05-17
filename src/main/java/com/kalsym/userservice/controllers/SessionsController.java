@@ -1,6 +1,6 @@
 package com.kalsym.userservice.controllers;
 
-import com.kalsym.userservice.UsersServiceApplication;
+import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.VersionHolder;
 import com.kalsym.userservice.models.Auth;
 import com.kalsym.userservice.models.HttpReponse;
@@ -79,19 +79,19 @@ public class SessionsController {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, accessToken, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, accessToken, "");
 
         Session session = getSession(accessToken, logprefix);
 
         if (null == session) {
-            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "session not found", "");
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
         if (session.getOwnerId() == null) {
-            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "session owner NOT_ACCEPTABLE", "");
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session owner NOT_ACCEPTABLE", "");
             response.setErrorStatus(HttpStatus.NOT_ACCEPTABLE);
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
         }
@@ -126,20 +126,20 @@ public class SessionsController {
         Optional<Client> optClient = clientsRepository.findById(userId);
 
         if (optClient.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "client found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client found", "");
             return optClient.get().getRoleId();
         }
 
         Optional<Customer> optCustomer = customersRepository.findById(userId);
         if (optCustomer.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customer found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer found", "");
             return optCustomer.get().getRoleId();
         }
 
         Optional<Administrator> optAdministrator = administratorsRepository.findById(userId);
 
         if (!optAdministrator.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "administrator found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "administrator found", "");
             return optAdministrator.get().getRoleId();
         }
 
@@ -150,21 +150,21 @@ public class SessionsController {
         ClientSession clientSession = clientSessionsRepository.findByAccessToken(accessToken);
 
         if (null != clientSession) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "client session found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client session found", "");
             return clientSession;
         }
 
         CustomerSession customerSession = customerSessionsRepository.findByAccessToken(accessToken);
 
         if (null != customerSession) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customer session found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer session found", "");
             return customerSession;
         }
 
         AdministratorSession administratorSession = administratorSessionsRepository.findByAccessToken(accessToken);
 
         if (null != administratorSession) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "administrator session found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "administrator session found", "");
             return administratorSession;
         }
 
@@ -174,7 +174,7 @@ public class SessionsController {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
         String logprefix = request.getRequestURI();
-        Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "validation failed", "");
+        Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "validation failed", "");
         List<String> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());

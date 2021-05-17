@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-public class UsersServiceApplication {
+public class UserServiceApplication {
 
     public static String VERSION;
 
@@ -20,7 +20,7 @@ public class UsersServiceApplication {
     public static String DESCRIPTION;
 
     public static void main(String[] args) {
-        SpringApplication.run(UsersServiceApplication.class, args);
+        SpringApplication.run(UserServiceApplication.class, args);
     }
 
     @Value("${build.version:not-known}")
@@ -35,12 +35,12 @@ public class UsersServiceApplication {
     @Bean
     CommandLineRunner lookup(ApplicationContext context, EmaiVerificationlHandler emailHandler) {
         return args -> {
-            UsersServiceApplication.VERSION = version;
+            UserServiceApplication.VERSION = version;
             VERSION = version;
             NAME = name;
             DESCRIPTION = description;
 
-            Logger.application.info("[v{}][{}] {}", UsersServiceApplication.VERSION, "", "\n"
+            Logger.application.info("[v{}][{}] {}", UserServiceApplication.VERSION, "", "\n"
                     + "                                                 _          \n"
                     + "                                                (_)         \n"
                     + "  _   _ ___  ___ _ __ ______ ___  ___ _ ____   ___  ___ ___ \n"
@@ -48,7 +48,7 @@ public class UsersServiceApplication {
                     + " | |_| \\__ \\  __/ |         \\__ \\  __/ |   \\ V /| | (_|  __/\n"
                     + "  \\__,_|___/\\___|_|         |___/\\___|_|    \\_/ |_|\\___\\___|\n"
                     + "                                                            \n"
-                    + " :: com.kalsym ::              (v" + UsersServiceApplication.VERSION + ")");
+                    + " :: com.kalsym ::              (v" + UserServiceApplication.VERSION + ")");
 
             String[] recipients = {"sarosh.tariq@kalsym.com", "shoaib@kalsym.com"};
             //emailHandler.sendEmail(recipients, "no-reply@symplified.biz", "Email Subject", "Email Body");

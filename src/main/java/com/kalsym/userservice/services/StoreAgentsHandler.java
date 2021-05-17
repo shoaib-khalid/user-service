@@ -4,7 +4,7 @@ import com.kalsym.userservice.models.storeagent.StoreAgentResponse;
 import com.kalsym.userservice.models.storeagent.LiveChatResponse;
 import com.kalsym.userservice.models.storeagent.LiveChatStoreAgent;
 import com.kalsym.userservice.utils.Logger;
-import com.kalsym.userservice.UsersServiceApplication;
+import com.kalsym.userservice.UserServiceApplication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -48,14 +48,14 @@ public class StoreAgentsHandler {
             ResponseEntity<LiveChatResponse> res = restTemplate.exchange(livechatStoreAgentCreationUrl, HttpMethod.POST, entity, LiveChatResponse.class);
 
             if (res.getBody().success == true) {
-                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, " created agent " + res.getBody());
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " created agent " + res.getBody());
 
                 return res.getBody().user;
             } else {
                 return null;
             }
         } catch (RestClientException e) {
-            Logger.application.error(Logger.pattern, UsersServiceApplication.VERSION, logprefix, " could not create agent", e);
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, " could not create agent", e);
 
         }
         return null;
@@ -91,14 +91,14 @@ public class StoreAgentsHandler {
             ResponseEntity<LiveChatResponse> res = restTemplate.exchange(livechatStoreAgentDeletionUrl, HttpMethod.POST, entity, LiveChatResponse.class);
 
             if (res.getBody().success == true) {
-                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, " deleted agent " + res.getBody());
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " deleted agent " + res.getBody());
 
                 return res.getBody().user;
             } else {
                 return null;
             }
         } catch (RestClientException e) {
-            Logger.application.error(Logger.pattern, UsersServiceApplication.VERSION, logprefix, " could not delete agent", e);
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, " could not delete agent", e);
 
         }
         return null;

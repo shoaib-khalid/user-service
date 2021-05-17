@@ -1,6 +1,6 @@
 package com.kalsym.userservice.services;
 
-import com.kalsym.userservice.UsersServiceApplication;
+import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.models.MySQLUserDetails;
 import com.kalsym.userservice.models.daos.Administrator;
 import com.kalsym.userservice.models.daos.RoleAuthority;
@@ -39,7 +39,7 @@ public class MySQLUserDetailsService implements UserDetailsService {
     @Override
     public MySQLUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "", "username: " + username, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "username: " + username, "");
 
         Client client = clientsRepository.findByUsernameOrEmail(username, username);
 
@@ -52,18 +52,18 @@ public class MySQLUserDetailsService implements UserDetailsService {
         if (null == client && null == administrator && null == customer) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         } else if (null != client) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "", "client: " + client, "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "client: " + client, "");
             roleId = client.getRoleId();
             List<RoleAuthority> auths = roleAuthoritiesRepository.findByRoleId(roleId);
             mud = new MySQLUserDetails(client, auths);
         } else if (null != administrator) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "", "administrator: " + administrator, "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "administrator: " + administrator, "");
 
             roleId = administrator.getRoleId();
             List<RoleAuthority> auths = roleAuthoritiesRepository.findByRoleId(roleId);
             mud = new MySQLUserDetails(administrator, auths);
         } else if (null != customer) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, "", "customer: " + customer, "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "customer: " + customer, "");
 
             roleId = customer.getRoleId();
             List<RoleAuthority> auths = roleAuthoritiesRepository.findByRoleId(roleId);

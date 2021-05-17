@@ -1,6 +1,6 @@
 package com.kalsym.userservice.models;
 
-import com.kalsym.userservice.UsersServiceApplication;
+import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.VersionHolder;
 import com.kalsym.userservice.models.daos.RoleAuthority;
 import com.kalsym.userservice.models.daos.Client;

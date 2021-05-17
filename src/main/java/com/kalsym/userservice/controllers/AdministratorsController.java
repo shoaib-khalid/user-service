@@ -1,6 +1,6 @@
 package com.kalsym.userservice.controllers;
 
-import com.kalsym.userservice.UsersServiceApplication;
+import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.models.Auth;
 import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.daos.AdministratorSession;
@@ -82,7 +82,7 @@ public class AdministratorsController {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         Administrator user = new Administrator();
         user.setUsername(username);
@@ -90,7 +90,7 @@ public class AdministratorsController {
         user.setRoleId(roleId);
         user.setLocked(locked);
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, user + "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, user + "", "");
         ExampleMatcher matcher = ExampleMatcher
                 .matchingAll()
                 .withIgnoreCase()
@@ -98,7 +98,7 @@ public class AdministratorsController {
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
         Example<Administrator> example = Example.of(user, matcher);
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
         Pageable pageable = PageRequest.of(page, pageSize);
 
         response.setSuccessStatus(HttpStatus.OK);
@@ -113,17 +113,17 @@ public class AdministratorsController {
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         Optional<Administrator> optAdministrator = administratorsRepository.findById(id);
 
         if (!optAdministrator.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user not found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user found", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
         response.setSuccessStatus(HttpStatus.OK);
         response.setData(optAdministrator.get());
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -136,20 +136,20 @@ public class AdministratorsController {
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         Optional<Administrator> optAdministrator = administratorsRepository.findById(id);
 
         if (!optAdministrator.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user not found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user found", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
         administratorsRepository.delete(optAdministrator.get());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user deleted", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user deleted", "");
         response.setSuccessStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -161,18 +161,18 @@ public class AdministratorsController {
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         Optional<Administrator> optAdministrator = administratorsRepository.findById(id);
 
         if (!optAdministrator.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user not found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user found", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
         Administrator user = optAdministrator.get();
         List<String> errors = new ArrayList<>();
 
@@ -181,14 +181,14 @@ public class AdministratorsController {
         for (Administrator existingAdministrator : administrators) {
             if (!user.equals(existingAdministrator)) {
                 if (existingAdministrator.getUsername().equals(body.getUsername())) {
-                    Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "username already exists", "");
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                     response.setErrorStatus(HttpStatus.CONFLICT);
                     errors.add("username already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
                 }
                 if (existingAdministrator.getEmail().equals(body.getEmail())) {
-                    Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "email already exists", "");
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
                     response.setErrorStatus(HttpStatus.CONFLICT);
                     errors.add("email already exists");
                     response.setData(errors);
@@ -196,7 +196,7 @@ public class AdministratorsController {
                 }
                 if (null != body.getId()) {
                     if (existingAdministrator.getEmail().equals(body.getEmail())) {
-                        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userId already exists", "");
+                        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId already exists", "");
                         response.setErrorStatus(HttpStatus.CONFLICT);
                         errors.add("userId already exists");
                         response.setData(errors);
@@ -216,7 +216,7 @@ public class AdministratorsController {
         user.update(body);
         user.setUpdated(DateTimeUtil.currentTimestamp());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user updated for id: " + id, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user updated for id: " + id, "");
         response.setSuccessStatus(HttpStatus.ACCEPTED);
         response.setData(administratorsRepository.save(user));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
@@ -229,12 +229,12 @@ public class AdministratorsController {
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         List<String> errors = new ArrayList<>();
         if (null == body.getPassword() || body.getPassword().length() == 0) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "username already exists", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
             response.setErrorStatus(HttpStatus.BAD_REQUEST);
             errors.add("password is required exists");
             response.setData(errors);
@@ -245,14 +245,14 @@ public class AdministratorsController {
 
         for (Administrator existingAdministrator : administrators) {
             if (existingAdministrator.getUsername().equals(body.getUsername())) {
-                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "username already exists", "");
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                 response.setErrorStatus(HttpStatus.CONFLICT);
                 errors.add("username already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
             if (existingAdministrator.getEmail().equals(body.getEmail())) {
-                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "email already exists", "");
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
                 response.setErrorStatus(HttpStatus.CONFLICT);
                 errors.add("email already exists");
                 response.setData(errors);
@@ -267,7 +267,7 @@ public class AdministratorsController {
         body.setDeactivated(false);
         body = administratorsRepository.save(body);
         body.setPassword(null);
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");
         response.setSuccessStatus(HttpStatus.CREATED);
         response.setData(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -280,23 +280,23 @@ public class AdministratorsController {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
             );
         } catch (BadCredentialsException e) {
-            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "error validating user", "");
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error validating user", "");
             response.setErrorStatus(HttpStatus.UNAUTHORIZED, "Bad Craedentiails");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (AuthenticationException e) {
-            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "error validating user", "");
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error validating user", "");
             response.setErrorStatus(HttpStatus.UNAUTHORIZED, e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user authenticated", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user authenticated", "");
 
         Administrator user = administratorsRepository.findByUsernameOrEmail(body.getUsername(), body.getUsername());
 
@@ -320,7 +320,7 @@ public class AdministratorsController {
         session.generateTokens();
 
         session = administratorSessionsRepository.save(session);
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "session created with id: " + session.getId(), "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session created with id: " + session.getId(), "");
 
         session.setUpdated(null);
         session.setStatus(null);
@@ -332,7 +332,7 @@ public class AdministratorsController {
         authReponse.setAuthorities(authorities);
         authReponse.setRole(user.getRoleId());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "generated token", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "generated token", "");
 
         response.setSuccessStatus(HttpStatus.ACCEPTED);
         response.setData(authReponse);
@@ -343,7 +343,7 @@ public class AdministratorsController {
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
         String logprefix = request.getRequestURI();
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
-        Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "validation failed", "");
+        Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "validation failed", "");
         List<String> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());

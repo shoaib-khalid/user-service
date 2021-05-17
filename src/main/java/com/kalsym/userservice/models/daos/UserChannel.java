@@ -39,6 +39,8 @@ public class UserChannel implements Serializable {
     private String userId;
 
     private String channelName;
+    
+    private String token;
 
     public void update(UserChannel userChannel) {
         if (null != userChannel.getId()) {
@@ -51,6 +53,10 @@ public class UserChannel implements Serializable {
 
         if (null != userChannel.getChannelName()) {
             this.channelName = userChannel.getChannelName();
+        }
+        
+        if (null != userChannel.getToken()) {
+            this.token = userChannel.getToken();
         }
 
     }

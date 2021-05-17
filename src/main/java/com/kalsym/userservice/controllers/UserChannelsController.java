@@ -1,6 +1,6 @@
 package com.kalsym.userservice.controllers;
 
-import com.kalsym.userservice.UsersServiceApplication;
+import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.VersionHolder;
 import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.daos.Authority;
@@ -59,21 +59,21 @@ public class UserChannelsController {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         UserChannel userChannel = new UserChannel();
         userChannel.setId(id);
         userChannel.setChannelName(channelName);
         userChannel.setUserId(userId);
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, userChannel + "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, userChannel + "", "");
         ExampleMatcher matcher = ExampleMatcher
                 .matchingAll()
                 .withIgnoreCase()
                 .withStringMatcher(ExampleMatcher.StringMatcher.EXACT);
         Example<UserChannel> example = Example.of(userChannel, matcher);
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
         Pageable pageable = PageRequest.of(page, pageSize);
 
         response.setSuccessStatus(HttpStatus.OK);
@@ -87,17 +87,17 @@ public class UserChannelsController {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         Optional<UserChannel> optUserChannel = userChannelsRepository.findById(id);
 
         if (!optUserChannel.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userChannel not found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userChannel found", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel found", "");
         response.setSuccessStatus(HttpStatus.OK);
         response.setData(optUserChannel.get());
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -110,20 +110,20 @@ public class UserChannelsController {
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         Optional<UserChannel> optUserChannel = userChannelsRepository.findById(id);
 
         if (!optUserChannel.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userChannel not found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userChannel found", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel found", "");
         userChannelsRepository.delete(optUserChannel.get());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userChannel deleted", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel deleted", "");
         response.setSuccessStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -135,18 +135,18 @@ public class UserChannelsController {
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         Optional<UserChannel> optUserChannel = userChannelsRepository.findById(id);
 
         if (!optUserChannel.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userChannel not found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userChannel found", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel found", "");
         UserChannel userChannel = optUserChannel.get();
         List<String> errors = new ArrayList<>();
 
@@ -155,7 +155,7 @@ public class UserChannelsController {
         for (UserChannel existingUserChannel : userChannels) {
             if (!userChannel.equals(existingUserChannel)) {
                 if (existingUserChannel.getRefId().equals(body.getRefId())) {
-                    Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userChannelId already exists", "");
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannelId already exists", "");
                     response.setErrorStatus(HttpStatus.CONFLICT);
                     errors.add("userChannelId already exists");
                     response.setData(errors);
@@ -166,7 +166,7 @@ public class UserChannelsController {
         }
         userChannel.update(body);
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userChannel updated for id: " + id, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel updated for id: " + id, "");
         response.setSuccessStatus(HttpStatus.ACCEPTED);
         response.setData(userChannelsRepository.save(userChannel));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
@@ -178,15 +178,15 @@ public class UserChannelsController {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         List<UserChannel> userChannels = userChannelsRepository.findByUserId(body.getUserId());
         List<String> errors = new ArrayList<>();
 
         for (UserChannel existingUserChannel : userChannels) {
             if (existingUserChannel.getRefId().equals(body.getRefId())) {
-                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userChannelId already exists", "");
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannelId already exists", "");
                 response.setErrorStatus(HttpStatus.CONFLICT);
                 errors.add("userChannelId already exists");
                 response.setData(errors);
@@ -195,7 +195,7 @@ public class UserChannelsController {
 
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userChannel created with id: " + body.getId(), "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel created with id: " + body.getId(), "");
         response.setSuccessStatus(HttpStatus.CREATED);
         response.setData(userChannelsRepository.save(body));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -205,7 +205,7 @@ public class UserChannelsController {
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
         String logprefix = request.getRequestURI();
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
-        Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "validation failed", "");
+        Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "validation failed", "");
         List<String> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());

@@ -4,7 +4,7 @@
  */
 package com.kalsym.userservice.services;
 
-import com.kalsym.userservice.UsersServiceApplication;
+import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.daos.Administrator;
 import com.kalsym.userservice.models.daos.Customer;
@@ -72,7 +72,7 @@ public class EmaiVerificationlHandler {
     public void sendVerificationEmail(Object user) {
         String logprefix = "sendVerificationEmail";
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         String email = null;
         String userId = null;
@@ -83,10 +83,10 @@ public class EmaiVerificationlHandler {
             customer = (Customer) user;
             email = customer.getEmail();
             userId = customer.getId();
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user is a customer", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user is a customer", "");
 
         } catch (Exception e) {
-            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "cannot cast user to customer", "");
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot cast user to customer", "");
 
         }
 
@@ -94,13 +94,13 @@ public class EmaiVerificationlHandler {
             client = (Client) user;
             email = client.getEmail();
             userId = client.getId();
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user is a client", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user is a client", "");
 
         } catch (Exception e) {
-            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "cannot cast user to client", "");
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot cast user to client", "");
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
 
         String verificationUrl = emailVerificationUrl;
 
@@ -118,7 +118,7 @@ public class EmaiVerificationlHandler {
             cev.setCustomerId(userId);
             customerEmailVerificationsRepository.save(cev);
 
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customer emailVerificationCreated: " + userId + " email: " + email, "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer emailVerificationCreated: " + userId + " email: " + email, "");
 
         } else if (client != null) {
             verificationUrl = verificationUrl + "/clients/" + userId + "/email-verification/" + generatedCode + "/verify";
@@ -130,11 +130,11 @@ public class EmaiVerificationlHandler {
             cev.setEmail(email);
             cev.setIsVerified(Boolean.FALSE);
             cev.setClientId(userId);
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "client " + client, "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client " + client, "");
 
             clientEmailVerificationsRepository.save(cev);
 
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "client emailVerificationCreated: " + userId + " email: " + email, "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client emailVerificationCreated: " + userId + " email: " + email, "");
 
         }
 
@@ -151,7 +151,7 @@ public class EmaiVerificationlHandler {
     public boolean verify(Object user, String code) {
         String logprefix = "verify";
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         String email = null;
         String userId = null;
@@ -162,10 +162,10 @@ public class EmaiVerificationlHandler {
             customer = (Customer) user;
             email = customer.getEmail();
             userId = customer.getId();
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user is a customer", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user is a customer", "");
 
         } catch (Exception e) {
-            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "cannot cast user to customer", "");
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot cast user to customer", "");
 
         }
 
@@ -173,19 +173,19 @@ public class EmaiVerificationlHandler {
             client = (Client) user;
             email = client.getEmail();
             userId = client.getId();
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "user is a client", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user is a client", "");
 
         } catch (Exception e) {
-            Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "cannot cast user to client", "");
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot cast user to client", "");
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
 
         boolean verified = false;
         if (customer != null) {
             List<CustomerEmailVerification> cevs = customerEmailVerificationsRepository.findByCustomerId(userId);
 
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customer cevs: " + cevs.size(), "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer cevs: " + cevs.size(), "");
 
             for (CustomerEmailVerification cev : cevs) {
                 if (cev.getCode().equals(code)) {
@@ -195,12 +195,12 @@ public class EmaiVerificationlHandler {
                 }
             }
 
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customer verified: " + verified, "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer verified: " + verified, "");
 
         } else if (client != null) {
             List<ClientEmailVerification> cevs = clientEmailVerificationsRepository.findByClientId(userId);
 
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "client cevs: " + cevs.size(), "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client cevs: " + cevs.size(), "");
 
             for (ClientEmailVerification cev : cevs) {
                 if (cev.getCode().equals(code)) {
@@ -210,7 +210,7 @@ public class EmaiVerificationlHandler {
                 }
             }
 
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "client verified: " + verified, "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client verified: " + verified, "");
 
         }
 

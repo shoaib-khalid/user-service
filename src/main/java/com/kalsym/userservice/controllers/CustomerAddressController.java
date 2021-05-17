@@ -1,6 +1,6 @@
 package com.kalsym.userservice.controllers;
 
-import com.kalsym.userservice.UsersServiceApplication;
+import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.daos.CustomerAddress;
 import com.kalsym.userservice.repositories.CustomerAddressRepository;
@@ -53,19 +53,19 @@ public class CustomerAddressController {
 
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         CustomerAddress customerAddress = new CustomerAddress();
         customerAddress.setCustomerId(customerId);
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, customerAddress + "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, customerAddress + "", "");
         ExampleMatcher matcher = ExampleMatcher
                 .matchingAll()
                 .withIgnoreCase()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
         Example<CustomerAddress> example = Example.of(customerAddress, matcher);
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
         Pageable pageable = PageRequest.of(page, pageSize);
 
         response.setSuccessStatus(HttpStatus.OK);
@@ -82,17 +82,17 @@ public class CustomerAddressController {
 
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(customerId);
 
         if (!optCustomerAddress.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customerAddress not found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customerAddress found", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
         response.setSuccessStatus(HttpStatus.OK);
         response.setData(optCustomerAddress.get());
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -107,20 +107,20 @@ public class CustomerAddressController {
 
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(id);
 
         if (!optCustomerAddress.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customerAddress not found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customerAddress found", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
         customerAddressRepository.delete(optCustomerAddress.get());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customerAddress deleted", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress deleted", "");
         response.setSuccessStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -134,18 +134,18 @@ public class CustomerAddressController {
 
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(id);
 
         if (!optCustomerAddress.isPresent()) {
-            Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customerAddress not found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
             response.setErrorStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customerAddress found", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
         CustomerAddress customerAddress = optCustomerAddress.get();
         List<String> errors = new ArrayList<>();
 
@@ -154,14 +154,14 @@ public class CustomerAddressController {
         for (CustomerAddress existingCustomerAddress : customers) {
             if (!customerAddress.equals(existingCustomerAddress)) {
                 if (existingCustomerAddress.getPhoneNumber().equals(body.getPhoneNumber())) {
-                    Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "username already exists", "");
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                     response.setErrorStatus(HttpStatus.CONFLICT);
                     errors.add("phone number already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
                 }
                 if (existingCustomerAddress.getEmail().equals(body.getEmail())) {
-                    Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "email already exists", "");
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
                     response.setErrorStatus(HttpStatus.CONFLICT);
                     errors.add("email already exists");
                     response.setData(errors);
@@ -174,7 +174,7 @@ public class CustomerAddressController {
 
         customerAddress.update(body);
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customerAddress updated for id: " + id, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress updated for id: " + id, "");
         response.setSuccessStatus(HttpStatus.ACCEPTED);
         response.setData(customerAddressRepository.save(customerAddress));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
@@ -188,8 +188,8 @@ public class CustomerAddressController {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, body.toString(), "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         List<String> errors = new ArrayList<>();
 
@@ -197,14 +197,14 @@ public class CustomerAddressController {
 
         for (CustomerAddress existingCustomerAddress : customers) {
             if (existingCustomerAddress.getPhoneNumber().equals(body.getPhoneNumber())) {
-                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "username already exists", "");
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                 response.setErrorStatus(HttpStatus.CONFLICT);
                 errors.add("phone number already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
             if (existingCustomerAddress.getEmail().equals(body.getEmail())) {
-                Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "email already exists", "");
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
                 response.setErrorStatus(HttpStatus.CONFLICT);
                 errors.add("email already exists");
                 response.setData(errors);
@@ -213,7 +213,7 @@ public class CustomerAddressController {
         }
 
         body = customerAddressRepository.save(body);
-        Logger.application.info(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "customerAddress created with id: " + body.getCustomerId(), "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress created with id: " + body.getCustomerId(), "");
         response.setSuccessStatus(HttpStatus.CREATED);
         response.setData(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -223,7 +223,7 @@ public class CustomerAddressController {
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
         String logprefix = request.getRequestURI();
 
-        Logger.application.warn(Logger.pattern, UsersServiceApplication.VERSION, logprefix, "validation failed", "");
+        Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "validation failed", "");
         List<String> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());

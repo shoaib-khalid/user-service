@@ -155,7 +155,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
                             <mainClass>
-                                com.kalsym.usersservice.UsersServiceApplication
+                                com.kalsym.userservice.UserServiceApplication
                             </mainClass>
                         </manifest>
                     </archive>

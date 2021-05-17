@@ -1,7 +1,7 @@
 package com.kalsym.userservice.models;
 
-import com.kalsym.usersservice.models.daos.RoleAuthority;
-import com.kalsym.usersservice.models.daos.Client;
+import com.kalsym.userservice.models.daos.RoleAuthority;
+import com.kalsym.userservice.models.daos.Client;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

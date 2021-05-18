@@ -321,7 +321,7 @@ public class ClientsController {
     
     @GetMapping(path = {"/{id}/email-verification/{code}/verify"}, name = "clients-get-by-id")
     //@PreAuthorize("hasAnyAuthority('clients-get-by-id', 'all')")
-    public ResponseEntity<HttpReponse> getCustomerVerify(HttpServletRequest request,
+    public ResponseEntity<HttpReponse> getClientVerify(HttpServletRequest request,
             @PathVariable String id,
             @PathVariable String code) {
         String logprefix = request.getRequestURI();

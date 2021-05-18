@@ -1,7 +1,6 @@
 package com.kalsym.userservice.controllers;
 
 import com.kalsym.userservice.UserServiceApplication;
-import com.kalsym.userservice.VersionHolder;
 import com.kalsym.userservice.models.Auth;
 import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.daos.RoleAuthority;
@@ -279,6 +278,40 @@ public class CustomersController {
         response.setSuccessStatus(HttpStatus.CREATED);
         response.setData(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    
+    
+    @GetMapping(path = {"/{id}/email-verification/{code}/verify"}, name = "clients-get-by-id")
+    //@PreAuthorize("hasAnyAuthority('clients-get-by-id', 'all')")
+    public ResponseEntity<HttpReponse> getClientVerify(HttpServletRequest request,
+            @PathVariable String id,
+            @PathVariable String code) {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+        
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        
+        Optional<Customer> optCustomer = customersRepository.findById(id);
+        
+        if (!optCustomer.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
+            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer found", "");
+        
+        boolean verified = emaiVerificationlHandler.verify(optCustomer.get(), code);
+        
+        if (!verified) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot verify", "");
+            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        
+        response.setSuccessStatus(HttpStatus.OK);
+        response.setData(optCustomer.get());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     //authentication

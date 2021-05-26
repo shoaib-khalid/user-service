@@ -111,7 +111,7 @@ public class StoreCustomersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         response.setData(customersRepository.findAll(example, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -131,12 +131,12 @@ public class StoreCustomersController {
 
         if (!optCustomer.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         response.setData(optCustomer.get());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -156,7 +156,7 @@ public class StoreCustomersController {
 
         if (!optCustomer.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -164,7 +164,7 @@ public class StoreCustomersController {
         customersRepository.delete(optCustomer.get());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user deleted", "");
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -184,7 +184,7 @@ public class StoreCustomersController {
 
         if (!optCustomer.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -198,14 +198,14 @@ public class StoreCustomersController {
             if (!user.equals(existingCustomer)) {
                 if (existingCustomer.getUsername().equals(body.getUsername())) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-                    response.setErrorStatus(HttpStatus.CONFLICT);
+                    response.setStatus(HttpStatus.CONFLICT);
                     errors.add("username already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
                 }
                 if (existingCustomer.getEmail().equals(body.getEmail())) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
-                    response.setErrorStatus(HttpStatus.CONFLICT);
+                    response.setStatus(HttpStatus.CONFLICT);
                     errors.add("email already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -213,7 +213,7 @@ public class StoreCustomersController {
                 if (null != body.getId()) {
                     if (existingCustomer.getEmail().equals(body.getEmail())) {
                         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId already exists", "");
-                        response.setErrorStatus(HttpStatus.CONFLICT);
+                        response.setStatus(HttpStatus.CONFLICT);
                         errors.add("userId already exists");
                         response.setData(errors);
                         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -233,7 +233,7 @@ public class StoreCustomersController {
         user.setUpdated(DateTimeUtil.currentTimestamp());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user updated for id: " + id, "");
-        response.setSuccessStatus(HttpStatus.ACCEPTED);
+        response.setStatus(HttpStatus.ACCEPTED);
         response.setData(customersRepository.save(user));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
@@ -252,7 +252,7 @@ public class StoreCustomersController {
         List<String> errors = new ArrayList<>();
         if (null == body.getPassword() || body.getPassword().length() == 0) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-            response.setErrorStatus(HttpStatus.BAD_REQUEST);
+            response.setStatus(HttpStatus.BAD_REQUEST);
             errors.add("password is required exists");
             response.setData(errors);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
@@ -263,14 +263,14 @@ public class StoreCustomersController {
         for (Customer existingCustomer : customers) {
             if (existingCustomer.getUsername().equals(body.getUsername())) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-                response.setErrorStatus(HttpStatus.CONFLICT);
+                response.setStatus(HttpStatus.CONFLICT);
                 errors.add("username already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
             if (existingCustomer.getEmail().equals(body.getEmail())) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
-                response.setErrorStatus(HttpStatus.CONFLICT);
+                response.setStatus(HttpStatus.CONFLICT);
                 errors.add("email already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -287,7 +287,7 @@ public class StoreCustomersController {
         body.setPassword(null);
         emaiVerificationlHandler.sendVerificationEmail(body);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");
-        response.setSuccessStatus(HttpStatus.CREATED);
+        response.setStatus(HttpStatus.CREATED);
         response.setData(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -315,17 +315,17 @@ public class StoreCustomersController {
 
             if (!match) {
                 Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user password not valid");
-                response.setErrorStatus(HttpStatus.UNAUTHORIZED, "Bad Craedentiails");
+                response.setStatus(HttpStatus.UNAUTHORIZED, "Bad Craedentiails");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
 
         } catch (BadCredentialsException e) {
             Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error validating user", "", e);
-            response.setErrorStatus(HttpStatus.UNAUTHORIZED, "Bad Craedentiails");
+            response.setStatus(HttpStatus.UNAUTHORIZED, "Bad Craedentiails");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (AuthenticationException e) {
             Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error validating user", "", e);
-            response.setErrorStatus(HttpStatus.UNAUTHORIZED, e.getMessage());
+            response.setStatus(HttpStatus.UNAUTHORIZED, e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
@@ -367,7 +367,7 @@ public class StoreCustomersController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "generated token", "");
 
-        response.setSuccessStatus(HttpStatus.ACCEPTED);
+        response.setStatus(HttpStatus.ACCEPTED);
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
@@ -381,7 +381,7 @@ public class StoreCustomersController {
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        response.setErrorStatus(HttpStatus.BAD_REQUEST);
+        response.setStatus(HttpStatus.BAD_REQUEST);
         response.setData(errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

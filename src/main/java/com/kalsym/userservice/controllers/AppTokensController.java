@@ -69,7 +69,7 @@ public class AppTokensController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         response.setData(apptokensRepository.findAll(example, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -86,12 +86,12 @@ public class AppTokensController {
 
         if (!optAppToken.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "apptoken not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "apptoken found", "");
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         response.setData(optAppToken.get());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -109,7 +109,7 @@ public class AppTokensController {
 
         if (!optAppToken.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "apptoken not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -117,7 +117,7 @@ public class AppTokensController {
         apptokensRepository.delete(optAppToken.get());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "apptoken deleted", "");
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -135,7 +135,7 @@ public class AppTokensController {
 
         if (!optAppToken.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "apptoken not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -147,7 +147,7 @@ public class AppTokensController {
         apptoken.update(body);
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "apptoken updated for id: " + id, "");
-        response.setSuccessStatus(HttpStatus.ACCEPTED);
+        response.setStatus(HttpStatus.ACCEPTED);
         response.setData(apptokensRepository.save(apptoken));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
@@ -164,7 +164,7 @@ public class AppTokensController {
         
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "apptoken created with id: " + body.getAppId(), "");
-        response.setSuccessStatus(HttpStatus.CREATED);
+        response.setStatus(HttpStatus.CREATED);
         response.setData(apptokensRepository.save(body));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -180,7 +180,7 @@ public class AppTokensController {
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        response.setErrorStatus(HttpStatus.BAD_REQUEST);
+        response.setStatus(HttpStatus.BAD_REQUEST);
         response.setData(errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

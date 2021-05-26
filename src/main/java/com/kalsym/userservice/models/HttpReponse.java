@@ -35,7 +35,7 @@ public class HttpReponse {
      *
      * @param status
      */
-    public void setSuccessStatus(HttpStatus status) {
+    public void setStatus(HttpStatus status) {
         this.status = status.value();
         this.message = status.getReasonPhrase();
     }
@@ -46,20 +46,10 @@ public class HttpReponse {
      *
      * @param status
      */
-    public void setErrorStatus(HttpStatus status) {
+    public void setStatus(HttpStatus status, String message) {
         this.status = status.value();
         this.error = status.getReasonPhrase();
     }
 
-    /**
-     * *
-     * Sets status and custom message.
-     *
-     * @param status
-     * @param message
-     */
-    public void setErrorStatus(HttpStatus status, String message) {
-        this.status = status.value();
-        this.error = message;
-    }
+   
 }

@@ -1,7 +1,6 @@
 package com.kalsym.userservice.controllers;
 
 import com.kalsym.userservice.UserServiceApplication;
-import com.kalsym.userservice.VersionHolder;
 import com.kalsym.userservice.models.Auth;
 import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.daos.Client;
@@ -86,13 +85,13 @@ public class SessionsController {
 
         if (null == session) {
             Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
         if (session.getOwnerId() == null) {
             Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session owner NOT_ACCEPTABLE", "");
-            response.setErrorStatus(HttpStatus.NOT_ACCEPTABLE);
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE);
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(response);
         }
         String roleId = getRoleId(session.getOwnerId(), logprefix);
@@ -118,7 +117,7 @@ public class SessionsController {
         authReponse.setAuthorities(authorities);
         authReponse.setRole(roleId);
         response.setData(authReponse);
-        response.setSuccessStatus(HttpStatus.ACCEPTED);
+        response.setStatus(HttpStatus.ACCEPTED);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
@@ -179,7 +178,7 @@ public class SessionsController {
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        response.setErrorStatus(HttpStatus.BAD_REQUEST);
+        response.setStatus(HttpStatus.BAD_REQUEST);
         response.setData(errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

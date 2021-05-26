@@ -45,7 +45,7 @@ public class AuthoritiesController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         response.setData(authoritiesRepository.findAll());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -62,12 +62,12 @@ public class AuthoritiesController {
 
         if (!optAuthority.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority found", "");
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         response.setData(optAuthority.get());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -85,7 +85,7 @@ public class AuthoritiesController {
 
         if (!optAuthority.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -93,7 +93,7 @@ public class AuthoritiesController {
         authoritiesRepository.delete(optAuthority.get());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority deleted", "");
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -112,7 +112,7 @@ public class AuthoritiesController {
 
         if (!optAuthority.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -126,7 +126,7 @@ public class AuthoritiesController {
             if (!authority.equals(existingAuthority)) {
                 if (existingAuthority.getId().equals(body.getId())) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authorityId already exists", "");
-                    response.setErrorStatus(HttpStatus.CONFLICT);
+                    response.setStatus(HttpStatus.CONFLICT);
                     errors.add("authorityId already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -137,7 +137,7 @@ public class AuthoritiesController {
         authority.updateAuthority(body);
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority updated for id: " + body.getId(), "");
-        response.setSuccessStatus(HttpStatus.ACCEPTED);
+        response.setStatus(HttpStatus.ACCEPTED);
         response.setData(authoritiesRepository.save(authority));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
@@ -158,7 +158,7 @@ public class AuthoritiesController {
         for (Authority existingAuthority : authorities) {
             if (existingAuthority.getId().equals(body.getId())) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authorityId already exists", "");
-                response.setErrorStatus(HttpStatus.CONFLICT);
+                response.setStatus(HttpStatus.CONFLICT);
                 errors.add("authorityId already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -168,7 +168,7 @@ public class AuthoritiesController {
         body = authoritiesRepository.save(body);
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority created with id: " + body.getId(), "");
-        response.setSuccessStatus(HttpStatus.CREATED);
+        response.setStatus(HttpStatus.CREATED);
         response.setData(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -192,7 +192,7 @@ public class AuthoritiesController {
         });
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authorities created count: " + body.size(), "");
-        response.setSuccessStatus(HttpStatus.CREATED);
+        response.setStatus(HttpStatus.CREATED);
         response.setData(newAuthorities);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -205,7 +205,7 @@ public class AuthoritiesController {
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        response.setErrorStatus(HttpStatus.BAD_REQUEST);
+        response.setStatus(HttpStatus.BAD_REQUEST);
         response.setData(errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

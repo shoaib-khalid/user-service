@@ -1,7 +1,6 @@
 package com.kalsym.userservice.controllers;
 
 import com.kalsym.userservice.UserServiceApplication;
-import com.kalsym.userservice.VersionHolder;
 import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.daos.Authority;
 import com.kalsym.userservice.models.daos.Role;
@@ -82,7 +81,7 @@ public class RolesController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         response.setData(rolesRepository.findAll(example, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -99,12 +98,12 @@ public class RolesController {
 
         if (!optRole.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role found", "");
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         response.setData(optRole.get());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -122,7 +121,7 @@ public class RolesController {
 
         if (!optRole.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -130,7 +129,7 @@ public class RolesController {
         rolesRepository.delete(optRole.get());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role deleted", "");
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -148,7 +147,7 @@ public class RolesController {
 
         if (!optRole.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -162,14 +161,14 @@ public class RolesController {
             if (!role.equals(existingRole)) {
                 if (existingRole.getId().equals(body.getId())) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "roleId already exists", "");
-                    response.setErrorStatus(HttpStatus.CONFLICT);
+                    response.setStatus(HttpStatus.CONFLICT);
                     errors.add("roleId already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
                 }
                 if (existingRole.getName().equals(body.getName())) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "name already exists", "");
-                    response.setErrorStatus(HttpStatus.CONFLICT);
+                    response.setStatus(HttpStatus.CONFLICT);
                     errors.add("name already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -180,7 +179,7 @@ public class RolesController {
         role.update(body);
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role updated for id: " + id, "");
-        response.setSuccessStatus(HttpStatus.ACCEPTED);
+        response.setStatus(HttpStatus.ACCEPTED);
         response.setData(rolesRepository.save(role));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
@@ -200,14 +199,14 @@ public class RolesController {
         for (Role existingRole : roles) {
             if (existingRole.getId().equals(body.getId())) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "roleId already exists", "");
-                response.setErrorStatus(HttpStatus.CONFLICT);
+                response.setStatus(HttpStatus.CONFLICT);
                 errors.add("roleId already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
             if (existingRole.getName().equals(body.getName())) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "name already exists", "");
-                response.setErrorStatus(HttpStatus.CONFLICT);
+                response.setStatus(HttpStatus.CONFLICT);
                 errors.add("name already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -215,7 +214,7 @@ public class RolesController {
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role created with id: " + body.getId(), "");
-        response.setSuccessStatus(HttpStatus.CREATED);
+        response.setStatus(HttpStatus.CREATED);
         response.setData(rolesRepository.save(body));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -233,13 +232,13 @@ public class RolesController {
 
         if (!optRole.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND, "role not found");
+            response.setStatus(HttpStatus.NOT_FOUND, "role not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role found", "");
 
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         response.setData(roleAuthoritiesRepository.findByRoleId(roleId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -260,7 +259,7 @@ public class RolesController {
 
         if (!optRoleAuthority.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role_authority not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND, "role_authority not found");
+            response.setStatus(HttpStatus.NOT_FOUND, "role_authority not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -268,7 +267,7 @@ public class RolesController {
         roleAuthoritiesRepository.delete(optRoleAuthority.get());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role_authority deleted", "");
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -287,7 +286,7 @@ public class RolesController {
 
         if (!optRole.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND, "role not found");
+            response.setStatus(HttpStatus.NOT_FOUND, "role not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -300,7 +299,7 @@ public class RolesController {
             Optional optAuthority = authoritiesRepository.findById(authority.getId());
             if (!optAuthority.isPresent()) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority " + authority.getId() + " not found", "");
-                response.setErrorStatus(HttpStatus.NOT_FOUND, "authority " + authority.getId() + " not found");
+                response.setStatus(HttpStatus.NOT_FOUND, "authority " + authority.getId() + " not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
@@ -313,7 +312,7 @@ public class RolesController {
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, i + "role_authorities created for roleId: " + roleId, "");
-        response.setSuccessStatus(HttpStatus.CREATED);
+        response.setStatus(HttpStatus.CREATED);
         response.setData(roleAuthorities);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -327,7 +326,7 @@ public class RolesController {
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        response.setErrorStatus(HttpStatus.BAD_REQUEST);
+        response.setStatus(HttpStatus.BAD_REQUEST);
         response.setData(errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

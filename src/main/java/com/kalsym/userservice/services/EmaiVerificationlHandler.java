@@ -24,9 +24,14 @@ import java.util.List;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 /**
  *
@@ -52,24 +57,93 @@ public class EmaiVerificationlHandler {
     @Value("${symplified.email.verification.url:http://209.58.160.20:20921}")
     private String emailVerificationUrl;
 
+    @Value("${symplified.email.service.url:http://209.58.160.20:2001}")
+    private String emailServiceUrl;
+
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public void sendEmail(String[] recipients, String from, String subject, String body) {
+    public boolean sendEmail(String[] recipients, String from, String subject, String body) throws Exception {
+        String logprefix = "sendEmail";
 
-        SimpleMailMessage msg = new SimpleMailMessage();
-        //msg.setTo("to_1@gmail.com", "to_2@gmail.com", "to_3@yahoo.com");
-        msg.setFrom(from);
-        msg.setTo(recipients);
+        class Email {
 
-        msg.setSubject(subject);
-        msg.setText(body);
+            String body;
+            String subject;
+            String[] to;
 
-        javaMailSender.send(msg);
+            public Email() {
+            }
+
+            public String getBody() {
+                return body;
+            }
+
+            public void setBody(String body) {
+                this.body = body;
+            }
+
+            public String getSubject() {
+                return subject;
+            }
+
+            public void setSubject(String subject) {
+                this.subject = subject;
+            }
+
+            public String[] getTo() {
+                return to;
+            }
+
+            public void setTo(String[] to) {
+                this.to = to;
+            }
+
+            @Override
+            public String toString() {
+                return "Email{" + "body=" + body + ", subject=" + subject + ", to=" + to + '}';
+            }
+
+        }
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        Email email = new Email();
+
+        email.setBody(body);
+        email.setSubject(subject);
+        email.setTo(recipients);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer accessToken");
+
+        HttpEntity<Email> httpEntity = new HttpEntity<>(email, headers);
+        String url = emailServiceUrl + "/email/no-reply";
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "url: " + url, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "httpEntity: " + httpEntity, "");
+
+        ResponseEntity<String> res = restTemplate.postForEntity(url, httpEntity, String.class);
+
+//        SimpleMailMessage msg = new SimpleMailMessage();
+//        //msg.setTo("to_1@gmail.com", "to_2@gmail.com", "to_3@yahoo.com");
+//        msg.setFrom(from);
+//        msg.setTo(recipients);
+//
+//        msg.setSubject(subject);
+//        msg.setText(body);
+//
+//        javaMailSender.send(msg);
+        if (res.getStatusCode() == HttpStatus.ACCEPTED || res.getStatusCode() == HttpStatus.OK) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "res: " + res.getBody(), "");
+            return true;
+        } else {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "could not send verification email res: " + res, "");
+            return false;
+        }
 
     }
 
-    public void sendVerificationEmail(Object user) {
+    public boolean sendVerificationEmail(Object user) throws Exception {
         String logprefix = "sendVerificationEmail";
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
@@ -140,12 +214,11 @@ public class EmaiVerificationlHandler {
 
         String[] recipients = {email};
 
-        String subject = "Verify Email";
+        String subject = "Email Verification";
 
         String body = "Please verify your email by click below link\n" + verificationUrl;
 
-        sendEmail(recipients, emailVerificationFrom, subject, body);
-
+        return sendEmail(recipients, emailVerificationFrom, subject, body);
     }
 
     public boolean verify(Object user, String code) {

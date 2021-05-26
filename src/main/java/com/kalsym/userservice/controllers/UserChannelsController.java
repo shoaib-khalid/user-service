@@ -1,11 +1,8 @@
 package com.kalsym.userservice.controllers;
 
 import com.kalsym.userservice.UserServiceApplication;
-import com.kalsym.userservice.VersionHolder;
 import com.kalsym.userservice.models.HttpReponse;
-import com.kalsym.userservice.models.daos.Authority;
 import com.kalsym.userservice.models.daos.UserChannel;
-import com.kalsym.userservice.repositories.AuthoritiesRepository;
 import com.kalsym.userservice.repositories.UserChannelsRepository;
 import com.kalsym.userservice.utils.Logger;
 import java.util.ArrayList;
@@ -76,7 +73,7 @@ public class UserChannelsController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         response.setData(userChannelsRepository.findAll(example, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -93,12 +90,12 @@ public class UserChannelsController {
 
         if (!optUserChannel.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel found", "");
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         response.setData(optUserChannel.get());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -116,7 +113,7 @@ public class UserChannelsController {
 
         if (!optUserChannel.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -124,7 +121,7 @@ public class UserChannelsController {
         userChannelsRepository.delete(optUserChannel.get());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel deleted", "");
-        response.setSuccessStatus(HttpStatus.OK);
+        response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -142,7 +139,7 @@ public class UserChannelsController {
 
         if (!optUserChannel.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel not found", "");
-            response.setErrorStatus(HttpStatus.NOT_FOUND);
+            response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
@@ -156,7 +153,7 @@ public class UserChannelsController {
             if (!userChannel.equals(existingUserChannel)) {
                 if (existingUserChannel.getRefId().equals(body.getRefId())) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannelId already exists", "");
-                    response.setErrorStatus(HttpStatus.CONFLICT);
+                    response.setStatus(HttpStatus.CONFLICT);
                     errors.add("userChannelId already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -167,7 +164,7 @@ public class UserChannelsController {
         userChannel.update(body);
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel updated for id: " + id, "");
-        response.setSuccessStatus(HttpStatus.ACCEPTED);
+        response.setStatus(HttpStatus.ACCEPTED);
         response.setData(userChannelsRepository.save(userChannel));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
@@ -187,7 +184,7 @@ public class UserChannelsController {
         for (UserChannel existingUserChannel : userChannels) {
             if (existingUserChannel.getRefId().equals(body.getRefId())) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannelId already exists", "");
-                response.setErrorStatus(HttpStatus.CONFLICT);
+                response.setStatus(HttpStatus.CONFLICT);
                 errors.add("userChannelId already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -196,7 +193,7 @@ public class UserChannelsController {
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel created with id: " + body.getId(), "");
-        response.setSuccessStatus(HttpStatus.CREATED);
+        response.setStatus(HttpStatus.CREATED);
         response.setData(userChannelsRepository.save(body));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -210,7 +207,7 @@ public class UserChannelsController {
                 .map(x -> x.getDefaultMessage())
                 .collect(Collectors.toList());
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        response.setErrorStatus(HttpStatus.BAD_REQUEST);
+        response.setStatus(HttpStatus.BAD_REQUEST);
         response.setData(errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

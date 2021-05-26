@@ -1,12 +1,9 @@
 package com.kalsym.userservice.models;
 
-import com.kalsym.userservice.UserServiceApplication;
-import com.kalsym.userservice.VersionHolder;
 import com.kalsym.userservice.models.daos.RoleAuthority;
 import com.kalsym.userservice.models.daos.Client;
 import com.kalsym.userservice.models.daos.Customer;
 import com.kalsym.userservice.models.daos.Administrator;
-import com.kalsym.userservice.utils.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

@@ -2,8 +2,8 @@ package com.kalsym.userservice.controllers;
 
 import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.models.HttpReponse;
-import com.kalsym.userservice.models.daos.CustomerAddress;
-import com.kalsym.userservice.repositories.CustomerAddressRepository;
+import com.kalsym.userservice.models.daos.AvailableChannel;
+import com.kalsym.userservice.repositories.AvailableChannelsRepository;
 import com.kalsym.userservice.utils.Logger;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,193 +36,184 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Sarosh
  */
 @RestController()
-@RequestMapping("/customer/{customerId}/address")
-public class CustomerAddressController {
+@RequestMapping("/availablechannels")
+public class AvailbleChannelsController {
 
     @Autowired
-    CustomerAddressRepository customerAddressRepository;
+    AvailableChannelsRepository availableChannelsRepository;
 
-    @GetMapping(path = {"/"}, name = "customer-address-get")
-    @PreAuthorize("hasAnyAuthority('customer-address-get', 'all')")
-    public ResponseEntity<HttpReponse> getCustomerAddresss(HttpServletRequest request,
-            @PathVariable String customerId,
-            @RequestParam(required = false) String email,
+
+    @GetMapping(path = {""}, name = "availablechannels-get")
+    @PreAuthorize("hasAnyAuthority('availablechannels-get', 'all')")
+    public ResponseEntity<HttpReponse> getAvailableChannels(HttpServletRequest request,
+            @RequestParam(required = false) String id,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String parentAvailableChannelId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int pageSize) {
         String logprefix = request.getRequestURI();
-
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
-        CustomerAddress customerAddress = new CustomerAddress();
-        customerAddress.setCustomerId(customerId);
+        AvailableChannel availablechannel = new AvailableChannel();
+        availablechannel.setId(id);
+        availablechannel.setName(name);
+        
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, customerAddress + "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, availablechannel + "", "");
         ExampleMatcher matcher = ExampleMatcher
                 .matchingAll()
                 .withIgnoreCase()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-        Example<CustomerAddress> example = Example.of(customerAddress, matcher);
+        Example<AvailableChannel> example = Example.of(availablechannel, matcher);
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
         Pageable pageable = PageRequest.of(page, pageSize);
 
         response.setStatus(HttpStatus.OK);
-        response.setData(customerAddressRepository.findAll(example, pageable));
+        response.setData(availableChannelsRepository.findAll(example, pageable));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping(path = {"/{id}"}, name = "customer-address-get-by-id")
-    @PreAuthorize("hasAnyAuthority('customer-address-get-by-id', 'all')")
-    public ResponseEntity<HttpReponse> getCustomerAddressById(HttpServletRequest request,
-            @PathVariable String customerId,
-            @PathVariable String id) {
+    @GetMapping(path = {"/{id}"}, name = "availablechannels-get-by-id")
+    @PreAuthorize("hasAnyAuthority('availablechannels-get-by-id', 'all')")
+    public ResponseEntity<HttpReponse> getAvailableChannelById(HttpServletRequest request, @PathVariable String id) {
         String logprefix = request.getRequestURI();
-
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
-        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(customerId);
+        Optional<AvailableChannel> optAvailableChannel = availableChannelsRepository.findById(id);
 
-        if (!optCustomerAddress.isPresent()) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
+        if (!optAvailableChannel.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel found", "");
         response.setStatus(HttpStatus.OK);
-        response.setData(optCustomerAddress.get());
+        response.setData(optAvailableChannel.get());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping(path = {"/{id}"}, name = "customer-address-delete-by-id")
-    @PreAuthorize("hasAnyAuthority('customer-address-delete-by-id', 'all')")
-    public ResponseEntity<HttpReponse> deleteCustomerAddressById(HttpServletRequest request,
-            @PathVariable String customerId,
-            @PathVariable String id) {
+    @DeleteMapping(path = {"/{id}"}, name = "availablechannels-delete-by-id")
+    @PreAuthorize("hasAnyAuthority('availablechannels-delete-by-id', 'all')")
+    public ResponseEntity<HttpReponse> deleteAvailableChannelById(HttpServletRequest request, @PathVariable String id) {
         String logprefix = request.getRequestURI();
-
+        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
-        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(id);
+        Optional<AvailableChannel> optAvailableChannel = availableChannelsRepository.findById(id);
 
-        if (!optCustomerAddress.isPresent()) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
+        if (!optAvailableChannel.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
-        customerAddressRepository.delete(optCustomerAddress.get());
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel found", "");
+        availableChannelsRepository.delete(optAvailableChannel.get());
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress deleted", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel deleted", "");
         response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PutMapping(path = {"/{id}"}, name = "customer-address-put-by-id")
-    @PreAuthorize("hasAnyAuthority('customer-address-put-by-id', 'all')")
-    public ResponseEntity<HttpReponse> putCustomerAddressById(HttpServletRequest request,
-            @PathVariable String customerId,
-            @PathVariable String id, @RequestBody CustomerAddress body) {
+    @PutMapping(path = {"/{id}"}, name = "availablechannels-put-by-id")
+    @PreAuthorize("hasAnyAuthority('availablechannels-put-by-id', 'all')")
+    public ResponseEntity<HttpReponse> putAvailableChannelById(HttpServletRequest request, @PathVariable String id, @RequestBody AvailableChannel body) {
         String logprefix = request.getRequestURI();
-
+        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
-        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(id);
+        Optional<AvailableChannel> optAvailableChannel = availableChannelsRepository.findById(id);
 
-        if (!optCustomerAddress.isPresent()) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
+        if (!optAvailableChannel.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
-        CustomerAddress customerAddress = optCustomerAddress.get();
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel found", "");
+        AvailableChannel availablechannel = optAvailableChannel.get();
         List<String> errors = new ArrayList<>();
 
-        List<CustomerAddress> customers = customerAddressRepository.findAll();
+        List<AvailableChannel> availablechannels = availableChannelsRepository.findAll();
 
-        for (CustomerAddress existingCustomerAddress : customers) {
-            if (!customerAddress.equals(existingCustomerAddress)) {
-                if (existingCustomerAddress.getPhoneNumber().equals(body.getPhoneNumber())) {
-                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
+        for (AvailableChannel existingAvailableChannel : availablechannels) {
+            if (!availablechannel.equals(existingAvailableChannel)) {
+                if (existingAvailableChannel.getId().equals(body.getId())) {
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannelId already exists", "");
                     response.setStatus(HttpStatus.CONFLICT);
-                    errors.add("phone number already exists");
+                    errors.add("availablechannelId already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
                 }
-                if (existingCustomerAddress.getEmail().equals(body.getEmail())) {
-                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
+                if (existingAvailableChannel.getName().equals(body.getName())) {
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "name already exists", "");
                     response.setStatus(HttpStatus.CONFLICT);
-                    errors.add("email already exists");
+                    errors.add("name already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
                 }
-
             }
 
         }
+        availablechannel.update(body);
 
-        customerAddress.update(body);
-
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress updated for id: " + id, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel updated for id: " + id, "");
         response.setStatus(HttpStatus.ACCEPTED);
-        response.setData(customerAddressRepository.save(customerAddress));
+        response.setData(availableChannelsRepository.save(availablechannel));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
-    @PostMapping(name = "customer-address-post")
-    //@PreAuthorize("hasAnyAuthority('customer-address-post', 'all')")
-    public ResponseEntity<HttpReponse> postCustomerAddress(HttpServletRequest request,
-            @PathVariable String customerId,
-            @Valid @RequestBody CustomerAddress body) throws Exception {
+    @PostMapping(name = "availablechannels-post")
+    @PreAuthorize("hasAnyAuthority('availablechannels-post', 'all')")
+    public ResponseEntity<HttpReponse> postAvailableChannel(HttpServletRequest request, @Valid @RequestBody AvailableChannel body) throws Exception {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
+        List<AvailableChannel> availablechannels = availableChannelsRepository.findAll();
         List<String> errors = new ArrayList<>();
 
-        List<CustomerAddress> customers = customerAddressRepository.findAll();
-
-        for (CustomerAddress existingCustomerAddress : customers) {
-            if (existingCustomerAddress.getPhoneNumber().equals(body.getPhoneNumber())) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
+        for (AvailableChannel existingAvailableChannel : availablechannels) {
+            if (existingAvailableChannel.getId().equals(body.getId())) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannelId already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
-                errors.add("phone number already exists");
+                errors.add("availablechannelId already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
-            if (existingCustomerAddress.getEmail().equals(body.getEmail())) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
+            if (existingAvailableChannel.getName().equals(body.getName())) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "name already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
-                errors.add("email already exists");
+                errors.add("name already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
         }
 
-        body = customerAddressRepository.save(body);
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress created with id: " + body.getCustomerId(), "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel created with id: " + body.getId(), "");
         response.setStatus(HttpStatus.CREATED);
-        response.setData(body);
+        response.setData(availableChannelsRepository.save(body));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+   
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
         String logprefix = request.getRequestURI();
-
+        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "validation failed", "");
         List<String> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(x -> x.getDefaultMessage())

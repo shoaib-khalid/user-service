@@ -305,11 +305,22 @@ public class ClientsController {
                     clientsRepository.delete(body);
                     response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
                     response.setError("Store agents could not be created");
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-                } else {
-                    body.setLiveChatAgentId(lcr.get_id());
-                    clientsRepository.save(body);
+                    return ResponseEntity.status(response.getStatus()).body(response);
                 }
+
+                try {
+                    storeAgentsHandler.inviteAgentToGroup(lcr.get_id(), body.getStoreId());
+                } catch (Exception e) {
+                    Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent could not be created", e);
+
+                    clientsRepository.delete(body);
+                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+                    response.setError(e.toString());
+                    return ResponseEntity.status(response.getStatus()).body(response);
+                }
+                body.setLiveChatAgentId(lcr.get_id());
+                clientsRepository.save(body);
+
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent added");
 
             }

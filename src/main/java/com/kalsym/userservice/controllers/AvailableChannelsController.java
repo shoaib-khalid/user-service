@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController()
 @RequestMapping("/availablechannels")
-public class AvailbleChannelsController {
+public class AvailableChannelsController {
 
     @Autowired
     AvailableChannelsRepository availableChannelsRepository;

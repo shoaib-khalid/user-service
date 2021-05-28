@@ -27,6 +27,9 @@ public class StoreAgentsHandler {
     @Value("${livechat.store.agent.deletion.url:http://209.58.160.20:3000/api/v1/users.delete}")
     private String livechatStoreAgentDeletionUrl;
 
+    @Value("${livechat.store.agent.group.invitation.url:http://209.58.160.20:7071/stores/<storeId>/livechat/agentinvite}")
+    private String livechatStoreAgentGroupInvitationUrl;
+
     @Value("${livechat.token:GvKS_Z_MvqDeExBPAmSrXdwXMYOlrsW3JkuSpsO9l76}")
     private String livechatToken;
 
@@ -102,6 +105,40 @@ public class StoreAgentsHandler {
 
         }
         return null;
+    }
+
+    public void inviteAgentToGroup(String agentId, String storeId) {
+        String logprefix = "createAgent";
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer accessToken");
+
+        class LiveChatAgentInvite {
+
+            private String userId;
+
+            public String getUserId() {
+                return userId;
+            }
+
+            public void setUserId(String userId) {
+                this.userId = userId;
+            }
+        }
+
+        LiveChatAgentInvite liveChatAgentInvite = new LiveChatAgentInvite();
+        liveChatAgentInvite.setUserId(agentId);
+        HttpEntity<LiveChatAgentInvite> entity;
+        entity = new HttpEntity<>(liveChatAgentInvite, headers);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " agent invite entity: " + entity);
+
+        String url = livechatStoreAgentGroupInvitationUrl.replace("<storeId>", storeId);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " url: " + url);
+
+        ResponseEntity<String> res = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " agent invite res: " + res.getBody());
     }
 
 }

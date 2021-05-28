@@ -42,7 +42,7 @@ public class ListenerBean {
                         authority.setId(requestMappingInfo.getName());
                         authority.setName(handlerMethod.getMethod().getName());
                         authority.setDescription(requestMappingInfo.toString());
-                        authority.setServiceId("users-service");
+                        authority.setServiceId("user-service");
 
                         if (null != authority.getId()) {
 

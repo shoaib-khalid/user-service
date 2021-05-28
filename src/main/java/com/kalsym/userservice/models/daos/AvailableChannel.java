@@ -19,7 +19,7 @@ import lombok.ToString;
  * @author saros
  */
 @Entity
-@Table(name = "client")
+@Table(name = "available_channel")
 @Getter
 @Setter
 @NoArgsConstructor

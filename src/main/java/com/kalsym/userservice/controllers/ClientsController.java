@@ -309,11 +309,22 @@ public class ClientsController {
                 }
 
                 try {
-                    storeAgentsHandler.inviteAgentToGroup(lcr.get_id(), body.getStoreId());
+
+                    if (body.getRoleId().equals("STORE_CSR_ORDER")) {
+                        storeAgentsHandler.inviteOrderAgentToGroup(lcr.get_id(), body.getStoreId());
+                    } else {
+                        storeAgentsHandler.inviteComplaintCsrAgentToGroup(lcr.get_id(), body.getStoreId());
+
+                    }
                 } catch (Exception e) {
                     Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent could not be created", e);
 
                     clientsRepository.delete(body);
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "deleted client", "");
+
+                    storeAgentsHandler.deleteAgent(lcr.get_id());
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "deleted agent", "");
+
                     response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
                     response.setError(e.toString());
                     return ResponseEntity.status(response.getStatus()).body(response);

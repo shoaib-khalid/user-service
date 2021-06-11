@@ -261,7 +261,7 @@ public class ClientsController {
             List<Client> clients = clientsRepository.findAll();
 
             for (Client existingClient : clients) {
-                if (existingClient.getUsername().equals(body.getUsername())) {
+                if (existingClient.getUsername().equalsIgnoreCase(body.getUsername())) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                     response.setStatus(HttpStatus.CONFLICT);
                     errors.add("username already exists");

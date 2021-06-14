@@ -70,7 +70,7 @@ public class CustomerAddressController {
 
         response.setStatus(HttpStatus.OK);
         response.setData(customerAddressRepository.findAll(example, pageable));
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping(path = {"/{id}"}, name = "customer-address-get-by-id")
@@ -89,13 +89,13 @@ public class CustomerAddressController {
         if (!optCustomerAddress.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
         response.setStatus(HttpStatus.OK);
         response.setData(optCustomerAddress.get());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @DeleteMapping(path = {"/{id}"}, name = "customer-address-delete-by-id")
@@ -114,7 +114,7 @@ public class CustomerAddressController {
         if (!optCustomerAddress.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
@@ -122,7 +122,7 @@ public class CustomerAddressController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress deleted", "");
         response.setStatus(HttpStatus.OK);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PutMapping(path = {"/{id}"}, name = "customer-address-put-by-id")
@@ -142,7 +142,7 @@ public class CustomerAddressController {
         if (!optCustomerAddress.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");

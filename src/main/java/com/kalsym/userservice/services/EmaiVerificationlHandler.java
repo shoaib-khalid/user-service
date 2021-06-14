@@ -5,20 +5,16 @@
 package com.kalsym.userservice.services;
 
 import com.kalsym.userservice.UserServiceApplication;
-import com.kalsym.userservice.models.HttpReponse;
-import com.kalsym.userservice.models.daos.Administrator;
 import com.kalsym.userservice.models.daos.Customer;
 import com.kalsym.userservice.models.daos.CustomerEmailVerification;
 import com.kalsym.userservice.models.daos.ClientEmailVerification;
+import com.kalsym.userservice.models.daos.ClientPasswordReset;
 import com.kalsym.userservice.models.daos.Client;
+import com.kalsym.userservice.models.daos.PasswordReset;
 import com.kalsym.userservice.repositories.ClientEmailVerificationsRepository;
-import com.kalsym.userservice.repositories.ClientSessionsRepository;
-import com.kalsym.userservice.repositories.ClientsRepository;
+import com.kalsym.userservice.repositories.ClientPasswordResetsRepository;
 import com.kalsym.userservice.repositories.CustomerEmailVerificationsRepository;
-import com.kalsym.userservice.repositories.CustomerSessionsRepository;
-import com.kalsym.userservice.repositories.CustomersRepository;
 import com.kalsym.userservice.utils.Logger;
-import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -28,8 +24,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -46,22 +40,17 @@ public class EmaiVerificationlHandler {
     @Autowired
     CustomerEmailVerificationsRepository customerEmailVerificationsRepository;
 
-//    @Autowired
-//    CustomersRepository customersRepository;
-//
-//    @Autowired
-//    ClientsRepository clientsRepository;
+    @Autowired
+    ClientPasswordResetsRepository clientPasswordResetsRepository;
+
     @Value("${symplified.email.verification.from:no-reply@symplified.biz}")
     private String emailVerificationFrom;
 
-    @Value("${symplified.email.verification.url:http://209.58.160.20:20921}")
-    private String emailVerificationUrl;
+    @Value("${symplified.user.service.url:http://209.58.160.20:20921}")
+    private String userServiceVerificationUrl;
 
     @Value("${symplified.email.service.url:http://209.58.160.20:2001}")
     private String emailServiceUrl;
-
-    @Autowired
-    private JavaMailSender javaMailSender;
 
     public boolean sendEmail(String[] recipients, String from, String subject, String body) throws Exception {
         String logprefix = "sendEmail";
@@ -124,15 +113,6 @@ public class EmaiVerificationlHandler {
 
         ResponseEntity<String> res = restTemplate.postForEntity(url, httpEntity, String.class);
 
-//        SimpleMailMessage msg = new SimpleMailMessage();
-//        //msg.setTo("to_1@gmail.com", "to_2@gmail.com", "to_3@yahoo.com");
-//        msg.setFrom(from);
-//        msg.setTo(recipients);
-//
-//        msg.setSubject(subject);
-//        msg.setText(body);
-//
-//        javaMailSender.send(msg);
         if (res.getStatusCode() == HttpStatus.ACCEPTED || res.getStatusCode() == HttpStatus.OK) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "res: " + res.getBody(), "");
             return true;
@@ -176,7 +156,7 @@ public class EmaiVerificationlHandler {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
 
-        String verificationUrl = emailVerificationUrl;
+        String verificationUrl = userServiceVerificationUrl;
 
         String generatedCode = generateCode();
 
@@ -221,8 +201,8 @@ public class EmaiVerificationlHandler {
         return sendEmail(recipients, emailVerificationFrom, subject, body);
     }
 
-    public boolean verify(Object user, String code) {
-        String logprefix = "verify";
+    public boolean verifyEmail(Object user, String code) {
+        String logprefix = "verifyEmail";
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
@@ -284,6 +264,154 @@ public class EmaiVerificationlHandler {
             }
 
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client verified: " + verified, "");
+
+        }
+
+        return verified;
+
+    }
+
+    public boolean sendPasswordReset(Object user) throws Exception {
+        String logprefix = "sendPasswordReset";
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+
+        String email = null;
+        String userId = null;
+
+        Customer customer = null;
+        Client client = null;
+        try {
+            customer = (Customer) user;
+            email = customer.getEmail();
+            userId = customer.getId();
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user is a customer", "");
+
+        } catch (Exception e) {
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot cast user to customer", "");
+
+        }
+
+        try {
+            client = (Client) user;
+            email = client.getEmail();
+            userId = client.getId();
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user is a client", "");
+
+        } catch (Exception e) {
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot cast user to client", "");
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
+
+        String verificationUrl = userServiceVerificationUrl;
+
+        String generatedCode = generateCode();
+
+        if (customer != null) {
+            verificationUrl = verificationUrl + "/customers/" + userId + "/password/" + generatedCode + "/reset";
+            CustomerEmailVerification cev = new CustomerEmailVerification();
+
+            cev.setCode(generatedCode);
+            cev.setCreated(new Date());
+            cev.setUpdated(new Date());
+            cev.setEmail(email);
+            cev.setIsVerified(Boolean.FALSE);
+            cev.setCustomerId(userId);
+            customerEmailVerificationsRepository.save(cev);
+
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer password reset created: " + userId + " email: " + email, "");
+
+        } else if (client != null) {
+            verificationUrl = verificationUrl + "/clients/" + userId + "/password/" + generatedCode + "/reset";
+            ClientEmailVerification cev = new ClientEmailVerification();
+
+            cev.setCode(generatedCode);
+            cev.setCreated(new Date());
+            cev.setUpdated(new Date());
+            cev.setEmail(email);
+            cev.setIsVerified(Boolean.FALSE);
+            cev.setClientId(userId);
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client " + client, "");
+
+            clientEmailVerificationsRepository.save(cev);
+
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client password reset created: " + userId + " email: " + email, "");
+
+        }
+
+        String[] recipients = {email};
+
+        String subject = "Email Verification";
+
+        String body = "Please reset your password by click below link\n" + verificationUrl;
+
+        return sendEmail(recipients, emailVerificationFrom, subject, body);
+    }
+
+    public boolean verifyPasswordReset(Object user, String code) {
+        String logprefix = "verifyPasswordReset";
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+
+        String email = null;
+        String userId = null;
+
+        Customer customer = null;
+        Client client = null;
+        try {
+            customer = (Customer) user;
+            email = customer.getEmail();
+            userId = customer.getId();
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user is a customer", "");
+
+        } catch (Exception e) {
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot cast user to customer", "");
+
+        }
+
+        try {
+            client = (Client) user;
+            email = client.getEmail();
+            userId = client.getId();
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user is a client", "");
+
+        } catch (Exception e) {
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot cast user to client", "");
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
+
+        boolean verified = false;
+        if (customer != null) {
+            List<CustomerEmailVerification> cevs = customerEmailVerificationsRepository.findByCustomerId(userId);
+
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer cevs: " + cevs.size(), "");
+
+            for (CustomerEmailVerification cev : cevs) {
+                if (cev.getCode().equals(code)) {
+                    verified = true;
+                    cev.setIsVerified(true);
+                    customerEmailVerificationsRepository.save(cev);
+                }
+            }
+
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer verified: " + verified, "");
+
+        } else if (client != null) {
+            List<ClientPasswordReset> cprs = clientPasswordResetsRepository.findByClientId(userId);
+
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client password resets: " + cprs.size(), "");
+
+            for (ClientPasswordReset cpr : cprs) {
+                if (cpr.getCode().equals(code)) {
+                    verified = true;
+                    cpr.setStatus(PasswordReset.PasswordResetStatus.VERIFIED);
+                    clientPasswordResetsRepository.save(cpr);
+                }
+            }
+
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client code verified: " + verified, "");
 
         }
 

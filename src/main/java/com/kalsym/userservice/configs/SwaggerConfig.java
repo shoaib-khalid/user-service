@@ -32,7 +32,6 @@ public class SwaggerConfig {
 
     }
 
-
     private Info apiInfo() {
         Contact contact = new Contact()
                 .email("support@kalsym.com")
@@ -41,9 +40,8 @@ public class SwaggerConfig {
         return new Info()
                 .version("0.0.1-SNAPSHOT")
                 .description("Users managment and auth.")
-                .title("users-service")
+                .title("user-service")
                 .contact(contact);
     }
-
 
 }

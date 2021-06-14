@@ -47,7 +47,7 @@ public class AuthoritiesController {
 
         response.setStatus(HttpStatus.OK);
         response.setData(authoritiesRepository.findAll());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping(path = {"/{id}"}, name = "authorities-get-by-id")
@@ -63,13 +63,13 @@ public class AuthoritiesController {
         if (!optAuthority.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority found", "");
         response.setStatus(HttpStatus.OK);
         response.setData(optAuthority.get());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @DeleteMapping(path = {"/{id}"}, name = "authorities-delete-by-id")
@@ -86,7 +86,7 @@ public class AuthoritiesController {
         if (!optAuthority.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority found", "");
@@ -94,7 +94,7 @@ public class AuthoritiesController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority deleted", "");
         response.setStatus(HttpStatus.OK);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PutMapping(path = {"/{id}"}, name = "authorities-put-by-id")
@@ -113,7 +113,7 @@ public class AuthoritiesController {
         if (!optAuthority.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority found", "");

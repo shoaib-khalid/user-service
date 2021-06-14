@@ -75,7 +75,7 @@ public class UserChannelsController {
 
         response.setStatus(HttpStatus.OK);
         response.setData(userChannelsRepository.findAll(example, pageable));
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping(path = {"/{id}"}, name = "userChannels-get-by-id")
@@ -91,13 +91,13 @@ public class UserChannelsController {
         if (!optUserChannel.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel found", "");
         response.setStatus(HttpStatus.OK);
         response.setData(optUserChannel.get());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @DeleteMapping(path = {"/{id}"}, name = "userChannels-delete-by-id")
@@ -114,7 +114,7 @@ public class UserChannelsController {
         if (!optUserChannel.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel found", "");
@@ -122,7 +122,7 @@ public class UserChannelsController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel deleted", "");
         response.setStatus(HttpStatus.OK);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PutMapping(path = {"/{id}"}, name = "userChannels-put-by-id")
@@ -140,7 +140,7 @@ public class UserChannelsController {
         if (!optUserChannel.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userChannel found", "");

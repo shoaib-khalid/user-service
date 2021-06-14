@@ -103,7 +103,7 @@ public class AdministratorsController {
 
         response.setStatus(HttpStatus.OK);
         response.setData(administratorsRepository.findAll(example, pageable));
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping(path = {"/{id}"}, name = "administrators-get-by-id")
@@ -120,13 +120,13 @@ public class AdministratorsController {
         if (!optAdministrator.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
         response.setStatus(HttpStatus.OK);
         response.setData(optAdministrator.get());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @DeleteMapping(path = {"/{id}"}, name = "administrators-delete-by-id")
@@ -143,7 +143,7 @@ public class AdministratorsController {
         if (!optAdministrator.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
@@ -151,7 +151,7 @@ public class AdministratorsController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user deleted", "");
         response.setStatus(HttpStatus.OK);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PutMapping(path = {"/{id}"}, name = "administrators-put-by-id")
@@ -169,7 +169,7 @@ public class AdministratorsController {
         if (!optAdministrator.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");

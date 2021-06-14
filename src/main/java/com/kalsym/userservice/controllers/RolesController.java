@@ -83,7 +83,7 @@ public class RolesController {
 
         response.setStatus(HttpStatus.OK);
         response.setData(rolesRepository.findAll(example, pageable));
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping(path = {"/{id}"}, name = "roles-get-by-id")
@@ -99,13 +99,13 @@ public class RolesController {
         if (!optRole.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role found", "");
         response.setStatus(HttpStatus.OK);
         response.setData(optRole.get());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @DeleteMapping(path = {"/{id}"}, name = "roles-delete-by-id")
@@ -122,7 +122,7 @@ public class RolesController {
         if (!optRole.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role found", "");
@@ -130,7 +130,7 @@ public class RolesController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role deleted", "");
         response.setStatus(HttpStatus.OK);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PutMapping(path = {"/{id}"}, name = "roles-put-by-id")
@@ -148,7 +148,7 @@ public class RolesController {
         if (!optRole.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role found", "");
@@ -233,14 +233,14 @@ public class RolesController {
         if (!optRole.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role not found", "");
             response.setStatus(HttpStatus.NOT_FOUND, "role not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role found", "");
 
         response.setStatus(HttpStatus.OK);
         response.setData(roleAuthoritiesRepository.findByRoleId(roleId));
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @DeleteMapping(path = {"/{roleId}/authorities/{authorityId}{serviceId}"}, name = "roles-delete-authorities-by-id")
@@ -260,7 +260,7 @@ public class RolesController {
         if (!optRoleAuthority.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role_authority not found", "");
             response.setStatus(HttpStatus.NOT_FOUND, "role_authority not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role_authority found", "");
@@ -268,7 +268,7 @@ public class RolesController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role_authority deleted", "");
         response.setStatus(HttpStatus.OK);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping(path = {"/{roleId}/authorities"}, name = "roles-post-authorities-by-roleId")
@@ -287,7 +287,7 @@ public class RolesController {
         if (!optRole.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role not found", "");
             response.setStatus(HttpStatus.NOT_FOUND, "role not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "role found", "");
@@ -300,7 +300,7 @@ public class RolesController {
             if (!optAuthority.isPresent()) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "authority " + authority.getId() + " not found", "");
                 response.setStatus(HttpStatus.NOT_FOUND, "authority " + authority.getId() + " not found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                return ResponseEntity.status(response.getStatus()).body(response);
             }
 
             RoleAuthority roleAuthority = new RoleAuthority();

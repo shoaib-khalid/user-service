@@ -86,7 +86,7 @@ public class SessionsController {
         if (null == session) {
             Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         if (session.getOwnerId() == null) {

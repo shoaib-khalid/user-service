@@ -45,11 +45,11 @@ public class HttpReponse {
      * Sets status and custom message.
      *
      * @param status
+     * @param message
      */
     public void setStatus(HttpStatus status, String message) {
         this.status = status.value();
         this.error = status.getReasonPhrase();
     }
 
-   
 }

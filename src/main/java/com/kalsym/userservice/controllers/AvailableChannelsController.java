@@ -73,7 +73,7 @@ public class AvailableChannelsController {
 
         response.setStatus(HttpStatus.OK);
         response.setData(availableChannelsRepository.findAll(example, pageable));
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping(path = {"/{id}"}, name = "availablechannels-get-by-id")
@@ -89,13 +89,13 @@ public class AvailableChannelsController {
         if (!optAvailableChannel.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel found", "");
         response.setStatus(HttpStatus.OK);
         response.setData(optAvailableChannel.get());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @DeleteMapping(path = {"/{id}"}, name = "availablechannels-delete-by-id")
@@ -112,7 +112,7 @@ public class AvailableChannelsController {
         if (!optAvailableChannel.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel found", "");
@@ -120,7 +120,7 @@ public class AvailableChannelsController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel deleted", "");
         response.setStatus(HttpStatus.OK);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PutMapping(path = {"/{id}"}, name = "availablechannels-put-by-id")
@@ -138,7 +138,7 @@ public class AvailableChannelsController {
         if (!optAvailableChannel.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "availablechannel found", "");

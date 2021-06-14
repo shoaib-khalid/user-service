@@ -109,7 +109,7 @@ public class CustomersController {
 
         response.setStatus(HttpStatus.OK);
         response.setData(customersRepository.findAll(example, pageable));
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping(path = {"/{id}"}, name = "customers-get-by-id")
@@ -126,13 +126,13 @@ public class CustomersController {
         if (!optCustomer.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
         response.setStatus(HttpStatus.OK);
         response.setData(optCustomer.get());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @DeleteMapping(path = {"/{id}"}, name = "customers-delete-by-id")
@@ -149,7 +149,7 @@ public class CustomersController {
         if (!optCustomer.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
@@ -157,7 +157,7 @@ public class CustomersController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user deleted", "");
         response.setStatus(HttpStatus.OK);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PutMapping(path = {"/{id}"}, name = "customers-put-by-id")
@@ -175,7 +175,7 @@ public class CustomersController {
         if (!optCustomer.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
@@ -279,39 +279,38 @@ public class CustomersController {
         response.setData(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    
-    
-    @GetMapping(path = {"/{id}/email-verification/{code}/verify"}, name = "clients-get-by-id")
+
+    @GetMapping(path = {"/{id}/email-verification/{code}/verify"}, name = "customer-email-verification-by-id")
     //@PreAuthorize("hasAnyAuthority('clients-get-by-id', 'all')")
     public ResponseEntity<HttpReponse> getClientVerify(HttpServletRequest request,
             @PathVariable String id,
             @PathVariable String code) {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-        
+
         Optional<Customer> optCustomer = customersRepository.findById(id);
-        
+
         if (!optCustomer.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer found", "");
-        
-        boolean verified = emaiVerificationlHandler.verify(optCustomer.get(), code);
-        
+
+        boolean verified = emaiVerificationlHandler.verifyEmail(optCustomer.get(), code);
+
         if (!verified) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot verify", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         response.setStatus(HttpStatus.OK);
         response.setData(optCustomer.get());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     //authentication

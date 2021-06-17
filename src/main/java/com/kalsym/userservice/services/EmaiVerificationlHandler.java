@@ -4,6 +4,7 @@
  */
 package com.kalsym.userservice.services;
 
+import com.kalsym.userservice.models.email.*;
 import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.models.daos.Customer;
 import com.kalsym.userservice.models.daos.CustomerEmailVerification;
@@ -46,68 +47,34 @@ public class EmaiVerificationlHandler {
     @Value("${symplified.email.verification.from:no-reply@symplified.biz}")
     private String emailVerificationFrom;
 
-    @Value("${symplified.user.service.url:http://209.58.160.20:20921}")
-    private String userServiceVerificationUrl;
+    @Value("${symplified.user.service.url:https://api.symplified.biz/user-service/v1}")
+    private String userServicenUrl;
 
     @Value("${symplified.email.service.url:http://209.58.160.20:2001}")
     private String emailServiceUrl;
 
-    public boolean sendEmail(String[] recipients, String from, String subject, String body) throws Exception {
+    @Value("${symplified.mechant-portal.url:https://symplified.biz}")
+    private String merchantPortalUrl;
+
+    public boolean sendEmail(String[] recipients, String body) throws Exception {
         String logprefix = "sendEmail";
-
-        class Email {
-
-            String body;
-            String subject;
-            String[] to;
-
-            public Email() {
-            }
-
-            public String getBody() {
-                return body;
-            }
-
-            public void setBody(String body) {
-                this.body = body;
-            }
-
-            public String getSubject() {
-                return subject;
-            }
-
-            public void setSubject(String subject) {
-                this.subject = subject;
-            }
-
-            public String[] getTo() {
-                return to;
-            }
-
-            public void setTo(String[] to) {
-                this.to = to;
-            }
-
-            @Override
-            public String toString() {
-                return "Email{" + "body=" + body + ", subject=" + subject + ", to=" + to + '}';
-            }
-
-        }
 
         RestTemplate restTemplate = new RestTemplate();
 
         Email email = new Email();
 
-        email.setBody(body);
-        email.setSubject(subject);
         email.setTo(recipients);
+
+        AccountVerificationEmailBody aveb = new AccountVerificationEmailBody();
+        aveb.setActionType(AccountVerificationEmailBody.ActionType.EMAIL_VERIFICATION);
+        aveb.setLink(body);
+        email.setUserAccountBody(aveb);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer accessToken");
 
         HttpEntity<Email> httpEntity = new HttpEntity<>(email, headers);
-        String url = emailServiceUrl + "/email/no-reply";
+        String url = emailServiceUrl + "/email/no-reply/user-account";
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "url: " + url, "");
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "httpEntity: " + httpEntity, "");
 
@@ -156,12 +123,15 @@ public class EmaiVerificationlHandler {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
 
-        String verificationUrl = userServiceVerificationUrl;
+        String verificationUrl = merchantPortalUrl;
 
         String generatedCode = generateCode();
 
         if (customer != null) {
-            verificationUrl = verificationUrl + "/customers/" + userId + "/email-verification/" + generatedCode + "/verify";
+            verificationUrl = verificationUrl + "/email-verified?id={{userId}}&code={{code}}";
+            verificationUrl = verificationUrl.replace("{{userId}}", userId);
+            verificationUrl = verificationUrl.replace("{{code}}", generatedCode);
+
             CustomerEmailVerification cev = new CustomerEmailVerification();
 
             cev.setCode(generatedCode);
@@ -175,7 +145,10 @@ public class EmaiVerificationlHandler {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer emailVerificationCreated: " + userId + " email: " + email, "");
 
         } else if (client != null) {
-            verificationUrl = verificationUrl + "/clients/" + userId + "/email-verification/" + generatedCode + "/verify";
+            verificationUrl = verificationUrl + "/email-verified?id={{userId}}&code={{code}}";
+            verificationUrl = verificationUrl.replace("{{userId}}", userId);
+            verificationUrl = verificationUrl.replace("{{code}}", generatedCode);
+
             ClientEmailVerification cev = new ClientEmailVerification();
 
             cev.setCode(generatedCode);
@@ -194,11 +167,7 @@ public class EmaiVerificationlHandler {
 
         String[] recipients = {email};
 
-        String subject = "Email Verification";
-
-        String body = "Please verify your email by click below link\n" + verificationUrl;
-
-        return sendEmail(recipients, emailVerificationFrom, subject, body);
+        return sendEmail(recipients, verificationUrl);
     }
 
     public boolean verifyEmail(Object user, String code) {
@@ -304,7 +273,7 @@ public class EmaiVerificationlHandler {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
 
-        String verificationUrl = userServiceVerificationUrl;
+        String verificationUrl = merchantPortalUrl;
 
         String generatedCode = generateCode();
 
@@ -346,7 +315,7 @@ public class EmaiVerificationlHandler {
 
         String body = "Please reset your password by click below link\n" + verificationUrl;
 
-        return sendEmail(recipients, emailVerificationFrom, subject, body);
+        return sendEmail(recipients, body);
     }
 
     public boolean verifyPasswordReset(Object user, String code) {

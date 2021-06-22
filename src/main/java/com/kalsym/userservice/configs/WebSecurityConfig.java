@@ -62,6 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/clients/authenticate",
                         "/clients/**/email-verification/**/verify",
                         "/clients/register",
+                        "/clients/**/password_reset",
                         "/customers/session/refresh",
                         "/customers/authenticate",
                         "/customers/register",

@@ -44,12 +44,6 @@ public class EmaiVerificationlHandler {
     @Autowired
     ClientPasswordResetsRepository clientPasswordResetsRepository;
 
-    @Value("${symplified.email.verification.from:no-reply@symplified.biz}")
-    private String emailVerificationFrom;
-
-    @Value("${symplified.user.service.url:https://api.symplified.biz/user-service/v1}")
-    private String userServicenUrl;
-
     @Value("${symplified.email.service.url:http://209.58.160.20:2001}")
     private String emailServiceUrl;
 
@@ -278,7 +272,9 @@ public class EmaiVerificationlHandler {
         String generatedCode = generateCode();
 
         if (customer != null) {
-            verificationUrl = verificationUrl + "/customers/" + userId + "/password/" + generatedCode + "/reset";
+            verificationUrl = verificationUrl + "/password-reset?id={{userId}}&code={{code}}";
+            verificationUrl = verificationUrl.replace("{{userId}}", userId);
+            verificationUrl = verificationUrl.replace("{{code}}", generatedCode);
             CustomerEmailVerification cev = new CustomerEmailVerification();
 
             cev.setCode(generatedCode);
@@ -292,7 +288,9 @@ public class EmaiVerificationlHandler {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer password reset created: " + userId + " email: " + email, "");
 
         } else if (client != null) {
-            verificationUrl = verificationUrl + "/clients/" + userId + "/password/" + generatedCode + "/reset";
+            verificationUrl = verificationUrl + "/password-reset?id={{userId}}&code={{code}}";
+            verificationUrl = verificationUrl.replace("{{userId}}", userId);
+            verificationUrl = verificationUrl.replace("{{code}}", generatedCode);
             ClientEmailVerification cev = new ClientEmailVerification();
 
             cev.setCode(generatedCode);
@@ -311,11 +309,7 @@ public class EmaiVerificationlHandler {
 
         String[] recipients = {email};
 
-        String subject = "Email Verification";
-
-        String body = "Please reset your password by click below link\n" + verificationUrl;
-
-        return sendEmail(recipients, body);
+        return sendEmail(recipients, verificationUrl);
     }
 
     public boolean verifyPasswordReset(Object user, String code) {

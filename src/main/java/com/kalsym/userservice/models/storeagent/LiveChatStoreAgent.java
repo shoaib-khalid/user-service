@@ -20,4 +20,6 @@ public class LiveChatStoreAgent {
     private String username;
     List<String> roles;
     CustomFields customFields;
+
+    private boolean joinDefaultChannels;
 }

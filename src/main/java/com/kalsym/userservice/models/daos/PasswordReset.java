@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -38,6 +40,8 @@ public class PasswordReset {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String code;
     private String email;
+
+    @Enumerated(EnumType.STRING)
     private PasswordResetStatus status;
 
     @CreationTimestamp

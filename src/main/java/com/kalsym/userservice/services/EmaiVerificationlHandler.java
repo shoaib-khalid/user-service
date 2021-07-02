@@ -11,7 +11,7 @@ import com.kalsym.userservice.models.daos.CustomerEmailVerification;
 import com.kalsym.userservice.models.daos.ClientEmailVerification;
 import com.kalsym.userservice.models.daos.ClientPasswordReset;
 import com.kalsym.userservice.models.daos.Client;
-import com.kalsym.userservice.models.daos.PasswordReset;
+import com.kalsym.userservice.models.daos.PasswordReset.PasswordResetStatus;
 import com.kalsym.userservice.repositories.ClientEmailVerificationsRepository;
 import com.kalsym.userservice.repositories.ClientPasswordResetsRepository;
 import com.kalsym.userservice.repositories.CustomerEmailVerificationsRepository;
@@ -271,8 +271,9 @@ public class EmaiVerificationlHandler {
 
         String generatedCode = generateCode();
 
+        verificationUrl = verificationUrl + "/forgot-password?id={{userId}}&code={{code}}";
+
         if (customer != null) {
-            verificationUrl = verificationUrl + "/password-reset?id={{userId}}&code={{code}}";
             verificationUrl = verificationUrl.replace("{{userId}}", userId);
             verificationUrl = verificationUrl.replace("{{code}}", generatedCode);
             CustomerEmailVerification cev = new CustomerEmailVerification();
@@ -288,20 +289,18 @@ public class EmaiVerificationlHandler {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer password reset created: " + userId + " email: " + email, "");
 
         } else if (client != null) {
-            verificationUrl = verificationUrl + "/password-reset?id={{userId}}&code={{code}}";
             verificationUrl = verificationUrl.replace("{{userId}}", userId);
             verificationUrl = verificationUrl.replace("{{code}}", generatedCode);
-            ClientEmailVerification cev = new ClientEmailVerification();
+            ClientPasswordReset cev = new ClientPasswordReset();
 
             cev.setCode(generatedCode);
             cev.setCreated(new Date());
             cev.setUpdated(new Date());
             cev.setEmail(email);
-            cev.setIsVerified(Boolean.FALSE);
             cev.setClientId(userId);
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client " + client, "");
 
-            clientEmailVerificationsRepository.save(cev);
+            clientPasswordResetsRepository.save(cev);
 
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client password reset created: " + userId + " email: " + email, "");
 
@@ -369,7 +368,7 @@ public class EmaiVerificationlHandler {
             for (ClientPasswordReset cpr : cprs) {
                 if (cpr.getCode().equals(code)) {
                     verified = true;
-                    cpr.setStatus(PasswordReset.PasswordResetStatus.VERIFIED);
+                    cpr.setStatus(PasswordResetStatus.VERIFIED);
                     clientPasswordResetsRepository.save(cpr);
                 }
             }

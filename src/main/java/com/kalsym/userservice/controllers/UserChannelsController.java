@@ -42,12 +42,10 @@ public class UserChannelsController {
     @Autowired
     UserChannelsRepository userChannelsRepository;
 
-
-
     @GetMapping(path = {""}, name = "userChannels-get")
     @PreAuthorize("hasAnyAuthority('userChannels-get', 'all')")
     public ResponseEntity<HttpReponse> getUserChannels(HttpServletRequest request,
-            @RequestParam(required = false) String id,
+            @RequestParam(required = false) String refId,
             @RequestParam(required = false) String channelName,
             @RequestParam(required = false) String parentUserChannelId,
             @RequestParam(required = false) String userId,
@@ -59,7 +57,7 @@ public class UserChannelsController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
         UserChannel userChannel = new UserChannel();
-        userChannel.setId(id);
+        userChannel.setRefId(refId);
         userChannel.setChannelName(channelName);
         userChannel.setUserId(userId);
 

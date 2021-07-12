@@ -230,7 +230,7 @@ public class CustomersController {
 
     @PostMapping(path = "/register", name = "customers-post")
     //@PreAuthorize("hasAnyAuthority('customers-post', 'all')")
-    public ResponseEntity<HttpReponse> postCustomer(HttpServletRequest request, @Valid @RequestBody Customer body) throws Exception {
+    public ResponseEntity<HttpReponse> postCustomer(HttpServletRequest request, @RequestBody Customer body) throws Exception {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.persistence.criteria.Predicate;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -64,7 +67,7 @@ public class UserChannelsController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, userChannel + "", "");
         ExampleMatcher matcher = ExampleMatcher
                 .matchingAll()
-                .withIgnoreCase()
+                .withIgnoreCase(false)
                 .withStringMatcher(ExampleMatcher.StringMatcher.EXACT);
         Example<UserChannel> example = Example.of(userChannel, matcher);
 
@@ -72,6 +75,8 @@ public class UserChannelsController {
         Pageable pageable = PageRequest.of(page, pageSize);
 
         response.setStatus(HttpStatus.OK);
+
+        //response.setData(userChannelsRepository.findByQuery(refId, userId, channelName, pageable));
         response.setData(userChannelsRepository.findAll(example, pageable));
         return ResponseEntity.status(response.getStatus()).body(response);
     }
@@ -209,4 +214,23 @@ public class UserChannelsController {
         response.setData(errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+    private static Specification<UserChannel> getUserChannelSpec(String refId, Example<UserChannel> example) {
+        return (Specification<UserChannel>) (root, query, builder) -> {
+            final List<Predicate> predicates = new ArrayList<>();
+
+            if (refId != null) {
+                predicates.add(builder.equal(root.get("refId"), refId));
+            }
+//            if (from != null && to != null) {
+//                to.setDate(to.getDate() + 1);
+//                predicates.add(builder.greaterThanOrEqualTo(root.get("created"), from));
+//                predicates.add(builder.lessThanOrEqualTo(root.get("created"), to));
+//            }
+            predicates.add(QueryByExamplePredicateBuilder.getPredicate(root, builder, example));
+
+            return builder.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+
 }

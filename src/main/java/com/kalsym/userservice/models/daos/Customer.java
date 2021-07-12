@@ -35,7 +35,6 @@ public class Customer implements Serializable {
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
 
-    @NotBlank(message = "username is required")
     private String username;
 
     

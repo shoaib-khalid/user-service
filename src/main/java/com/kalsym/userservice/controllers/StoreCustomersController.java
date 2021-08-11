@@ -250,25 +250,19 @@ public class StoreCustomersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         List<String> errors = new ArrayList<>();
-        if (null == body.getPassword() || body.getPassword().length() == 0) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-            response.setStatus(HttpStatus.BAD_REQUEST);
-            errors.add("password is required exists");
-            response.setData(errors);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
 
         List<Customer> customers = customersRepository.findByStoreId(storeId);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "this store has "+customers.size()+" customers", "");
 
         for (Customer existingCustomer : customers) {
-            if (existingCustomer.getUsername().equals(body.getUsername())) {
+            if (existingCustomer.getUsername() != null && existingCustomer.getUsername().equals(body.getUsername())) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
                 errors.add("username already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
-            if (existingCustomer.getEmail().equals(body.getEmail())) {
+            if (existingCustomer.getEmail() != null && existingCustomer.getEmail().equals(body.getEmail())) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
                 errors.add("email already exists");
@@ -277,7 +271,9 @@ public class StoreCustomersController {
             }
         }
 
-        body.setPassword(bcryptEncoder.encode(body.getPassword()));
+        if (body.getPassword() != null) {
+            body.setPassword(bcryptEncoder.encode(body.getPassword()));
+        }
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
         body.setLocked(false);
@@ -285,7 +281,8 @@ public class StoreCustomersController {
 
         body = customersRepository.save(body);
         body.setPassword(null);
-        emaiVerificationlHandler.sendVerificationEmail(body);
+        //TODO: enable verification email for later when password required
+        //emaiVerificationlHandler.sendVerificationEmail(body);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");
         response.setStatus(HttpStatus.CREATED);
         response.setData(body);
@@ -332,7 +329,6 @@ public class StoreCustomersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user authenticated", "");
 
 //        Customer user = customersRepository.findByUsernameOrEmail(body.getUsername(), body.getUsername());
-
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(user.getRoleId());
         ArrayList<String> authorities = new ArrayList<>();
         if (null != roleAuthories) {

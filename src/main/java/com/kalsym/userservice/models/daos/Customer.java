@@ -36,14 +36,11 @@ public class Customer implements Serializable {
     private String id;
 
     private String username;
-
     
     private String password;
 
-    @NotBlank(message = "name is required")
     private String name;
 
-    @NotBlank(message = "email is required")
     private String email;
 
     private String facebookId;

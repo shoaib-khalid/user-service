@@ -239,7 +239,6 @@ public class CustomersController {
 
         List<String> errors = new ArrayList<>();
 
-
         List<Customer> customers = customersRepository.findAll();
 
         for (Customer existingCustomer : customers) {
@@ -259,7 +258,10 @@ public class CustomersController {
             }
         }
 
-        body.setPassword(bcryptEncoder.encode(body.getPassword()));
+        if (body.getPassword() != null) {
+            body.setPassword(bcryptEncoder.encode(body.getPassword()));
+
+        }
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
         body.setLocked(false);

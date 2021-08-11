@@ -47,7 +47,6 @@ public class Customer implements Serializable {
     private String email;
 
     private String facebookId;
-
     private String phoneNumber;
 
     private Boolean locked;

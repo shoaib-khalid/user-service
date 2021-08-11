@@ -238,13 +238,7 @@ public class CustomersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         List<String> errors = new ArrayList<>();
-        if (null == body.getPassword() || body.getPassword().length() == 0) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-            response.setStatus(HttpStatus.BAD_REQUEST);
-            errors.add("password is required exists");
-            response.setData(errors);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+
 
         List<Customer> customers = customersRepository.findAll();
 

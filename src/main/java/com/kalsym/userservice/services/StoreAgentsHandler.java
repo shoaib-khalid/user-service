@@ -21,16 +21,16 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class StoreAgentsHandler {
 
-    @Value("${livechat.store.agent.creation.url:http://209.58.160.20:3000/api/v1/users.create}")
+    @Value("${livechat.store.agent.creation.url:https://live.symplified.biz/api/v1/users.create}")
     private String livechatStoreAgentCreationUrl;
 
-    @Value("${livechat.store.agent.deletion.url:http://209.58.160.20:3000/api/v1/users.delete}")
+    @Value("${livechat.store.agent.deletion.url:https://live.symplified.biz/api/v1/users.delete}")
     private String livechatStoreAgentDeletionUrl;
 
-    @Value("${livechat.store.order.agent.group.invitation.url:http://209.58.160.20:7071/stores/<storeId>/livechat/order-csr/agentinvite}")
+    @Value("${livechat.store.order.agent.group.invitation.url:https://api.symplified.biz/product-service/v1/stores/<storeId>/livechat/order-csr/agentinvite}")
     private String livechatStoreOrdersAgentGroupInvitationUrl;
 
-    @Value("${livechat.store.complaint.agent.group.invitation.url:http://209.58.160.20:7071/stores/<storeId>/livechat/complaint-csr/agentinvite}")
+    @Value("${livechat.store.complaint.agent.group.invitation.url:https://api.symplified.biz/product-service/v1/stores/<storeId>/livechat/complaint-csr/agentinvite}")
     private String livechatStoreComplaintAgentGroupInvitationUrl;
 
     //@Value("${livechat.token:GvKS_Z_MvqDeExBPAmSrXdwXMYOlrsW3JkuSpsO9l76}")
@@ -162,6 +162,7 @@ public class StoreAgentsHandler {
         liveChatAgentInvite.setUserId(agentId);
         HttpEntity<LiveChatAgentInvite> entity;
         entity = new HttpEntity<>(liveChatAgentInvite, headers);
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " agent invite entity: " + entity);
 
         String url = livechatStoreComplaintAgentGroupInvitationUrl.replace("<storeId>", storeId);

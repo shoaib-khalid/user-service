@@ -45,7 +45,7 @@ public class StoreAgentsHandler {
     @Value("${liveChat.login.password:sarosh@1234}")
     private String liveChatLoginPassword;
 
-    @Value("${liveChat.login.url:http://209.58.160.20:3000/api/v1/login}")
+    @Value("${liveChat.login.url:https://api.symplified.biz/api/v1/login}")
     private String liveChatLoginUrl;
 
     public StoreAgentResponse createAgent(LiveChatStoreAgent storeAgent) {

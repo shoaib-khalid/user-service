@@ -1,5 +1,6 @@
 package com.kalsym.userservice.controllers;
 
+import com.kalsym.userservice.models.Store;
 import com.kalsym.userservice.models.storeagent.StoreAgentResponse;
 import com.kalsym.userservice.models.storeagent.CustomFields;
 import com.kalsym.userservice.models.storeagent.LiveChatStoreAgent;
@@ -13,6 +14,7 @@ import com.kalsym.userservice.models.requestbodies.AuthenticationBody;
 import com.kalsym.userservice.repositories.RoleAuthoritiesRepository;
 import com.kalsym.userservice.repositories.ClientSessionsRepository;
 import com.kalsym.userservice.repositories.ClientsRepository;
+import com.kalsym.userservice.repositories.StoreRepository;
 import com.kalsym.userservice.services.EmaiVerificationlHandler;
 import com.kalsym.userservice.services.StoreAgentsHandler;
 import com.kalsym.userservice.utils.DateTimeUtil;
@@ -56,31 +58,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController()
 @RequestMapping("/clients")
 public class ClientsController {
-    
+
     @Autowired
     AuthenticationManager authenticationManager;
-    
+
     @Autowired
     ClientsRepository clientsRepository;
-    
+
     @Autowired
     RoleAuthoritiesRepository roleAuthoritiesRepository;
-    
+
     @Autowired
     ClientSessionsRepository clientSessionsRepository;
-    
+
     @Autowired
     private PasswordEncoder bcryptEncoder;
-    
+
     @Autowired
     EmaiVerificationlHandler emaiVerificationlHandler;
-    
+
     @Autowired
     StoreAgentsHandler storeAgentsHandler;
-    
+
+    @Autowired
+    StoreRepository storeRepository;
+
     @Value("${session.expiry:3600}")
     private int expiry;
-    
+
     @GetMapping(path = {"/"}, name = "clients-get")
     @PreAuthorize("hasAnyAuthority('clients-get', 'all')")
     public ResponseEntity<HttpReponse> getClients(HttpServletRequest request,
@@ -93,16 +98,16 @@ public class ClientsController {
             @RequestParam(defaultValue = "20") int pageSize) {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-        
+
         Client client = new Client();
         client.setUsername(username);
         client.setEmail(email);
         client.setRoleId(roleId);
         client.setLocked(locked);
         client.setStoreId(storeId);
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, client + "", "");
         ExampleMatcher matcher = ExampleMatcher
                 .matchingAll()
@@ -110,90 +115,90 @@ public class ClientsController {
                 .withIgnorePaths("locked")
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
         Example<Client> example = Example.of(client, matcher);
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
         Pageable pageable = PageRequest.of(page, pageSize);
-        
+
         response.setStatus(HttpStatus.OK);
         response.setData(clientsRepository.findAll(example, pageable));
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-    
+
     @GetMapping(path = {"/{id}"}, name = "clients-get-by-id")
     @PreAuthorize("hasAnyAuthority('clients-get-by-id', 'all')")
     public ResponseEntity<HttpReponse> getClientById(HttpServletRequest request, @PathVariable String id) {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-        
+
         Optional<Client> optClient = clientsRepository.findById(id);
-        
+
         if (!optClient.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client found", "");
         response.setStatus(HttpStatus.OK);
         response.setData(optClient.get());
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-    
+
     @DeleteMapping(path = {"/{id}"}, name = "clients-delete-by-id")
     @PreAuthorize("hasAnyAuthority('clients-delete-by-id', 'all')")
     public ResponseEntity<HttpReponse> deleteClientById(HttpServletRequest request, @PathVariable String id) {
         String logprefix = request.getRequestURI();
-        
+
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-        
+
         Optional<Client> optClient = clientsRepository.findById(id);
-        
+
         if (!optClient.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client found", "");
-        
+
         if (optClient.get().getRoleId().equals("STORE_CSR_ORDER") || optClient.get().getRoleId().equals("STORE_CSR_COMPLAINT")) {
             storeAgentsHandler.deleteAgent(optClient.get().getLiveChatAgentId());
         }
         clientsRepository.delete(optClient.get());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client deleted", "");
         response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-    
+
     @PutMapping(path = {"/{id}"}, name = "clients-put-by-id")
     @PreAuthorize("hasAnyAuthority('clients-put-by-id', 'all')")
     public ResponseEntity<HttpReponse> putClientById(HttpServletRequest request, @PathVariable String id, @RequestBody Client body) {
         String logprefix = request.getRequestURI();
-        
+
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
-        
+
         Optional<Client> optClient = clientsRepository.findById(id);
-        
+
         if (!optClient.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client found", "");
         Client client = optClient.get();
         List<String> errors = new ArrayList<>();
-        
+
         List<Client> clients = clientsRepository.findAll();
-        
+
         for (Client existingClient : clients) {
             if (!client.equals(existingClient)) {
                 if (existingClient.getUsername().equals(body.getUsername())) {
@@ -220,35 +225,35 @@ public class ClientsController {
                     }
                 }
             }
-            
+
         }
-        
+
         if (null != body.getPassword() && body.getPassword().length() > 0) {
             body.setPassword(bcryptEncoder.encode(body.getPassword()));
         } else {
             body.setPassword(null);
         }
-        
+
         client.update(body);
         client.setUpdated(DateTimeUtil.currentTimestamp());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client updated for id: " + id, "");
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(clientsRepository.save(client));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
-    
+
     @PostMapping(path = "/register", name = "clients-post")
     //@PreAuthorize("hasAnyAuthority('clients-post', 'all')")
     public ResponseEntity<HttpReponse> postClient(HttpServletRequest request,
             @Valid @RequestBody Client body) throws Exception {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        
+
         try {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
-            
+
             List<String> errors = new ArrayList<>();
             if (null == body.getPassword() || body.getPassword().length() == 0) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
@@ -257,9 +262,9 @@ public class ClientsController {
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
-            
+
             List<Client> clients = clientsRepository.findAll();
-            
+
             for (Client existingClient : clients) {
                 if (existingClient.getUsername().equalsIgnoreCase(body.getUsername())) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
@@ -276,9 +281,9 @@ public class ClientsController {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
                 }
             }
-            
+
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client roleId: " + body.getRoleId(), "");
-            
+
             String originalPassword = body.getPassword();
             body.setPassword(bcryptEncoder.encode(body.getPassword()));
             body.setLocked(false);
@@ -295,14 +300,32 @@ public class ClientsController {
                 liveChatStoreAgent.setPassword(originalPassword);
                 List<String> roles = new ArrayList();
                 roles.add("livechat-agent");
+
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "storeId: " + body.getStoreId());
+
+                if (null != body.getStoreId()) {
+                    Optional<Store> optStore = storeRepository.findById(body.getStoreId());
+
+                    if (optStore.isPresent()) {
+                        Store store = optStore.get();
+                        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "vertical of store: " + store.getVerticalCode());
+
+                        if (store.getVerticalCode().equalsIgnoreCase("FnB")) {
+                            roles.add("fnb");
+                            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "added role fnb");
+
+                        }
+                    }
+                }
+
                 liveChatStoreAgent.setRoles(roles);
                 CustomFields customFields = new CustomFields();
                 customFields.setStoreId(body.getStoreId());
                 liveChatStoreAgent.setCustomFields(customFields);
                 liveChatStoreAgent.setJoinDefaultChannels(false);
-                
+
                 StoreAgentResponse lcr = storeAgentsHandler.createAgent(liveChatStoreAgent);
-                
+
                 if (lcr == null) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent could not be created");
                     clientsRepository.delete(body);
@@ -310,9 +333,9 @@ public class ClientsController {
                     response.setError("Store agents could not be created");
                     return ResponseEntity.status(response.getStatus()).body(response);
                 }
-                
+
                 try {
-                    
+
                     if (body.getRoleId().equals("STORE_CSR_ORDER")) {
                         storeAgentsHandler.inviteOrderAgentToGroup(lcr.get_id(), body.getStoreId());
                     } else if (body.getRoleId().equals("STORE_CSR_COMPLAINT")) {
@@ -320,28 +343,28 @@ public class ClientsController {
                     } else if (body.getRoleId().equals("STORE_CSR_ADMIN")) {
                         storeAgentsHandler.inviteComplaintCsrAgentToGroup(lcr.get_id(), body.getStoreId());
                         storeAgentsHandler.inviteOrderAgentToGroup(lcr.get_id(), body.getStoreId());
-                        
+
                     }
                 } catch (Exception e) {
                     Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent could not be created", e);
-                    
+
                     clientsRepository.delete(body);
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "deleted client", "");
-                    
+
                     storeAgentsHandler.deleteAgent(lcr.get_id());
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "deleted agent", "");
-                    
+
                     response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
                     response.setError(e.toString());
                     return ResponseEntity.status(response.getStatus()).body(response);
                 }
                 body.setLiveChatAgentId(lcr.get_id());
                 clientsRepository.save(body);
-                
+
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent added");
-                
+
             }
-            
+
             if (!emaiVerificationlHandler.sendVerificationEmail(body)) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "could not verification email", "");
                 clientsRepository.delete(body);
@@ -349,7 +372,7 @@ public class ClientsController {
                 response.setError("Error sending verification email");
                 return ResponseEntity.status(response.getStatus()).body(response);
             }
-            
+
             body.setPassword(null);
             response.setStatus(HttpStatus.CREATED);
             response.setData(body);
@@ -360,9 +383,9 @@ public class ClientsController {
             response.setError(e.toString());
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
     }
-    
+
     @GetMapping(path = {"/{id}/email-verification/{code}/verify"}, name = "clients-email-verification-by-id")
     //@PreAuthorize("hasAnyAuthority('clients-get-by-id', 'all')")
     public ResponseEntity<HttpReponse> getClientVerify(HttpServletRequest request,
@@ -370,33 +393,33 @@ public class ClientsController {
             @PathVariable String code) {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-        
+
         Optional<Client> optClient = clientsRepository.findById(id);
-        
+
         if (!optClient.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         Client existingClient = optClient.get();
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client found", "");
-        
+
         boolean verified = emaiVerificationlHandler.verifyEmail(existingClient, code);
-        
+
         if (!verified) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot verify", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         response.setStatus(HttpStatus.OK);
         response.setData(existingClient);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-    
+
     @PutMapping(path = {"/{id}/password/{code}/reset"}, name = "clients-get-by-id")
     //@PreAuthorize("hasAnyAuthority('clients-get-by-id', 'all')")
     public ResponseEntity<HttpReponse> putClientPasswordReset(HttpServletRequest request,
@@ -405,65 +428,65 @@ public class ClientsController {
             @RequestBody Client body) {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-        
+
         Optional<Client> optClient = clientsRepository.findById(id);
-        
+
         if (!optClient.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         Client existingClient = optClient.get();
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client found", "");
-        
+
         boolean verified = emaiVerificationlHandler.verifyPasswordReset(existingClient, code);
-        
+
         if (!verified) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot verify", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             response.setError("Code not valid");
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         existingClient.setPassword(bcryptEncoder.encode(body.getPassword()));
         existingClient = clientsRepository.save(existingClient);
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(existingClient);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-    
+
     @GetMapping(path = {"/{email}/password_reset"}, name = "clients-password_reset-post-by-id")
     public ResponseEntity<HttpReponse> postClientPasswordReset(HttpServletRequest request,
             @PathVariable String email) {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-        
+
         Client client = clientsRepository.findByUsernameOrEmail(email, email);
-        
+
         if (client == null) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client found", "");
-        
+
         try {
             emaiVerificationlHandler.sendPasswordReset(client);
         } catch (Exception e) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error sending email ", "", e);
-            
+
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             response.setError(e.toString());
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         response.setStatus(HttpStatus.OK);
         response.setData(client);
         return ResponseEntity.status(response.getStatus()).body(response);
@@ -476,7 +499,7 @@ public class ClientsController {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "body: " + body);
-        
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
@@ -490,20 +513,20 @@ public class ClientsController {
             response.setStatus(HttpStatus.UNAUTHORIZED, e.getLocalizedMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client authenticated", "");
-        
+
         Client client = clientsRepository.findByUsernameOrEmail(body.getUsername(), body.getUsername());
-        
+
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(client.getRoleId());
         ArrayList<String> authorities = new ArrayList<>();
         if (null != roleAuthories) {
-            
+
             for (RoleAuthority roleAuthority : roleAuthories) {
                 authorities.add(roleAuthority.getAuthorityId());
             }
         }
-        
+
         ClientSession session = new ClientSession();
         session.setRemoteAddress(request.getRemoteAddr());
         session.setOwnerId(client.getId());
@@ -513,64 +536,64 @@ public class ClientsController {
         session.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
         session.setStatus("ACTIVE");
         session.generateTokens();
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session: " + session, "");
-        
+
         session = clientSessionsRepository.save(session);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session created with id: " + session.getId(), "");
-        
+
         session.setUpdated(null);
         session.setStatus(null);
         session.setRemoteAddress(null);
         session.setId(null);
-        
+
         Auth authReponse = new Auth();
         authReponse.setSession(session);
         authReponse.setAuthorities(authorities);
         authReponse.setRole(client.getRoleId());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "generated token", "");
-        
+
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
-    
+
     @PostMapping(path = "session/refresh", name = "clients-session-refresh")
     public ResponseEntity refreshSession(@Valid @RequestBody String refreshToken,
             HttpServletRequest request) throws Exception {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "refreshToken: " + refreshToken);
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, refreshToken, "");
-        
+
         ClientSession session = clientSessionsRepository.findByRefreshToken(refreshToken);
-        
+
         if (null == session) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         Optional<Client> optClient = clientsRepository.findById(session.getOwnerId());
-        
+
         if (!optClient.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        
+
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(optClient.get().getRoleId());
         ArrayList<String> authorities = new ArrayList<>();
         if (null != roleAuthories) {
-            
+
             for (RoleAuthority roleAuthority : roleAuthories) {
                 authorities.add(roleAuthority.getAuthorityId());
             }
         }
-        
+
         ClientSession newSession = new ClientSession();
         newSession.setRemoteAddress(request.getRemoteAddr());
         newSession.setOwnerId(optClient.get().getId());
@@ -580,35 +603,35 @@ public class ClientsController {
         newSession.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
         newSession.setStatus("ACTIVE");
         newSession.generateTokens();
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session: " + newSession, "");
-        
+
         newSession = clientSessionsRepository.save(newSession);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session created with id: " + newSession.getId(), "");
-        
+
         newSession.setOwnerId(null);
         newSession.setUpdated(null);
         newSession.setStatus(null);
         newSession.setRemoteAddress(null);
         newSession.setUsername(null);
         newSession.setId(null);
-        
+
         Auth authReponse = new Auth();
         authReponse.setSession(newSession);
         authReponse.setAuthorities(authorities);
         authReponse.setRole(optClient.get().getRoleId());
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "generated token", "");
-        
+
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
-    
+
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
         String logprefix = request.getRequestURI();
-        
+
         Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "validation failed", "");
         List<String> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(x -> x.getDefaultMessage())

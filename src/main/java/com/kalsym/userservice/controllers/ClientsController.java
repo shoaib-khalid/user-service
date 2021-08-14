@@ -303,19 +303,25 @@ public class ClientsController {
 
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "storeId: " + body.getStoreId());
 
-                if (null != body.getStoreId()) {
-                    Optional<Store> optStore = storeRepository.findById(body.getStoreId());
+                try {
+                    if (null != body.getStoreId()) {
+                        Optional<Store> optStore = storeRepository.findById(body.getStoreId());
 
-                    if (optStore.isPresent()) {
-                        Store store = optStore.get();
-                        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "vertical of store: " + store.getVerticalCode());
+                        if (optStore.isPresent()) {
+                            Store store = optStore.get();
+                            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "vertical of store: " + store.getVerticalCode());
+                            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, store.getVerticalCode().toLowerCase() + " contains fnb :" + store.getVerticalCode().toLowerCase().contains("fnb"));
 
-                        if (store.getVerticalCode().equalsIgnoreCase("FnB")) {
-                            roles.add("fnb");
-                            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "added role fnb");
+                            if (store.getVerticalCode().toLowerCase().contains("fnb")) {
+                                roles.add("fnb");
+                                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "added role fnb");
 
+                            }
                         }
                     }
+                } catch (Exception e) {
+                    Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error checking vertical");
+
                 }
 
                 liveChatStoreAgent.setRoles(roles);

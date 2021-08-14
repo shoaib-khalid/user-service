@@ -50,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClientException;
 
 /**
  *
@@ -330,16 +331,21 @@ public class ClientsController {
                 liveChatStoreAgent.setCustomFields(customFields);
                 liveChatStoreAgent.setJoinDefaultChannels(false);
 
-                StoreAgentResponse lcr = storeAgentsHandler.createAgent(liveChatStoreAgent);
+                StoreAgentResponse lcr = null;
+                try {
+                    lcr = storeAgentsHandler.createAgent(liveChatStoreAgent);
+                } catch (RestClientException e) {
+                    Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent could not be created", e);
 
-                if (lcr == null) {
-                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent could not be created");
                     clientsRepository.delete(body);
                     response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-                    response.setError("Store agents could not be created");
+                    response.setError(e.getMessage());
+                    response.setMessage(e.getMessage());
                     return ResponseEntity.status(response.getStatus()).body(response);
+
                 }
 
+              
                 try {
 
                     if (body.getRoleId().equals("STORE_CSR_ORDER")) {

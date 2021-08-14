@@ -48,7 +48,7 @@ public class StoreAgentsHandler {
     @Value("${liveChat.login.url:https://api.symplified.biz/api/v1/login}")
     private String liveChatLoginUrl;
 
-    public StoreAgentResponse createAgent(LiveChatStoreAgent storeAgent) {
+    public StoreAgentResponse createAgent(LiveChatStoreAgent storeAgent) throws RestClientException {
         String logprefix = "createAgent";
 
         if (!loginLiveChat()) {
@@ -65,21 +65,15 @@ public class StoreAgentsHandler {
         HttpEntity<LiveChatStoreAgent> entity;
         entity = new HttpEntity<>(storeAgent, headers);
 
-        try {
-            ResponseEntity<LiveChatResponse> res = restTemplate.exchange(livechatStoreAgentCreationUrl, HttpMethod.POST, entity, LiveChatResponse.class);
+        ResponseEntity<LiveChatResponse> res = restTemplate.exchange(livechatStoreAgentCreationUrl, HttpMethod.POST, entity, LiveChatResponse.class);
 
-            if (res.getBody().success == true) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " created agent " + res.getBody());
+        if (res.getBody().success == true) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " created agent " + res.getBody());
 
-                return res.getBody().user;
-            } else {
-                return null;
-            }
-        } catch (RestClientException e) {
-            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, " could not create agent", e);
-
+            return res.getBody().user;
+        } else {
+            return null;
         }
-        return null;
     }
 
     public Object deleteAgent(String id) {

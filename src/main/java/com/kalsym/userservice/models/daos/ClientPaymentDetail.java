@@ -66,6 +66,26 @@ public class ClientPaymentDetail implements Serializable {
         if (null != cpd.getBankAccountTitle()) {
             this.bankAccountTitle = cpd.getBankAccountTitle();
         }
+
+        if (null != cpd.getBankName()) {
+            this.bankName = cpd.getBankName();
+        }
+
+        if (null != cpd.getBankAccountNumber()) {
+            this.bankAccountNumber = cpd.getBankAccountNumber();
+        }
+
+        if (null != cpd.getTaxNumber()) {
+            this.taxNumber = cpd.getTaxNumber();
+        }
+
+        if (null != cpd.getStRate()) {
+            this.stRate = cpd.getStRate();
+        }
+
+        if (null != cpd.getWhtRate()) {
+            this.whtRate = cpd.getWhtRate();
+        }
     }
 
     @Override

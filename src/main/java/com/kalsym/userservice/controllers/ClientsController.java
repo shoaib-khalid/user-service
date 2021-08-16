@@ -87,6 +87,9 @@ public class ClientsController {
     @Value("${session.expiry:3600}")
     private int expiry;
 
+    @Value("${email.verification.enabled:false}")
+    private Boolean emailVerificationEnabled;
+
     @GetMapping(path = {"/"}, name = "clients-get")
     @PreAuthorize("hasAnyAuthority('clients-get', 'all')")
     public ResponseEntity<HttpReponse> getClients(HttpServletRequest request,
@@ -345,7 +348,6 @@ public class ClientsController {
 
                 }
 
-              
                 try {
 
                     if (body.getRoleId().equals("STORE_CSR_ORDER")) {
@@ -377,12 +379,14 @@ public class ClientsController {
 
             }
 
-            if (!emaiVerificationlHandler.sendVerificationEmail(body)) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "could not verification email", "");
-                clientsRepository.delete(body);
-                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-                response.setError("Error sending verification email");
-                return ResponseEntity.status(response.getStatus()).body(response);
+            if (emailVerificationEnabled) {
+                if (!emaiVerificationlHandler.sendVerificationEmail(body)) {
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "could not verification email", "");
+                    clientsRepository.delete(body);
+                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+                    response.setError("Error sending verification email");
+                    return ResponseEntity.status(response.getStatus()).body(response);
+                }
             }
 
             body.setPassword(null);

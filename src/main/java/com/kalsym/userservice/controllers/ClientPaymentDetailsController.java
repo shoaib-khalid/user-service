@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Sarosh
  */
 @RestController()
-@RequestMapping("/cleints/{clientId}/payment_details")
+@RequestMapping("/clients/{clientId}/payment_details")
 public class ClientPaymentDetailsController {
 
     @Autowired

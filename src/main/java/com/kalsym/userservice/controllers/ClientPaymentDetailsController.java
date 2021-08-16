@@ -66,7 +66,7 @@ public class ClientPaymentDetailsController {
         clientPaymentDetail.setBankAccountTitle(bankAccountTitle);
         clientPaymentDetail.setBankAccountNumber(bankAccountNumber);
         clientPaymentDetail.setBankName(bankName);
-        
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, clientPaymentDetail + "", "");
         ExampleMatcher matcher = ExampleMatcher
                 .matchingAll()
@@ -159,11 +159,6 @@ public class ClientPaymentDetailsController {
         ClientPaymentDetail clientPaymentDetail = optClientPaymentDetail.get();
         List<String> errors = new ArrayList<>();
 
-
-        
-
-       
-
         clientPaymentDetail.update(body);
         clientPaymentDetail.setUpdated(DateTimeUtil.currentTimestamp());
 
@@ -173,7 +168,7 @@ public class ClientPaymentDetailsController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
-    @PostMapping(path = "/register", name = "client-payment-details-post")
+    @PostMapping(path = "", name = "client-payment-details-post")
     //@PreAuthorize("hasAnyAuthority('client-payment-details-post', 'all')")
     public ResponseEntity<HttpReponse> postClientPaymentDetail(HttpServletRequest request,
             @PathVariable String clientId,
@@ -184,21 +179,16 @@ public class ClientPaymentDetailsController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
-        
-
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
 
-
         body = clientPaymentDetailsRepository.save(body);
-       
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "clientPaymentDetail created with id: " + body.getId(), "");
         response.setStatus(HttpStatus.CREATED);
         response.setData(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
-   
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {

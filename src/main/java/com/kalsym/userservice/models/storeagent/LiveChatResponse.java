@@ -31,4 +31,5 @@ public class LiveChatResponse {
 
     public StoreAgentResponse user;
     public boolean success;
+    public String error ;
 }

@@ -5,12 +5,17 @@ import com.kalsym.userservice.models.storeagent.LiveChatResponse;
 import com.kalsym.userservice.models.storeagent.LiveChatStoreAgent;
 import com.kalsym.userservice.utils.Logger;
 import com.kalsym.userservice.UserServiceApplication;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpClientErrorException.Conflict;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -48,7 +53,7 @@ public class StoreAgentsHandler {
     @Value("${liveChat.login.url:https://api.symplified.biz/api/v1/login}")
     private String liveChatLoginUrl;
 
-    public StoreAgentResponse createAgent(LiveChatStoreAgent storeAgent) throws RestClientException {
+    public LiveChatResponse createAgent(LiveChatStoreAgent storeAgent) throws RestClientException, HttpClientErrorException {
         String logprefix = "createAgent";
 
         if (!loginLiveChat()) {
@@ -65,15 +70,32 @@ public class StoreAgentsHandler {
         HttpEntity<LiveChatStoreAgent> entity;
         entity = new HttpEntity<>(storeAgent, headers);
 
-        ResponseEntity<LiveChatResponse> res = restTemplate.exchange(livechatStoreAgentCreationUrl, HttpMethod.POST, entity, LiveChatResponse.class);
-
-        if (res.getBody().success == true) {
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "livechatStoreAgentCreationUrl: " + livechatStoreAgentCreationUrl);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "entity: " + entity);
+        ResponseEntity<LiveChatResponse> res = null;
+        try {
+            res = restTemplate.exchange(livechatStoreAgentCreationUrl, HttpMethod.POST, entity, LiveChatResponse.class);
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " created agent " + res.getBody());
 
-            return res.getBody().user;
-        } else {
-            return null;
+        } catch (RestClientException e) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "message from RC " + e.getMessage());
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "message from RC2:  " + e.getMessage().replace("400 Bad Request: ", ""));
+
+            JSONArray ar = new JSONArray(e.getMessage().replace("400 Bad Request: ", ""));
+            JSONObject obj = ar.getJSONObject(0);
+            LiveChatResponse lcr = new LiveChatResponse();
+
+            if (obj.getString("error").contains("already in use")) {
+                lcr.setError("Username already exists in Live Chat");
+            } else {
+                lcr.setError("User could not be created at Live Chat");
+            }
+
+            lcr.setSuccess(false);
+            return lcr;
         }
+
+        return res.getBody();
     }
 
     public Object deleteAgent(String id) {

@@ -11,6 +11,7 @@ import com.kalsym.userservice.models.daos.RoleAuthority;
 import com.kalsym.userservice.models.daos.ClientSession;
 import com.kalsym.userservice.models.daos.Client;
 import com.kalsym.userservice.models.requestbodies.AuthenticationBody;
+import com.kalsym.userservice.models.storeagent.LiveChatResponse;
 import com.kalsym.userservice.repositories.RoleAuthoritiesRepository;
 import com.kalsym.userservice.repositories.ClientSessionsRepository;
 import com.kalsym.userservice.repositories.ClientsRepository;
@@ -50,6 +51,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 /**
@@ -334,29 +336,39 @@ public class ClientsController {
                 liveChatStoreAgent.setCustomFields(customFields);
                 liveChatStoreAgent.setJoinDefaultChannels(false);
 
-                StoreAgentResponse lcr = null;
+                LiveChatResponse lcr = null;
+                String liveChatId = "";
                 try {
                     lcr = storeAgentsHandler.createAgent(liveChatStoreAgent);
-                } catch (RestClientException e) {
-                    Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent could not be created", e);
 
-                    clientsRepository.delete(body);
+                    if (lcr.success == true) {
+                        liveChatId = lcr.getUser()._id;
+                    } else {
+                        Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent could not be created because" + lcr.getError());
+                        clientsRepository.delete(body);
+                        response.setStatus(HttpStatus.CONFLICT);
+                        response.setError(lcr.getError());
+                        response.setMessage(lcr.getError());
+                        return ResponseEntity.status(response.getStatus()).body(response);
+                    }
+                } catch (Exception e) {
+                    Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent could not be created because", e);
+
                     response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
                     response.setError(e.getMessage());
                     response.setMessage(e.getMessage());
                     return ResponseEntity.status(response.getStatus()).body(response);
-
                 }
 
                 try {
 
                     if (body.getRoleId().equals("STORE_CSR_ORDER")) {
-                        storeAgentsHandler.inviteOrderAgentToGroup(lcr.get_id(), body.getStoreId());
+                        storeAgentsHandler.inviteOrderAgentToGroup(liveChatId, body.getStoreId());
                     } else if (body.getRoleId().equals("STORE_CSR_COMPLAINT")) {
-                        storeAgentsHandler.inviteComplaintCsrAgentToGroup(lcr.get_id(), body.getStoreId());
+                        storeAgentsHandler.inviteComplaintCsrAgentToGroup(liveChatId, body.getStoreId());
                     } else if (body.getRoleId().equals("STORE_CSR_ADMIN")) {
-                        storeAgentsHandler.inviteComplaintCsrAgentToGroup(lcr.get_id(), body.getStoreId());
-                        storeAgentsHandler.inviteOrderAgentToGroup(lcr.get_id(), body.getStoreId());
+                        storeAgentsHandler.inviteComplaintCsrAgentToGroup(liveChatId, body.getStoreId());
+                        storeAgentsHandler.inviteOrderAgentToGroup(liveChatId, body.getStoreId());
 
                     }
                 } catch (Exception e) {
@@ -365,14 +377,14 @@ public class ClientsController {
                     clientsRepository.delete(body);
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "deleted client", "");
 
-                    storeAgentsHandler.deleteAgent(lcr.get_id());
+                    storeAgentsHandler.deleteAgent(liveChatId);
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "deleted agent", "");
 
                     response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
                     response.setError(e.toString());
                     return ResponseEntity.status(response.getStatus()).body(response);
                 }
-                body.setLiveChatAgentId(lcr.get_id());
+                body.setLiveChatAgentId(liveChatId);
                 clientsRepository.save(body);
 
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "agent added");

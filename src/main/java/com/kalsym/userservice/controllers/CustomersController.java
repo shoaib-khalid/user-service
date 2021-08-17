@@ -114,7 +114,8 @@ public class CustomersController {
 
     @GetMapping(path = {"/{id}"}, name = "customers-get-by-id")
     @PreAuthorize("hasAnyAuthority('customers-get-by-id', 'all')")
-    public ResponseEntity<HttpReponse> getCustomerById(HttpServletRequest request, @PathVariable String id) {
+    public ResponseEntity<HttpReponse> getCustomerById(HttpServletRequest request, 
+            @PathVariable String id) {
         String logprefix = request.getRequestURI();
         String location = Thread.currentThread().getStackTrace()[1].getMethodName();
         HttpReponse response = new HttpReponse(request.getRequestURI());

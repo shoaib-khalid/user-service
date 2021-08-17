@@ -42,7 +42,7 @@ public class CustomerAddressController {
     @Autowired
     CustomerAddressRepository customerAddressRepository;
 
-    @GetMapping(path = {"/"}, name = "customer-address-get")
+    @GetMapping(path = {""}, name = "customer-address-get")
     @PreAuthorize("hasAnyAuthority('customer-address-get', 'all')")
     public ResponseEntity<HttpReponse> getCustomerAddresss(HttpServletRequest request,
             @PathVariable String customerId,
@@ -73,42 +73,17 @@ public class CustomerAddressController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-//    @GetMapping(path = {"/{id}"}, name = "customer-address-get-by-id")
-//    @PreAuthorize("hasAnyAuthority('customer-address-get-by-id', 'all')")
-//    public ResponseEntity<HttpReponse> getCustomerAddressById(HttpServletRequest request,
-//            @PathVariable String customerId,
-//            @PathVariable String id) {
-//        String logprefix = request.getRequestURI();
-//
-//        HttpReponse response = new HttpReponse(request.getRequestURI());
-//
-//        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-//
-//        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(customerId);
-//
-//        if (!optCustomerAddress.isPresent()) {
-//            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
-//            response.setStatus(HttpStatus.NOT_FOUND);
-//            return ResponseEntity.status(response.getStatus()).body(response);
-//        }
-//
-//        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
-//        response.setStatus(HttpStatus.OK);
-//        response.setData(optCustomerAddress.get());
-//        return ResponseEntity.status(response.getStatus()).body(response);
-//    }
-    @DeleteMapping(path = {"/{id}"}, name = "customer-address-delete-by-id")
+    @DeleteMapping(path = {""}, name = "customer-address-delete-by-id")
     @PreAuthorize("hasAnyAuthority('customer-address-delete-by-id', 'all')")
     public ResponseEntity<HttpReponse> deleteCustomerAddressById(HttpServletRequest request,
-            @PathVariable String customerId,
-            @PathVariable String id) {
+            @PathVariable String customerId) {
         String logprefix = request.getRequestURI();
 
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
-        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(id);
+        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(customerId);
 
         if (!optCustomerAddress.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
@@ -124,11 +99,11 @@ public class CustomerAddressController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PutMapping(path = {"/{id}"}, name = "customer-address-put-by-id")
+    @PutMapping(path = {""}, name = "customer-address-put-by-id")
     @PreAuthorize("hasAnyAuthority('customer-address-put-by-id', 'all')")
     public ResponseEntity<HttpReponse> putCustomerAddressById(HttpServletRequest request,
             @PathVariable String customerId,
-            @PathVariable String id, @RequestBody CustomerAddress body) {
+            @RequestBody CustomerAddress body) {
         String logprefix = request.getRequestURI();
 
         HttpReponse response = new HttpReponse(request.getRequestURI());
@@ -136,44 +111,20 @@ public class CustomerAddressController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
-        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(id);
+        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(customerId);
 
         if (!optCustomerAddress.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-
+        body.setCustomerId(customerId);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
         CustomerAddress customerAddress = optCustomerAddress.get();
-        List<String> errors = new ArrayList<>();
-
-        List<CustomerAddress> customers = customerAddressRepository.findAll();
-
-        for (CustomerAddress existingCustomerAddress : customers) {
-            if (!customerAddress.equals(existingCustomerAddress)) {
-                if (existingCustomerAddress.getPhoneNumber().equals(body.getPhoneNumber())) {
-                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-                    response.setStatus(HttpStatus.CONFLICT);
-                    errors.add("phone number already exists");
-                    response.setData(errors);
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-                }
-                if (existingCustomerAddress.getEmail().equals(body.getEmail())) {
-                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
-                    response.setStatus(HttpStatus.CONFLICT);
-                    errors.add("email already exists");
-                    response.setData(errors);
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-                }
-
-            }
-
-        }
 
         customerAddress.update(body);
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress updated for id: " + id, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress updated for id: " + customerId, "");
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(customerAddressRepository.save(customerAddress));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
@@ -190,7 +141,6 @@ public class CustomerAddressController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
-        List<String> errors = new ArrayList<>();
 
         body.setId(customerId);
         body = customerAddressRepository.save(body);

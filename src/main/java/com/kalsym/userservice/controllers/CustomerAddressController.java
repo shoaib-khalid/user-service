@@ -73,31 +73,30 @@ public class CustomerAddressController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping(path = {"/{id}"}, name = "customer-address-get-by-id")
-    @PreAuthorize("hasAnyAuthority('customer-address-get-by-id', 'all')")
-    public ResponseEntity<HttpReponse> getCustomerAddressById(HttpServletRequest request,
-            @PathVariable String customerId,
-            @PathVariable String id) {
-        String logprefix = request.getRequestURI();
-
-        HttpReponse response = new HttpReponse(request.getRequestURI());
-
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-
-        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(customerId);
-
-        if (!optCustomerAddress.isPresent()) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
-            response.setStatus(HttpStatus.NOT_FOUND);
-            return ResponseEntity.status(response.getStatus()).body(response);
-        }
-
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
-        response.setStatus(HttpStatus.OK);
-        response.setData(optCustomerAddress.get());
-        return ResponseEntity.status(response.getStatus()).body(response);
-    }
-
+//    @GetMapping(path = {"/{id}"}, name = "customer-address-get-by-id")
+//    @PreAuthorize("hasAnyAuthority('customer-address-get-by-id', 'all')")
+//    public ResponseEntity<HttpReponse> getCustomerAddressById(HttpServletRequest request,
+//            @PathVariable String customerId,
+//            @PathVariable String id) {
+//        String logprefix = request.getRequestURI();
+//
+//        HttpReponse response = new HttpReponse(request.getRequestURI());
+//
+//        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+//
+//        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(customerId);
+//
+//        if (!optCustomerAddress.isPresent()) {
+//            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
+//            response.setStatus(HttpStatus.NOT_FOUND);
+//            return ResponseEntity.status(response.getStatus()).body(response);
+//        }
+//
+//        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
+//        response.setStatus(HttpStatus.OK);
+//        response.setData(optCustomerAddress.get());
+//        return ResponseEntity.status(response.getStatus()).body(response);
+//    }
     @DeleteMapping(path = {"/{id}"}, name = "customer-address-delete-by-id")
     @PreAuthorize("hasAnyAuthority('customer-address-delete-by-id', 'all')")
     public ResponseEntity<HttpReponse> deleteCustomerAddressById(HttpServletRequest request,
@@ -193,7 +192,7 @@ public class CustomerAddressController {
 
         List<String> errors = new ArrayList<>();
 
-
+        body.setId(customerId);
         body = customerAddressRepository.save(body);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress created with id: " + body.getCustomerId(), "");
         response.setStatus(HttpStatus.CREATED);

@@ -182,6 +182,7 @@ public class ClientPaymentDetailsController {
         
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
+        body.setClientId(clientId);
         
         body = clientPaymentDetailsRepository.save(body);
         

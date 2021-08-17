@@ -5,10 +5,12 @@ import com.kalsym.userservice.models.Auth;
 import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.daos.RoleAuthority;
 import com.kalsym.userservice.models.daos.CustomerSession;
+import com.kalsym.userservice.models.daos.CustomerWithDetail;
 import com.kalsym.userservice.models.daos.Customer;
 import com.kalsym.userservice.models.requestbodies.AuthenticationBody;
 import com.kalsym.userservice.repositories.RoleAuthoritiesRepository;
 import com.kalsym.userservice.repositories.CustomerSessionsRepository;
+import com.kalsym.userservice.repositories.CustomerWithDetailRepository;
 import com.kalsym.userservice.repositories.CustomersRepository;
 import com.kalsym.userservice.services.EmaiVerificationlHandler;
 import com.kalsym.userservice.utils.DateTimeUtil;
@@ -55,6 +57,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class StoreCustomersController {
 
     @Autowired
+    CustomerWithDetailRepository customerWithDetailRepository;
+    
+    @Autowired
     AuthenticationManager authenticationManager;
 
     @Autowired
@@ -92,7 +97,7 @@ public class StoreCustomersController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
 
-        Customer user = new Customer();
+        CustomerWithDetail user = new CustomerWithDetail();
         user.setUsername(username);
         user.setEmail(email);
         user.setRoleId(roleId);
@@ -106,13 +111,13 @@ public class StoreCustomersController {
                 .withIgnoreCase()
                 .withIgnorePaths("locked")
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-        Example<Customer> example = Example.of(user, matcher);
+        Example<CustomerWithDetail> example = Example.of(user, matcher);
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
         Pageable pageable = PageRequest.of(page, pageSize);
 
         response.setStatus(HttpStatus.OK);
-        response.setData(customersRepository.findAll(example, pageable));
+        response.setData(customerWithDetailRepository.findAll(example, pageable));
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

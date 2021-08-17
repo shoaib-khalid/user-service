@@ -33,7 +33,7 @@ import org.hibernate.annotations.GenericGenerator;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
-public class Customer implements Serializable {
+public class CustomerWithDetail implements Serializable {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -61,9 +61,12 @@ public class Customer implements Serializable {
 
     private String storeId;
 
-    
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
+    @JoinColumn(name = "customerId", insertable = false, updatable = false, nullable = true)
+    private List<CustomerAddress> customerAddress;
 
-    public void update(Customer user) {
+    public void update(CustomerWithDetail user) {
         if (null != user.getEmail()) {
             email = user.getEmail();
         }
@@ -101,7 +104,7 @@ public class Customer implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Customer other = (Customer) obj;
+        final CustomerWithDetail other = (CustomerWithDetail) obj;
         return Objects.equals(this.id, other.getId());
     }
 

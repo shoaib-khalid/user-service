@@ -47,7 +47,7 @@ public class ClientPaymentDetailsController {
     @Autowired
     ClientsRepository clientsRepository;
     
-    @GetMapping(path = {""}, name = "client-payment-details-get")
+    @GetMapping(path = {"/"}, name = "client-payment-details-get")
     @PreAuthorize("hasAnyAuthority('client-payment-details-get', 'all')")
     public ResponseEntity<HttpReponse> getClientPaymentDetails(HttpServletRequest request,
             @PathVariable String clientId,

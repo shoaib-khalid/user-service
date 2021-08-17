@@ -193,24 +193,6 @@ public class CustomerAddressController {
 
         List<String> errors = new ArrayList<>();
 
-        List<CustomerAddress> customers = customerAddressRepository.findAll();
-
-        for (CustomerAddress existingCustomerAddress : customers) {
-            if (existingCustomerAddress.getPhoneNumber().equals(body.getPhoneNumber())) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-                response.setStatus(HttpStatus.CONFLICT);
-                errors.add("phone number already exists");
-                response.setData(errors);
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-            }
-            if (existingCustomerAddress.getEmail().equals(body.getEmail())) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
-                response.setStatus(HttpStatus.CONFLICT);
-                errors.add("email already exists");
-                response.setData(errors);
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-            }
-        }
 
         body = customerAddressRepository.save(body);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress created with id: " + body.getCustomerId(), "");

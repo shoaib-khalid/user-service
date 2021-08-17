@@ -61,8 +61,6 @@ public class Customer implements Serializable {
 
     private String storeId;
 
-    
-
     public void update(Customer user) {
         if (null != user.getEmail()) {
             email = user.getEmail();
@@ -86,6 +84,10 @@ public class Customer implements Serializable {
 
         if (null != user.getName()) {
             name = user.getName();
+        }
+
+        if (null != user.getName()) {
+            phoneNumber = user.getPhoneNumber();
         }
 
         if (null != user.getLocked()) {

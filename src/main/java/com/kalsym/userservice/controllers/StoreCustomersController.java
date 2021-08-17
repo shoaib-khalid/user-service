@@ -58,7 +58,7 @@ public class StoreCustomersController {
 
     @Autowired
     CustomerWithDetailRepository customerWithDetailRepository;
-    
+
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -197,18 +197,18 @@ public class StoreCustomersController {
         Customer user = optCustomer.get();
         List<String> errors = new ArrayList<>();
 
-        List<Customer> customers = customersRepository.findAll();
+        List<Customer> customers = customersRepository.findByStoreId(storeId);
 
         for (Customer existingCustomer : customers) {
             if (!user.equals(existingCustomer)) {
-                if (existingCustomer.getUsername().equals(body.getUsername())) {
+                if (existingCustomer.getUsername() != null && existingCustomer.getUsername().equals(body.getUsername())) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                     response.setStatus(HttpStatus.CONFLICT);
                     errors.add("username already exists");
                     response.setData(errors);
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
                 }
-                if (existingCustomer.getEmail().equals(body.getEmail())) {
+                if (existingCustomer.getEmail() != null && existingCustomer.getEmail().equals(body.getEmail())) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
                     response.setStatus(HttpStatus.CONFLICT);
                     errors.add("email already exists");
@@ -257,7 +257,7 @@ public class StoreCustomersController {
         List<String> errors = new ArrayList<>();
 
         List<Customer> customers = customersRepository.findByStoreId(storeId);
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "this store has "+customers.size()+" customers", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "this store has " + customers.size() + " customers", "");
 
         for (Customer existingCustomer : customers) {
             if (existingCustomer.getUsername() != null && existingCustomer.getUsername().equals(body.getUsername())) {

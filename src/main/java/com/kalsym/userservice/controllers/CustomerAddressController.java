@@ -141,9 +141,19 @@ public class CustomerAddressController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
+        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(customerId);
 
-        body.setId(customerId);
-        body = customerAddressRepository.save(body);
+        if (!optCustomerAddress.isPresent()) {
+            body.setId(customerId);
+            body = customerAddressRepository.save(body);
+        } else {
+            body.setCustomerId(customerId);
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
+            CustomerAddress customerAddress = optCustomerAddress.get();
+            customerAddress.update(body);
+            body = customerAddressRepository.save(body);
+        }
+
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress created with id: " + body.getCustomerId(), "");
         response.setStatus(HttpStatus.CREATED);
         response.setData(body);

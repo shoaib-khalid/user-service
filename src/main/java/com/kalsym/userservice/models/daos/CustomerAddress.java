@@ -26,8 +26,6 @@ import org.hibernate.annotations.GenericGenerator;
 public class CustomerAddress implements Serializable {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
 
     private String name;
@@ -49,7 +47,33 @@ public class CustomerAddress implements Serializable {
     private String customerId;
 
     public void update(CustomerAddress customerAddress) {
+        if (null != customerAddress.getName()) {
+            name = customerAddress.getName();
+        }
 
+        if (null != customerAddress.getEmail()) {
+            email = customerAddress.getEmail();
+        }
+
+        if (null != customerAddress.getCountry()) {
+            country = customerAddress.getCountry();
+        }
+
+        if (null != customerAddress.getState()) {
+            state = customerAddress.getState();
+        }
+
+        if (null != customerAddress.getCountry()) {
+            phoneNumber = customerAddress.getPhoneNumber();
+        }
+
+        if (null != customerAddress.getPostCode()) {
+            postCode = customerAddress.getPostCode();
+        }
+
+        if (null != customerAddress.getAddress()) {
+            address = customerAddress.getAddress();
+        }
     }
 
 }

@@ -63,6 +63,10 @@ public class CustomerAddress implements Serializable {
             state = customerAddress.getState();
         }
 
+        if (null != customerAddress.getCity()) {
+            city = customerAddress.getCity();
+        }
+
         if (null != customerAddress.getCountry()) {
             phoneNumber = customerAddress.getPhoneNumber();
         }

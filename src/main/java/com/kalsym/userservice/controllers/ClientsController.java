@@ -170,9 +170,11 @@ public class ClientsController {
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client found", "");
-
-        if (optClient.get().getRoleId().equals("STORE_CSR_ORDER") || optClient.get().getRoleId().equals("STORE_CSR_COMPLAINT")) {
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client role" + optClient.get().getRoleId(), "");
+        if (optClient.get().getRoleId().equals("STORE_CSR_ORDER") || optClient.get().getRoleId().equals("STORE_CSR_COMPLAINT") || optClient.get().getRoleId().equals("STORE_CSR_ADMIN")) {
             storeAgentsHandler.deleteAgent(optClient.get().getLiveChatAgentId());
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client deleted from rocket chat", "");
+
         }
         clientsRepository.delete(optClient.get());
 

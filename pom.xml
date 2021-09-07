@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.kalsym</groupId>
     <artifactId>user-service</artifactId>
-    <version>3.0.24-SNAPSHOT</version>
+    <version>3.0.25-SNAPSHOT</version>
     <name>user-service</name>
     <description>Users auth service</description>
     <properties>
@@ -77,36 +77,18 @@
             <artifactId>jaxb-api</artifactId>
         </dependency>
         
-        <!--swagger-->
+       <!--swagger-->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.5.4</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-webmvc-core</artifactId>
-            <version>1.5.4</version>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
-            <artifactId>springfox-core</artifactId>
-            <version>3.0.0</version>
-            <type>jar</type>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-spi</artifactId>
-            <version>3.0.0</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-spring-web</artifactId>
-            <version>3.0.0</version>
-            <type>jar</type>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+            <scope>compile</scope>
         </dependency>
         
         <!--jwt-->

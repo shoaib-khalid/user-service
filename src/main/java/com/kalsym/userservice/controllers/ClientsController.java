@@ -594,15 +594,12 @@ public class ClientsController {
             HttpServletRequest request) throws Exception {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "refreshToken: " + refreshToken);
-
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, refreshToken, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "refreshToken: [" + refreshToken + "]");
 
         ClientSession session = clientSessionsRepository.findByRefreshToken(refreshToken);
 
         if (null == session) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session not found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session not found in clientSession", "");
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
@@ -639,7 +636,6 @@ public class ClientsController {
         newSession = clientSessionsRepository.save(newSession);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session created with id: " + newSession.getId(), "");
 
-        newSession.setOwnerId(null);
         newSession.setUpdated(null);
         newSession.setStatus(null);
         newSession.setRemoteAddress(null);

@@ -12,7 +12,7 @@ public class Auth {
 
     private String role;
     private List<String> authorities;
-    
+    private String sessionType;
     
     
 
@@ -40,6 +40,12 @@ public class Auth {
         this.role = role;
     }
     
-    
+     public String getSessionType() {
+        return sessionType;
+    }
+
+    public void setSessionType(String sessionType) {
+        this.role = sessionType;
+    }
 
 }

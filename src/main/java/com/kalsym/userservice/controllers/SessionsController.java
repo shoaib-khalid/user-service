@@ -80,9 +80,23 @@ public class SessionsController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, accessToken, "");
-
-        Session session = getSession(accessToken, logprefix);
-
+        
+        String sessionType=null;
+        Session session = getClientSession(accessToken, logprefix);
+        if (session==null) {
+            session = getCustomerSession(accessToken, logprefix);
+            if (session==null) {
+                session = getAdminSession(accessToken, logprefix);
+                if (session!=null) {
+                    sessionType="ADMIN";
+                }
+            } else {
+                sessionType="CUSTOMER";
+            }
+        } else {
+            sessionType="CLIENT";
+        }
+        
         if (null == session) {
             Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
@@ -115,6 +129,7 @@ public class SessionsController {
         authReponse.setSession(session);
         authReponse.setAuthorities(authorities);
         authReponse.setRole(roleId);
+        authReponse.setSessionType(sessionType);
         response.setData(authReponse);
         response.setStatus(HttpStatus.ACCEPTED);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
@@ -144,33 +159,34 @@ public class SessionsController {
         return null;
     }
 
-    private Session getSession(String accessToken, String logprefix) {
-        Session session = null;
+    private Session getClientSession(String accessToken, String logprefix) {
         ClientSession clientSession = clientSessionsRepository.findByAccessToken(accessToken);
 
         if (null != clientSession) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client session found", "");
-            session = clientSession;
-            session.setSessionType("CLIENT");
-            return session;
+            return clientSession;
         }
-
+        
+        return null;
+    }
+    
+    private Session getCustomerSession(String accessToken, String logprefix) {
         CustomerSession customerSession = customerSessionsRepository.findByAccessToken(accessToken);
 
         if (null != customerSession) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer session found", "");
-            session = customerSession;
-            session.setSessionType("CUSTOMER");
             return customerSession;
         }
+        
+        return null;
+    }
 
+    private Session getAdminSession(String accessToken, String logprefix) {
         AdministratorSession administratorSession = administratorSessionsRepository.findByAccessToken(accessToken);
 
         if (null != administratorSession) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "administrator session found", "");
-            session = administratorSession;
-            session.setSessionType("ADMIN");
-            return session;
+            return administratorSession;
         }
 
         return null;

@@ -45,7 +45,7 @@ public class Auth {
     }
 
     public void setSessionType(String sessionType) {
-        this.role = sessionType;
+        this.sessionType = sessionType;
     }
 
 }

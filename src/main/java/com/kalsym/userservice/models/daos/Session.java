@@ -47,7 +47,8 @@ public class Session {
     private String refreshToken;
 
     private String ownerId;
-
+    private String sessionType;
+    
     public void generateTokens() throws Exception {
         String accessTokenKey = UUID.randomUUID().toString();
         String refreshTokenKey = UUID.randomUUID().toString();

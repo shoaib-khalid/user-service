@@ -107,7 +107,6 @@ public class SessionsController {
                 authorities.add(roleAuthority.getAuthorityId());
             }
         }
-        session.setOwnerId(null);
         session.setUpdated(null);
         session.setStatus(null);
         session.setRemoteAddress(null);
@@ -146,17 +145,22 @@ public class SessionsController {
     }
 
     private Session getSession(String accessToken, String logprefix) {
+        Session session = null;
         ClientSession clientSession = clientSessionsRepository.findByAccessToken(accessToken);
 
         if (null != clientSession) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client session found", "");
-            return clientSession;
+            session = clientSession;
+            session.setSessionType("CLIENT");
+            return session;
         }
 
         CustomerSession customerSession = customerSessionsRepository.findByAccessToken(accessToken);
 
         if (null != customerSession) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer session found", "");
+            session = customerSession;
+            session.setSessionType("CUSTOMER");
             return customerSession;
         }
 
@@ -164,7 +168,9 @@ public class SessionsController {
 
         if (null != administratorSession) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "administrator session found", "");
-            return administratorSession;
+            session = administratorSession;
+            session.setSessionType("ADMIN");
+            return session;
         }
 
         return null;

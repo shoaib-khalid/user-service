@@ -264,9 +264,9 @@ public class ClientsController {
 
             List<String> errors = new ArrayList<>();
             if (null == body.getPassword() || body.getPassword().length() == 0) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "password not provided", "");
                 response.setStatus(HttpStatus.BAD_REQUEST);
-                errors.add("password is required exists");
+                errors.add("password is required");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
@@ -653,7 +653,67 @@ public class ClientsController {
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
+    
+    //authentication
+    @PostMapping(path = "/generateTempToken", name = "clients-authenticate")
+    public ResponseEntity generateTempToken(@Valid @RequestBody AuthenticationBody body,
+            HttpServletRequest request) throws Exception {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "body: " + body);
 
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client authenticated", "");
+
+        Client client = clientsRepository.findByUsernameAndPassword(body.getUsername(), body.getPassword());
+        
+        if (client==null) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Authentication Failed");
+            response.setStatus(HttpStatus.UNAUTHORIZED, "Authentication Failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+        
+        List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(client.getRoleId());
+        ArrayList<String> authorities = new ArrayList<>();
+        if (null != roleAuthories) {
+
+            for (RoleAuthority roleAuthority : roleAuthories) {
+                authorities.add(roleAuthority.getAuthorityId());
+            }
+        }
+        
+        int tempTokenExpiryInSecond = 300;//5 minutes
+        ClientSession session = new ClientSession();
+        session.setRemoteAddress(request.getRemoteAddr());
+        session.setOwnerId(client.getId());
+        session.setUsername(client.getUsername());
+        session.setCreated(DateTimeUtil.currentTimestamp());
+        session.setUpdated(DateTimeUtil.currentTimestamp());
+        session.setExpiry(DateTimeUtil.expiryTimestamp(tempTokenExpiryInSecond));
+        session.setStatus("ACTIVE");
+        session.generateTokens();
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session: " + session, "");
+
+        session = clientSessionsRepository.save(session);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session created with id: " + session.getId(), "");
+
+        session.setUpdated(null);
+        session.setStatus(null);
+        session.setRemoteAddress(null);
+        session.setId(null);
+
+        Auth authReponse = new Auth();
+        authReponse.setSession(session);
+        authReponse.setAuthorities(authorities);
+        authReponse.setRole(client.getRoleId());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "temp token generated", "");
+
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setData(authReponse);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+    
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
         String logprefix = request.getRequestURI();

@@ -11,6 +11,7 @@ import com.kalsym.userservice.models.daos.RoleAuthority;
 import com.kalsym.userservice.models.daos.ClientSession;
 import com.kalsym.userservice.models.daos.Client;
 import com.kalsym.userservice.models.requestbodies.AuthenticationBody;
+import com.kalsym.userservice.models.requestbodies.TempTokenRequest;
 import com.kalsym.userservice.models.storeagent.LiveChatResponse;
 import com.kalsym.userservice.repositories.RoleAuthoritiesRepository;
 import com.kalsym.userservice.repositories.ClientSessionsRepository;
@@ -656,7 +657,7 @@ public class ClientsController {
     
     //authentication
     @PostMapping(path = "/generateTempToken", name = "clients-authenticate")
-    public ResponseEntity generateTempToken(@Valid @RequestBody AuthenticationBody body,
+    public ResponseEntity generateTempToken(@Valid @RequestBody TempTokenRequest body,
             HttpServletRequest request) throws Exception {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
@@ -664,7 +665,7 @@ public class ClientsController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client authenticated", "");
 
-        Client client = clientsRepository.findByUsernameAndPassword(body.getUsername(), body.getPassword());
+        Client client = clientsRepository.findByUsernameAndId(body.getUsername(), body.getClientId());
         
         if (client==null) {
             Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Authentication Failed");

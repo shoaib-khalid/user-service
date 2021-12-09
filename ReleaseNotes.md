@@ -3,14 +3,14 @@
 ##################################################
 ### Code changes:
 New API generateTempToken() to generate temporary token that expired in 5 minutes. 
-This token allow merchant to check unprocess order immediately
+This token allow merchant to check unprocess order immediately using url with token, without enter username/password
 
 
 ##################################################
 # user-service-3.1.0-SNAPSHOT
 ##################################################
 ### Code changes:
-New function for store-user
+New function for store-user. this user that manage branch (store). one customer (client) can have multiple branch (store)
 
 1) new table : store_user
 

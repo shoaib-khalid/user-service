@@ -16,6 +16,9 @@ public class TempTokenRequest {
 
     @NotBlank(message = "username is required")
     private String username;
+    
+    @NotBlank(message = "password is required")
+    private String password;
 
     @NotBlank(message = "clientId is required")
     private String clientId;

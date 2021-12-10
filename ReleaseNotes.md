@@ -1,5 +1,5 @@
 ##################################################
-# user-service-3.1.1-SNAPSHOT | 8-Dec-2021
+# user-service-3.1.1-SNAPSHOT | 10-Dec-2021
 ##################################################
 ### Code changes:
 New API generateTempToken() to generate temporary token that expired in 5 minutes. 

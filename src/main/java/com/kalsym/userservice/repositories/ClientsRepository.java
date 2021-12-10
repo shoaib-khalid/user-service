@@ -16,5 +16,5 @@ public interface ClientsRepository extends PagingAndSortingRepository<Client, St
     
     Client findByUsernameOrEmail(String userName, String email);
   
-    Client findByUsernameAndId(String userName, String id);
+    Client findByUsernameAndPasswordAndId(String userName, String password, String id);
 }

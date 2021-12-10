@@ -665,7 +665,7 @@ public class ClientsController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client authenticated", "");
 
-        Client client = clientsRepository.findByUsernameAndId(body.getUsername(), body.getClientId());
+        Client client = clientsRepository.findByUsernameAndPasswordAndId(body.getUsername(), body.getPassword(), body.getClientId());
         
         if (client==null) {
             Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Authentication Failed");

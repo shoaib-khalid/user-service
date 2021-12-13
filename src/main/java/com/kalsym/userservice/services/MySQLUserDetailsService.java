@@ -42,9 +42,15 @@ public class MySQLUserDetailsService implements UserDetailsService {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "username: " + username, "");
 
         Client client = clientsRepository.findByUsernameOrEmail(username, username);
-
-        Customer customer = customersRepository.findByUsernameOrEmail(username, username);
-
+        
+        Customer customer = null;
+        List<Customer> customerList = customersRepository.findByUsernameOrEmail(username, username);
+        if (customerList.size()>1) {
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, "", "Customer with same email address. Found record:"+customerList.size());
+        } else if (customerList.size()>0) {
+            customer = customerList.get(0);
+        }
+        
         Administrator administrator = administratorsRepository.findByUsernameOrEmail(username, username);
 
         String roleId = null;

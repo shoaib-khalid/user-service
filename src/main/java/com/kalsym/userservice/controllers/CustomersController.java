@@ -337,8 +337,13 @@ public class CustomersController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user authenticated", "");
 
-        Customer user = customersRepository.findByUsernameOrEmail(body.getUsername(), body.getUsername());
-
+        List<Customer> userList = customersRepository.findByUsernameOrEmail(body.getUsername(), body.getUsername());
+        
+        if (userList.size()>1) {
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Customer with same email address. Found record:"+userList.size());
+        }
+        Customer user = userList.get(0);
+        
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(user.getRoleId());
         ArrayList<String> authorities = new ArrayList<>();
         if (null != roleAuthories) {

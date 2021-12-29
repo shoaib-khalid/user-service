@@ -1,4 +1,15 @@
 ##################################################
+# user-service-3.1.3-SNAPSHOT | 29-Dec-2021
+##################################################
+### Code changes:
+Remove config : symplified.mechant-portal.url=https://symplified.biz/merchant
+
+Add new config : 
+	symplified.merchant.reset.password.url=https://symplified.biz/merchant/forgot-password
+	symplified.merchant.email.verification.url=https://symplified.biz/merchant/email-verified
+	
+	
+##################################################
 # user-service-3.1.2-SNAPSHOT | 13-Dec-2021
 ##################################################
 ### Code changes:

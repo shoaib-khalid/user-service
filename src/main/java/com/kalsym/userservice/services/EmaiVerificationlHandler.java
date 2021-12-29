@@ -47,8 +47,11 @@ public class EmaiVerificationlHandler {
     @Value("${symplified.email.service.url:http://209.58.160.20:2001}")
     private String emailServiceUrl;
 
-    @Value("${symplified.mechant-portal.url:https://symplified.biz}")
-    private String merchantPortalUrl;
+    @Value("${symplified.merchant.reset.password.url:https://symplified.biz/forgot-password}")
+    private String merchantResetPasswordUrl;
+    
+    @Value("${symplified.merchant.email.verification.url:https://symplified.biz/email-verified}")
+    private String merchantEmailVerificationUrl;
 
     public boolean sendEmail(String[] recipients, String body) throws Exception {
         String logprefix = "sendEmail";
@@ -117,12 +120,12 @@ public class EmaiVerificationlHandler {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
 
-        String verificationUrl = merchantPortalUrl;
+        String verificationUrl = merchantEmailVerificationUrl;
 
         String generatedCode = generateCode();
 
         if (customer != null) {
-            verificationUrl = verificationUrl + "/email-verified?id={{userId}}&code={{code}}";
+            verificationUrl = verificationUrl + "?id={{userId}}&code={{code}}";
             verificationUrl = verificationUrl.replace("{{userId}}", userId);
             verificationUrl = verificationUrl.replace("{{code}}", generatedCode);
 
@@ -267,11 +270,11 @@ public class EmaiVerificationlHandler {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
 
-        String verificationUrl = merchantPortalUrl;
+        String verificationUrl = merchantResetPasswordUrl;
 
         String generatedCode = generateCode();
 
-        verificationUrl = verificationUrl + "/forgot-password?id={{userId}}&code={{code}}";
+        verificationUrl = verificationUrl + "?id={{userId}}&code={{code}}";
 
         if (customer != null) {
             verificationUrl = verificationUrl.replace("{{userId}}", userId);

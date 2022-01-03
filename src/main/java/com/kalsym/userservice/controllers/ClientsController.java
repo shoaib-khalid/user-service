@@ -739,6 +739,27 @@ public class ClientsController {
         Client client = optClient.get();
         List<String> errors = new ArrayList<>();
         
+        if (!body.getNewPassword().equals(body.getConfirmNewPassword())) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "new password is not same", "");
+            response.setStatus(HttpStatus.CONFLICT, "Confirm new password not same");
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+        
+        //verify current password
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(client.getUsername(), body.getCurrentPassword())
+            );
+        } catch (BadCredentialsException e) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "BadCredentialsException exception", e);
+            response.setStatus(HttpStatus.UNAUTHORIZED, "Bad Credentiails");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        } catch (AuthenticationException e) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "AuthenticationException exception ", e);
+            response.setStatus(HttpStatus.UNAUTHORIZED, e.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }        
+        
         Client clientBody = new Client();
         clientBody.setId(id);
         if (null != body.getNewPassword() && body.getNewPassword().length() > 0) {

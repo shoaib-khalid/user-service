@@ -752,12 +752,12 @@ public class ClientsController {
             );
         } catch (BadCredentialsException e) {
             Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "BadCredentialsException exception", e);
-            response.setStatus(HttpStatus.UNAUTHORIZED, "Bad Credentiails");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            response.setStatus(HttpStatus.FORBIDDEN, "Bad Credentiails");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         } catch (AuthenticationException e) {
             Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "AuthenticationException exception ", e);
-            response.setStatus(HttpStatus.UNAUTHORIZED, e.getLocalizedMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            response.setStatus(HttpStatus.FORBIDDEN, e.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }        
         
         Client clientBody = new Client();

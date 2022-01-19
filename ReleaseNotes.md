@@ -1,4 +1,13 @@
 ##################################################
+# user-service-3.1.4-SNAPSHOT | 19-Jan-2022
+##################################################
+Add new field for merchant : country to disallow merchant create store for multiple country
+
+### DB changes:
+ALTER TABLE customer ADD countryId VARCHAR(3);
+
+
+##################################################
 # user-service-3.1.3-SNAPSHOT | 29-Dec-2021
 ##################################################
 ### Code changes:

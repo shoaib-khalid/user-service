@@ -1,5 +1,5 @@
 ##################################################
-# user-service-3.1.4-SNAPSHOT | 19-Jan-2022
+# user-service-3.1.5-SNAPSHOT | 19-Jan-2022
 ##################################################
 Add new field for merchant : country to disallow merchant create store for multiple country
 

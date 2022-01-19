@@ -8,6 +8,13 @@ ALTER TABLE customer ADD countryId VARCHAR(3);
 
 
 ##################################################
+# user-service-3.1.4-SNAPSHOT | 03-Jan-2022
+##################################################
+### Code changes:
+New function changePasswordClientById()
+
+
+##################################################
 # user-service-3.1.3-SNAPSHOT | 29-Dec-2021
 ##################################################
 ### Code changes:

@@ -7,6 +7,7 @@ import com.kalsym.userservice.models.storeagent.LiveChatStoreAgent;
 import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.models.Auth;
 import com.kalsym.userservice.models.HttpReponse;
+import com.kalsym.userservice.models.ChangePassword;
 import com.kalsym.userservice.models.daos.RoleAuthority;
 import com.kalsym.userservice.models.daos.ClientSession;
 import com.kalsym.userservice.models.daos.Client;
@@ -714,6 +715,68 @@ public class ClientsController {
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
+    
+    
+    @PutMapping(path = {"/{id}/changepassword"}, name = "clients-put-by-id")
+    @PreAuthorize("hasAnyAuthority('clients-put-by-id', 'all')")
+    public ResponseEntity<HttpReponse> changePasswordClientById(HttpServletRequest request, @PathVariable String id, @RequestBody ChangePassword body) {
+        String logprefix = request.getRequestURI();
+
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
+
+        Optional<Client> optClient = clientsRepository.findById(id);
+
+        if (!optClient.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client found", "");
+        Client client = optClient.get();
+        List<String> errors = new ArrayList<>();
+        
+        if (!body.getNewPassword().equals(body.getConfirmNewPassword())) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "new password is not same", "");
+            response.setStatus(HttpStatus.CONFLICT, "Confirm new password not same");
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+        
+        //verify current password
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(client.getUsername(), body.getCurrentPassword())
+            );
+        } catch (BadCredentialsException e) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "BadCredentialsException exception", e);
+            response.setStatus(HttpStatus.FORBIDDEN, "Bad Credentiails");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        } catch (AuthenticationException e) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "AuthenticationException exception ", e);
+            response.setStatus(HttpStatus.FORBIDDEN, e.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }        
+        
+        Client clientBody = new Client();
+        clientBody.setId(id);
+        if (null != body.getNewPassword() && body.getNewPassword().length() > 0) {
+            clientBody.setPassword(bcryptEncoder.encode(body.getNewPassword()));
+        } else {
+            clientBody.setPassword(null);
+        }
+
+        client.update(clientBody);
+        client.setUpdated(DateTimeUtil.currentTimestamp());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client updated for id: " + id, "");
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setData(clientsRepository.save(client));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+    
     
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {

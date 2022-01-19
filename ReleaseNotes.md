@@ -4,7 +4,7 @@
 Add new field for merchant : country to disallow merchant create store for multiple country
 
 ### DB changes:
-ALTER TABLE customer ADD countryId VARCHAR(3);
+ALTER TABLE client ADD countryId VARCHAR(3);
 
 
 ##################################################

@@ -55,7 +55,8 @@ public class Client implements Serializable {
 
     private Boolean locked;
     private Boolean deactivated;
-
+    private String countryId;
+   
     @CreationTimestamp
     Date created;
 

@@ -60,9 +60,7 @@ public class Customer implements Serializable {
     private String roleId;
 
     private String storeId;
-    
-    private String countryId;
-    
+        
     public void update(Customer user) {
         if (null != user.getEmail()) {
             email = user.getEmail();

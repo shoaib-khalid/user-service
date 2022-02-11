@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.1.6-SNAPSHOT | 11-Feb-2022
+##################################################
+Link client with regionCountry
+
+
+##################################################
 # user-service-3.1.5-SNAPSHOT | 19-Jan-2022
 ##################################################
 Add new field for merchant : country to disallow merchant create store for multiple country

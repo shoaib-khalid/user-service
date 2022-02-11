@@ -7,8 +7,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -65,7 +68,11 @@ public class Client implements Serializable {
 
     @NotBlank(message = "role is required")
     private String roleId;
-
+    
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "countryId", insertable = false, updatable = false, nullable = true)    
+    private RegionCountry regionCountry;
+    
     public void update(Client user) {
         if (null != user.getEmail()) {
             email = user.getEmail();

@@ -53,7 +53,7 @@ public class EmaiVerificationlHandler {
     @Value("${symplified.merchant.email.verification.url:https://symplified.biz/email-verified}")
     private String merchantEmailVerificationUrl;
 
-    public boolean sendEmail(String[] recipients, String body) throws Exception {
+    public boolean sendEmail(String[] recipients, String body, String actionType) throws Exception {
         String logprefix = "sendEmail";
 
         RestTemplate restTemplate = new RestTemplate();
@@ -63,7 +63,10 @@ public class EmaiVerificationlHandler {
         email.setTo(recipients);
 
         AccountVerificationEmailBody aveb = new AccountVerificationEmailBody();
-        aveb.setActionType(AccountVerificationEmailBody.ActionType.EMAIL_VERIFICATION);
+        if (actionType.equals("RESET"))
+            aveb.setActionType(AccountVerificationEmailBody.ActionType.PASSWORD_RESET);
+        else
+            aveb.setActionType(AccountVerificationEmailBody.ActionType.EMAIL_VERIFICATION);
         aveb.setLink(body);
         email.setUserAccountBody(aveb);
 
@@ -164,7 +167,7 @@ public class EmaiVerificationlHandler {
 
         String[] recipients = {email};
 
-        return sendEmail(recipients, verificationUrl);
+        return sendEmail(recipients, verificationUrl, "VERIFY");
     }
 
     public boolean verifyEmail(Object user, String code) {
@@ -311,7 +314,7 @@ public class EmaiVerificationlHandler {
 
         String[] recipients = {email};
 
-        return sendEmail(recipients, verificationUrl);
+        return sendEmail(recipients, verificationUrl, "RESET");
     }
 
     public boolean verifyPasswordReset(Object user, String code) {

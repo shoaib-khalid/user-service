@@ -622,10 +622,10 @@ public class ClientsController {
             }
         } else if (body.getLoginType().equalsIgnoreCase("FACEBOOK")) {
             //validate token with facebook
-            Optional<GoogleAuthService.GoogleUserInfo> googleResult = googleAuthService.getUserInfo(body.getToken());
-            if (googleResult.isPresent()) {
+            Optional<FacebookAuthService.FacebookUserInfo> fbResult = facebookAuthService.getUserInfo(body.getToken());
+            if (fbResult.isPresent()) {
                 //authenticated
-                if (googleResult.get().email.equals(body.getEmail())) {
+                if (fbResult.get().email.equals(body.getEmail())) {
                     //check if email is same
                     userEmail = body.getEmail();
                 }

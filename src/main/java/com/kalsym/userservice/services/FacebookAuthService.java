@@ -37,15 +37,54 @@ public class FacebookAuthService {
     @Value("${fb.verify.token.url:https://graph.facebook.com/debug_token}")
     private String fbVerifyTokenUrl;
     
+    @Value("${fb.generate.access.token.url:https://graph.facebook.com/access_token}")
+    private String fbGenerateAccessTokenUrl;
+    
     @Value("${fb.verify.appid:283489330438468}")
     private String fbAppId;
+    
+    @Value("${fb.verify.appSecret:519e90e18180c6b69e1ec1013139e2e4}")
+    private String fbAppSecret;
+    
+    
+    private String getAccessToken() {
+        
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            final URIBuilder builder = new URIBuilder(fbGenerateAccessTokenUrl);
+            builder.addParameter("client_id", fbAppId);
+            builder.addParameter("client_secret", fbAppSecret);
+            builder.addParameter("grant_type", "client_credentials");
+            URI uri = builder.build();
+        
+            ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
+            
+            if (result.getStatusCode() == HttpStatus.OK) {
+                JSONObject jsonObject = new JSONObject(result.getBody());
+                Logger.application.info("Facebook result:"+jsonObject.toString());
+                String access_token = jsonObject.getString("access_token");
+                return access_token;
+            } else {
+                return null;
+            }
+            
+        } catch (Exception e) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "message from RC " + e.getMessage());            
+            return null;
+        }   
+    }
     
     public Optional<FacebookUserInfo> getUserInfo(String userAccessToken) {
         
         try {
+            String accessToken = getAccessToken();
+            if (accessToken==null) {
+                return Optional.empty();
+            }
+            
             RestTemplate restTemplate = new RestTemplate();
             final URIBuilder builder = new URIBuilder(fbVerifyTokenUrl);
-            builder.addParameter("access_token", fbAppId);
+            builder.addParameter("access_token", accessToken);
             builder.addParameter("input_token", userAccessToken);
             URI uri = builder.build();
         

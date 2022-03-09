@@ -39,15 +39,18 @@ public class GoogleAuthService {
     private static final JacksonFactory jacksonFactory = new JacksonFactory();
     private static final HttpTransport httpTransport = new NetHttpTransport();
     private static final String logprefix = "GoogleAuthService";
-   
-    public Optional<GoogleUserInfo> getUserInfo(String token, String clientId) {
+    
+    @Value("${symplified.google.clientid:155178094159-ivl0potc6e41dh1f0j8jleer92n96csp.apps.googleusercontent.com}")
+    private String googleClientId;
+    
+    public Optional<GoogleUserInfo> getUserInfo(String token) {
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier
                 .Builder(httpTransport, jacksonFactory)
-                .setAudience(ImmutableList.of(clientId))
+                .setAudience(ImmutableList.of(googleClientId))
                 .build();
 
         try {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Verify token -> clientId:"+clientId+" Token:"+token);
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Verify token -> googleClientId:"+googleClientId+" Token:"+token);
             GoogleIdToken verifiedToken = verifier.verify(token);
             GoogleIdToken.Payload tokenPayload = verifiedToken.getPayload();
             String subject = tokenPayload.getSubject();

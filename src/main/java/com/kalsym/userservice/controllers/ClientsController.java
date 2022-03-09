@@ -608,10 +608,10 @@ public class ClientsController {
         
         if (body.getLoginType().equalsIgnoreCase("GOOGLE")) {
             //validate token with google
-            Optional<GoogleAuthService.GoogleUserInfo> googleResult = googleAuthService.getUserInfo(body.getToken(), body.getUserId());
+            Optional<GoogleAuthService.GoogleUserInfo> googleResult = googleAuthService.getUserInfo(body.getToken());
             if (googleResult.isPresent()) {
                 //authenticated
-                userEmail = googleResult.get().email;
+                userEmail = body.getEmail();
             }
         } else if (body.getLoginType().equalsIgnoreCase("FACEBOOK")) {
             //validate token with facebook

@@ -37,12 +37,15 @@ public class FacebookAuthService {
     @Value("${fb.verify.token.url:https://graph.facebook.com/debug_token}")
     private String fbVerifyTokenUrl;
     
-    public Optional<FacebookUserInfo> getUserInfo(String accessToken, String userAccessToken) {
+    @Value("${fb.verify.appid:283489330438468}")
+    private String fbAppId;
+    
+    public Optional<FacebookUserInfo> getUserInfo(String userAccessToken) {
         
         try {
             RestTemplate restTemplate = new RestTemplate();
             final URIBuilder builder = new URIBuilder(fbVerifyTokenUrl);
-            builder.addParameter("access_token", accessToken);
+            builder.addParameter("access_token", fbAppId);
             builder.addParameter("input_token", userAccessToken);
             URI uri = builder.build();
         

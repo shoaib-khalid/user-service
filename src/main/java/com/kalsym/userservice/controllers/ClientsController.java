@@ -99,6 +99,9 @@ public class ClientsController {
     @Autowired
     GoogleAuthService googleAuthService;
     
+    @Autowired
+    FacebookAuthService facebookAuthService;
+    
     @GetMapping(path = {"/"}, name = "clients-get")
     @PreAuthorize("hasAnyAuthority('clients-get', 'all')")
     public ResponseEntity<HttpReponse> getClients(HttpServletRequest request,
@@ -611,10 +614,21 @@ public class ClientsController {
             Optional<GoogleAuthService.GoogleUserInfo> googleResult = googleAuthService.getUserInfo(body.getToken());
             if (googleResult.isPresent()) {
                 //authenticated
-                userEmail = body.getEmail();
+                if (googleResult.get().email.equals(body.getEmail())) {
+                    //check if email is same
+                    userEmail = body.getEmail();
+                }
             }
         } else if (body.getLoginType().equalsIgnoreCase("FACEBOOK")) {
             //validate token with facebook
+            Optional<GoogleAuthService.GoogleUserInfo> googleResult = googleAuthService.getUserInfo(body.getToken());
+            if (googleResult.isPresent()) {
+                //authenticated
+                if (googleResult.get().email.equals(body.getEmail())) {
+                    //check if email is same
+                    userEmail = body.getEmail();
+                }
+            }
         } else if (body.getLoginType().equalsIgnoreCase("APPLE")) {
             //validate token with apple
         }            

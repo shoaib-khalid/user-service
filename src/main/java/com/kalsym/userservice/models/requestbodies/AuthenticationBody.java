@@ -19,4 +19,5 @@ public class AuthenticationBody {
 
     @NotBlank(message = "password is required")
     private String password;
+    
 }

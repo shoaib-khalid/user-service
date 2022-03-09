@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.0-SNAPSHOT | 09-March-2022
+##################################################
+Add token verification for login using facebook & google
+
+
+##################################################
 # user-service-3.1.7-SNAPSHOT | 24-Feb-2022
 ##################################################
 Bug fix for email template for password reset

@@ -13,12 +13,14 @@ import com.kalsym.userservice.models.daos.ClientSession;
 import com.kalsym.userservice.models.daos.Client;
 import com.kalsym.userservice.models.requestbodies.AuthenticationBody;
 import com.kalsym.userservice.models.requestbodies.TempTokenRequest;
+import com.kalsym.userservice.models.requestbodies.ValidateOauthRequest;
 import com.kalsym.userservice.models.storeagent.LiveChatResponse;
 import com.kalsym.userservice.repositories.RoleAuthoritiesRepository;
 import com.kalsym.userservice.repositories.ClientSessionsRepository;
 import com.kalsym.userservice.repositories.ClientsRepository;
 import com.kalsym.userservice.repositories.StoreRepository;
 import com.kalsym.userservice.services.EmaiVerificationlHandler;
+import com.kalsym.userservice.services.GoogleAuthService;
 import com.kalsym.userservice.services.StoreAgentsHandler;
 import com.kalsym.userservice.utils.DateTimeUtil;
 import com.kalsym.userservice.utils.Logger;
@@ -93,7 +95,10 @@ public class ClientsController {
 
     @Value("${email.verification.enabled:false}")
     private Boolean emailVerificationEnabled;
-
+    
+    @Autowired
+    GoogleAuthService googleAuthService;
+    
     @GetMapping(path = {"/"}, name = "clients-get")
     @PreAuthorize("hasAnyAuthority('clients-get', 'all')")
     public ResponseEntity<HttpReponse> getClients(HttpServletRequest request,
@@ -549,6 +554,80 @@ public class ClientsController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client authenticated", "");
 
         Client client = clientsRepository.findByUsernameOrEmail(body.getUsername(), body.getUsername());
+
+        List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(client.getRoleId());
+        ArrayList<String> authorities = new ArrayList<>();
+        if (null != roleAuthories) {
+
+            for (RoleAuthority roleAuthority : roleAuthories) {
+                authorities.add(roleAuthority.getAuthorityId());
+            }
+        }
+
+        ClientSession session = new ClientSession();
+        session.setRemoteAddress(request.getRemoteAddr());
+        session.setOwnerId(client.getId());
+        session.setUsername(client.getUsername());
+        session.setCreated(DateTimeUtil.currentTimestamp());
+        session.setUpdated(DateTimeUtil.currentTimestamp());
+        session.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
+        session.setStatus("ACTIVE");
+        session.generateTokens();
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session: " + session, "");
+
+        session = clientSessionsRepository.save(session);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session created with id: " + session.getId(), "");
+
+        session.setUpdated(null);
+        session.setStatus(null);
+        session.setRemoteAddress(null);
+        session.setId(null);
+
+        Auth authReponse = new Auth();
+        authReponse.setSession(session);
+        authReponse.setAuthorities(authorities);
+        authReponse.setRole(client.getRoleId());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "generated token", "");
+
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setData(authReponse);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+    
+    //authentication
+    @PostMapping(path = "/loginoauth", name = "clients-authenticate")
+    public ResponseEntity loginOauth(@Valid @RequestBody ValidateOauthRequest body,
+            HttpServletRequest request) throws Exception {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "body: " + body);
+        
+        String userEmail = null;
+        
+        if (body.getLoginType().equalsIgnoreCase("GOOGLE")) {
+            //validate token with google
+            Optional<GoogleAuthService.GoogleUserInfo> googleResult = googleAuthService.getUserInfo(body.getToken(), body.getUserId());
+            if (googleResult.isPresent()) {
+                //authenticated
+                userEmail = googleResult.get().email;
+            }
+        } else if (body.getLoginType().equalsIgnoreCase("FACEBOOK")) {
+            //validate token with facebook
+        } else if (body.getLoginType().equalsIgnoreCase("APPLE")) {
+            //validate token with apple
+        }            
+        
+        if (userEmail==null) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Authentication failed");
+            response.setStatus(HttpStatus.UNAUTHORIZED, "Fail to validate token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client authenticated", "");
+
+        Client client = clientsRepository.findByUsernameOrEmail(userEmail, userEmail);
 
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(client.getRoleId());
         ArrayList<String> authorities = new ArrayList<>();

@@ -59,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers(
                         "/clients/session/refresh",
                         "/clients/authenticate",
-                        "/clients/authenticate",
+                        "/clients/loginoauth",
                         "/clients/**/email-verification/**/verify",
                         "/clients/register",
                         "/clients/**/password_reset",

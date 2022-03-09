@@ -56,7 +56,8 @@ public class FacebookAuthService {
             builder.addParameter("client_secret", fbAppSecret);
             builder.addParameter("grant_type", "client_credentials");
             URI uri = builder.build();
-        
+            
+            Logger.application.info("Calling getAccessToken FB url:"+uri.toString());
             ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
             
             if (result.getStatusCode() == HttpStatus.OK) {
@@ -87,7 +88,8 @@ public class FacebookAuthService {
             builder.addParameter("access_token", accessToken);
             builder.addParameter("input_token", userAccessToken);
             URI uri = builder.build();
-        
+            
+            Logger.application.info("Calling getUserInfo FB url:"+uri.toString());
             ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
             
             if (result.getStatusCode() == HttpStatus.OK) {

@@ -40,10 +40,10 @@ public class FacebookAuthService {
     @Value("${fb.generate.access.token.url:https://graph.facebook.com/access_token}")
     private String fbGenerateAccessTokenUrl;
     
-    @Value("${fb.verify.appid:283489330438468}")
+    @Value("${fb.verify.appid:2915126152079198}")
     private String fbAppId;
     
-    @Value("${fb.verify.appSecret:519e90e18180c6b69e1ec1013139e2e4}")
+    @Value("${fb.verify.appSecret:2a9f0365d6777a36f509c8d9deefcc83}")
     private String fbAppSecret;
     
     
@@ -96,10 +96,13 @@ public class FacebookAuthService {
                 JSONObject jsonObject = new JSONObject(result.getBody());
                 Logger.application.info("Facebook result:"+jsonObject.toString());
                 JSONObject data = jsonObject.getJSONObject("data");
-                Logger.application.info("Facebook data:"+data.toString());
-                String id = data.getString("user_id");
-                String email = data.getString("email");
-                return Optional.of(new FacebookUserInfo(id, email, email, email));
+                //Logger.application.info("Facebook data:"+data.toString());
+                Boolean isValid = data.getBoolean("is_valid");
+                String userId = null;
+                if (isValid) {
+                    userId = data.getString("user_id");
+                }
+                return Optional.of(new FacebookUserInfo(userId));
             } else {
                 return Optional.empty();
             }
@@ -111,16 +114,9 @@ public class FacebookAuthService {
     }
 
     public static class FacebookUserInfo {
-        public String id = "";
-        public String email = "";
-        public String firstName = "";
-        public String lastName = "";
-
-        public FacebookUserInfo(String id, String email, String firstName, String lastName) {
-            this.id = id;
-            this.email = email;
-            this.firstName = firstName;
-            this.lastName = lastName;
+        public String userId = "";
+        
+        public FacebookUserInfo(String id) {
         }
     }
 }

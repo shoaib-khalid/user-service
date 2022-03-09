@@ -625,7 +625,7 @@ public class ClientsController {
             Optional<FacebookAuthService.FacebookUserInfo> fbResult = facebookAuthService.getUserInfo(body.getToken());
             if (fbResult.isPresent()) {
                 //authenticated
-                if (fbResult.get().email.equals(body.getEmail())) {
+                if (fbResult.get().userId.equals(body.getUserId())) {
                     //check if email is same
                     userEmail = body.getEmail();
                 }
@@ -643,7 +643,19 @@ public class ClientsController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client authenticated", "");
 
         Client client = clientsRepository.findByUsernameOrEmail(userEmail, userEmail);
-
+        
+        if (client == null) {
+            //create new account
+            client = new Client();
+            client.setEmail(userEmail);
+            client.setRoleId(logprefix);
+            client.setUsername(userEmail);
+            client.setLocked(false);
+            client.setDeactivated(false);
+            client.setRoleId("STORE_OWNER");
+            client = clientsRepository.save(client);
+        }
+        
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(client.getRoleId());
         ArrayList<String> authorities = new ArrayList<>();
         if (null != roleAuthories) {

@@ -22,7 +22,6 @@ public class ValidateOauthRequest {
     
     private String userId;
     
-    @NotBlank(message = "email is required")
     private String email;
 
 }

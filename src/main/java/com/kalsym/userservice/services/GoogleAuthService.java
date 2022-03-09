@@ -40,7 +40,7 @@ public class GoogleAuthService {
     private static final HttpTransport httpTransport = new NetHttpTransport();
     private static final String logprefix = "GoogleAuthService";
     
-    @Value("${symplified.google.clientid:155178094159-ivl0potc6e41dh1f0j8jleer92n96csp.apps.googleusercontent.com}")
+    @Value("${symplified.google.clientid:905470792335-krfa0c32ajed37ktrn16ggj3km0783rd.apps.googleusercontent.com}")
     private String googleClientId;
     
     public Optional<GoogleUserInfo> getUserInfo(String token) {

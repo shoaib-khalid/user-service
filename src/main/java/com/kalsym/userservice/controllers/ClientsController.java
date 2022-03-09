@@ -21,6 +21,7 @@ import com.kalsym.userservice.repositories.ClientsRepository;
 import com.kalsym.userservice.repositories.StoreRepository;
 import com.kalsym.userservice.services.EmaiVerificationlHandler;
 import com.kalsym.userservice.services.GoogleAuthService;
+import com.kalsym.userservice.services.FacebookAuthService;
 import com.kalsym.userservice.services.StoreAgentsHandler;
 import com.kalsym.userservice.utils.DateTimeUtil;
 import com.kalsym.userservice.utils.Logger;

@@ -78,14 +78,14 @@ public class FacebookAuthService {
     public Optional<FacebookUserInfo> getUserInfo(String userAccessToken) {
         
         try {
-            String accessToken = getAccessToken();
+            /*String accessToken = getAccessToken();
             if (accessToken==null) {
                 return Optional.empty();
-            }
+            }*/
             
             RestTemplate restTemplate = new RestTemplate();
             final URIBuilder builder = new URIBuilder(fbVerifyTokenUrl);
-            builder.addParameter("access_token", accessToken);
+            builder.addParameter("access_token", fbAppId+"|"+fbAppSecret);
             builder.addParameter("input_token", userAccessToken);
             URI uri = builder.build();
             

@@ -653,6 +653,7 @@ public class ClientsController {
             client.setLocked(false);
             client.setDeactivated(false);
             client.setRoleId("STORE_OWNER");
+            client.setName(body.getName());
             client = clientsRepository.save(client);
         }
         

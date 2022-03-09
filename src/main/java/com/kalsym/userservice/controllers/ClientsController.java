@@ -654,6 +654,7 @@ public class ClientsController {
             client.setDeactivated(false);
             client.setRoleId("STORE_OWNER");
             client.setName(body.getName());
+            client.setCountryId(body.getCountry());
             client = clientsRepository.save(client);
         }
         

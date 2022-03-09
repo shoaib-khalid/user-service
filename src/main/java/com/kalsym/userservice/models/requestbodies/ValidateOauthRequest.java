@@ -26,5 +26,8 @@ public class ValidateOauthRequest {
     private String userId;
     
     private String email;
+    
+    @NotBlank(message = "country is required")
+    private String country;
 
 }

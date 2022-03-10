@@ -118,6 +118,7 @@ public class FacebookAuthService {
         public String userId = "";
         
         public FacebookUserInfo(String id) {
+            this.userId = id;
         }
     }
 }

@@ -101,6 +101,7 @@ public class FacebookAuthService {
                 String userId = null;
                 if (isValid) {
                     userId = data.getString("user_id");
+                    Logger.application.info("Token is valid. UserId:"+userId);
                 }
                 return Optional.of(new FacebookUserInfo(userId));
             } else {

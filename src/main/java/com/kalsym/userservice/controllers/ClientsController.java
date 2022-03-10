@@ -628,8 +628,10 @@ public class ClientsController {
                 if (fbResult.get().userId.equals(body.getUserId())) {
                     //check if email is same
                     userEmail = body.getEmail();
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "User Id is valid");
                 }
             }
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userEmail:"+userEmail+" FB response userId:"+fbResult.get().userId+" UserId from request:"+body.getUserId());
         } else if (body.getLoginType().equalsIgnoreCase("APPLE")) {
             //validate token with apple
         }            

@@ -339,7 +339,11 @@ public class CustomersController {
 
         List<Customer> userList = customersRepository.findByUsernameOrEmail(body.getUsername(), body.getUsername());
         
-        if (userList.size()>1) {
+        if (userList.size()==0) {
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Customer not found. Found record:"+userList.size());
+            response.setStatus(HttpStatus.UNAUTHORIZED, "Bad Craedentiails");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        } else {
             Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Customer with same email address. Found record:"+userList.size());
         }
         Customer user = userList.get(0);

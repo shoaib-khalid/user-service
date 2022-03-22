@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.1-SNAPSHOT | 22-March-2022
+##################################################
+Bug fix for register customer
+
+
+##################################################
 # user-service-3.2.0-SNAPSHOT | 09-March-2022
 ##################################################
 Add token verification for login using facebook & google

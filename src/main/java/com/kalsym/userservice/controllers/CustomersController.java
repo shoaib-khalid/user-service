@@ -260,15 +260,16 @@ public class CustomersController {
         }
 
         if (body.getPassword() != null) {
-            body.setPassword(bcryptEncoder.encode(body.getPassword()));
-
+            String password = bcryptEncoder.encode(body.getPassword());
+            body.setPassword(password);
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Set password:"+password);
         }
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
         body.setLocked(false);
         body.setDeactivated(false);
-
         body = customersRepository.save(body);
+        
         body.setPassword(null);
         emaiVerificationlHandler.sendVerificationEmail(body);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");

@@ -270,7 +270,6 @@ public class CustomersController {
         body.setDeactivated(false);
         body = customersRepository.save(body);
         
-        body.setPassword(null);
         emaiVerificationlHandler.sendVerificationEmail(body);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");
         response.setStatus(HttpStatus.CREATED);

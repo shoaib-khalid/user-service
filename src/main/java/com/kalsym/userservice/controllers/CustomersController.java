@@ -387,6 +387,41 @@ public class CustomersController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
+    @GetMapping(path = {"/{email}/password_reset"}, name = "customer-password_reset-post-by-id")
+    public ResponseEntity<HttpReponse> postCustomerPasswordReset(HttpServletRequest request,
+            @PathVariable String email) {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+
+        List<Customer> customerList = customersRepository.findByUsernameOrEmail(email, email);
+
+        if (customerList.isEmpty()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer found", "");
+        
+        Customer customer = null;
+        try {
+            customer = customerList.get(0);
+            emaiVerificationlHandler.sendPasswordReset(customer);
+        } catch (Exception e) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error sending email ", "", e);
+
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setError(e.toString());
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        response.setStatus(HttpStatus.OK);
+        response.setData(customer);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
         String logprefix = request.getRequestURI();

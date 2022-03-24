@@ -19,8 +19,7 @@ public class ValidateOauthRequest {
     
     @NotBlank(message = "token is required")
     private String token;
-    
-    @NotBlank(message = "name is required")
+        
     private String name;
     
     private String userId;

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
-import java.net.URI;
+import java.net.URL;
 import org.apache.http.client.utils.URIBuilder;
         
 import org.json.JSONArray;
@@ -24,6 +24,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
+
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.JWK;
+import java.text.ParseException;
 
 /**
  *
@@ -47,42 +54,30 @@ public class AppleAuthService {
     private String fbAppSecret;
     
     
-    public Optional<AppleUserInfo> validateToken(String userAccessToken) {
+    public Optional<AppleUserInfo> validateToken(String appleIdentityToken) {
         
-        return Optional.of(new AppleUserInfo(true));
-        
-        /*
         try {
-           
-            RestTemplate restTemplate = new RestTemplate();
-            final URIBuilder builder = new URIBuilder(fbVerifyTokenUrl);
-            builder.addParameter("access_token", fbAppId+"|"+fbAppSecret);
-            builder.addParameter("input_token", userAccessToken);
-            URI uri = builder.build();
-            
-            Logger.application.info("Calling getUserInfo FB url:"+uri.toString());
-            ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
-            
-            if (result.getStatusCode() == HttpStatus.OK) {
-                JSONObject jsonObject = new JSONObject(result.getBody());
-                Logger.application.info("Facebook result:"+jsonObject.toString());
-                JSONObject data = jsonObject.getJSONObject("data");
-                //Logger.application.info("Facebook data:"+data.toString());
-                Boolean isValid = data.getBoolean("is_valid");
-                String userId = null;
-                if (isValid) {
-                    userId = data.getString("user_id");
-                    Logger.application.info("Token is valid. UserId:"+userId);
-                }
-                return Optional.of(new AppleUserInfo(userId));
+            JWKSet publicKeys = JWKSet.load(new URL("https://appleid.apple.com/auth/keys"));
+            boolean validChain = false;
+            int i=0;
+            for (JWK key : publicKeys.getKeys()) {
+                JWSObject jwt =  JWSObject.parse(appleIdentityToken);
+                if (!validChain) {
+                    validChain = jwt.verify(new RSASSAVerifier(key.toRSAKey()));
+                    Logger.application.info("validChain["+i+"] = "+validChain);
+                }  
+                i++;
+            }
+            Logger.application.info("validChain = "+validChain);
+            if (validChain) {
+                return Optional.of(new AppleUserInfo(true));
             } else {
                 return Optional.empty();
             }
-            
-        } catch (Exception e) {
-            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "message from RC " + e.getMessage());            
+        } catch (Exception ex) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Exception : ", ex);            
             return Optional.empty();
-        }  */ 
+        }     
     }
 
     public static class AppleUserInfo {

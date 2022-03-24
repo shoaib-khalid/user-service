@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.kalsym</groupId>
     <artifactId>user-service</artifactId>
-    <version>3.2.2-SNAPSHOT</version>
+    <version>3.2.3-SNAPSHOT</version>
     <name>user-service</name>
     <description>Users auth service</description>
     <properties>
@@ -129,6 +129,13 @@
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>4.5.3</version>
+        </dependency>
+        
+        <!-- to validate apple token !-->
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>9.20</version>
         </dependency>
 <!-- Thanks for using https://jar-download.com -->
 

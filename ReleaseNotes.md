@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.3-SNAPSHOT | 24-March-2022
+##################################################
+Validate apple token 
+
+
+##################################################
 # user-service-3.2.2-SNAPSHOT | 24-March-2022
 ##################################################
 New parameter in customer reset password : domain & reseturl 

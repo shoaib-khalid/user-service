@@ -22,6 +22,7 @@ import com.kalsym.userservice.repositories.StoreRepository;
 import com.kalsym.userservice.services.EmaiVerificationlHandler;
 import com.kalsym.userservice.services.GoogleAuthService;
 import com.kalsym.userservice.services.FacebookAuthService;
+import com.kalsym.userservice.services.AppleAuthService;
 import com.kalsym.userservice.services.StoreAgentsHandler;
 import com.kalsym.userservice.utils.DateTimeUtil;
 import com.kalsym.userservice.utils.Logger;
@@ -102,6 +103,9 @@ public class ClientsController {
     
     @Autowired
     FacebookAuthService facebookAuthService;
+    
+    @Autowired
+    AppleAuthService appleAuthService;
     
     @GetMapping(path = {"/"}, name = "clients-get")
     @PreAuthorize("hasAnyAuthority('clients-get', 'all')")
@@ -636,6 +640,15 @@ public class ClientsController {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userEmail:"+userEmail+" FB response userId:"+fbResult.get().userId+" UserId from request:"+body.getUserId());
         } else if (body.getLoginType().equalsIgnoreCase("APPLE")) {
             //validate token with apple
+            Optional<AppleAuthService.AppleUserInfo> appleResult = appleAuthService.validateToken(body.getToken());
+            if (appleResult.isPresent()) {
+                //authenticated
+                if (appleResult.get().isValid) {
+                    userEmail = body.getUserId();
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Token is valid");
+                }
+            }
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userEmail:"+userEmail+" UserId from request:"+body.getUserId());
         }            
         
         if (userEmail==null) {

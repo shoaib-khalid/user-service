@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.2-SNAPSHOT | 24-March-2022
+##################################################
+New parameter in customer reset password : domain & reseturl 
+
+
+##################################################
 # user-service-3.2.1-SNAPSHOT | 22-March-2022
 ##################################################
 Bug fix for register customer

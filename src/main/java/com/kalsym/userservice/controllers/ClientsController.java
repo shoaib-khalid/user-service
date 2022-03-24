@@ -405,7 +405,7 @@ public class ClientsController {
             }
 
             if (emailVerificationEnabled) {
-                if (!emaiVerificationlHandler.sendVerificationEmail(body)) {
+                if (!emaiVerificationlHandler.sendVerificationEmail(body, null)) {
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "could not verification email", "");
                     clientsRepository.delete(body);
                     response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -502,7 +502,9 @@ public class ClientsController {
 
     @GetMapping(path = {"/{email}/password_reset"}, name = "clients-password_reset-post-by-id")
     public ResponseEntity<HttpReponse> postClientPasswordReset(HttpServletRequest request,
-            @PathVariable String email) {
+            @PathVariable String email,
+            @RequestParam(required = false) String domain,
+            @RequestParam(required = false) String reseturl) {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
@@ -519,7 +521,7 @@ public class ClientsController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client found", "");
 
         try {
-            emaiVerificationlHandler.sendPasswordReset(client);
+            emaiVerificationlHandler.sendPasswordReset(client, domain, reseturl);
         } catch (Exception e) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error sending email ", "", e);
 

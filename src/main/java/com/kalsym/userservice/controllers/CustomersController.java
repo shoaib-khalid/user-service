@@ -270,7 +270,7 @@ public class CustomersController {
         body.setDeactivated(false);
         body = customersRepository.save(body);
         
-        emaiVerificationlHandler.sendVerificationEmail(body);
+        emaiVerificationlHandler.sendVerificationEmail(body, null);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");
         response.setStatus(HttpStatus.CREATED);
         response.setData(body);
@@ -389,7 +389,10 @@ public class CustomersController {
 
     @GetMapping(path = {"/{email}/password_reset"}, name = "customer-password_reset-post-by-id")
     public ResponseEntity<HttpReponse> postCustomerPasswordReset(HttpServletRequest request,
-            @PathVariable String email) {
+            @PathVariable String email,
+            @RequestParam(required = false) String domain,
+            @RequestParam(required = false) String reseturl
+            ) {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
@@ -408,7 +411,7 @@ public class CustomersController {
         Customer customer = null;
         try {
             customer = customerList.get(0);
-            emaiVerificationlHandler.sendPasswordReset(customer);
+            emaiVerificationlHandler.sendPasswordReset(customer, domain, reseturl);
         } catch (Exception e) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error sending email ", "", e);
 

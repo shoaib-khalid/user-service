@@ -49,11 +49,11 @@ public class EmaiVerificationlHandler {
 
     @Value("${symplified.merchant.reset.password.url:https://symplified.biz/forgot-password}")
     private String merchantResetPasswordUrl;
-    
+     
     @Value("${symplified.merchant.email.verification.url:https://symplified.biz/email-verified}")
     private String merchantEmailVerificationUrl;
 
-    public boolean sendEmail(String[] recipients, String body, String actionType) throws Exception {
+    public boolean sendEmail(String[] recipients, String body, String actionType, String domain) throws Exception {
         String logprefix = "sendEmail";
 
         RestTemplate restTemplate = new RestTemplate();
@@ -61,7 +61,8 @@ public class EmaiVerificationlHandler {
         Email email = new Email();
 
         email.setTo(recipients);
-
+        email.setDomain(domain);
+        
         AccountVerificationEmailBody aveb = new AccountVerificationEmailBody();
         if (actionType.equals("RESET"))
             aveb.setActionType(AccountVerificationEmailBody.ActionType.PASSWORD_RESET);
@@ -90,7 +91,7 @@ public class EmaiVerificationlHandler {
 
     }
 
-    public boolean sendVerificationEmail(Object user) throws Exception {
+    public boolean sendVerificationEmail(Object user, String domain) throws Exception {
         String logprefix = "sendVerificationEmail";
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
@@ -167,7 +168,7 @@ public class EmaiVerificationlHandler {
 
         String[] recipients = {email};
 
-        return sendEmail(recipients, verificationUrl, "VERIFY");
+        return sendEmail(recipients, verificationUrl, "VERIFY", domain);
     }
 
     public boolean verifyEmail(Object user, String code) {
@@ -240,7 +241,7 @@ public class EmaiVerificationlHandler {
 
     }
 
-    public boolean sendPasswordReset(Object user) throws Exception {
+    public boolean sendPasswordReset(Object user, String domain, String resetUrl) throws Exception {
         String logprefix = "sendPasswordReset";
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
@@ -272,8 +273,13 @@ public class EmaiVerificationlHandler {
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
-
+        
         String verificationUrl = merchantResetPasswordUrl;
+        
+        if (resetUrl!=null) {
+           verificationUrl = resetUrl;
+        }
+        
 
         String generatedCode = generateCode();
 
@@ -314,7 +320,7 @@ public class EmaiVerificationlHandler {
 
         String[] recipients = {email};
 
-        return sendEmail(recipients, verificationUrl, "RESET");
+        return sendEmail(recipients, verificationUrl, "RESET", domain);
     }
 
     public boolean verifyPasswordReset(Object user, String code) {

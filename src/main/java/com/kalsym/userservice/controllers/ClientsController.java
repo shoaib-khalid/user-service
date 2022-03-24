@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
@@ -97,6 +98,9 @@ public class ClientsController {
 
     @Value("${email.verification.enabled:false}")
     private Boolean emailVerificationEnabled;
+    
+    @Value("${apple.login.redirect.url:https://merchant.symplified.it/applelogin}")
+    private String appleLoginRedirectUrl;
     
     @Autowired
     GoogleAuthService googleAuthService;
@@ -715,7 +719,24 @@ public class ClientsController {
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
-
+    
+    //authentication
+    @PostMapping(path = "/applecallback", name = "clients-authenticate")
+    public ResponseEntity appleCallback(HttpServletRequest request,
+            @RequestParam String state,
+            @RequestParam String code,
+            @RequestParam String id_token) throws Exception {
+        String logprefix = request.getRequestURI();
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "state: " + state);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "code: " + code);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "id_token: " + id_token);
+        
+        //redirect to front-end url      
+        return ResponseEntity.status(HttpStatus.FOUND)
+        .location(URI.create(appleLoginRedirectUrl+"?state="+state+"&code="+code+"&id_token="+id_token))
+        .build();
+    }
+    
     @PostMapping(path = "session/refresh", name = "clients-session-refresh")
     public ResponseEntity refreshSession(@Valid @RequestBody String refreshToken,
             HttpServletRequest request) throws Exception {

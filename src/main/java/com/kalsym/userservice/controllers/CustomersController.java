@@ -498,7 +498,7 @@ public class CustomersController {
             if (appleResult.isPresent()) {
                 //authenticated
                 if (appleResult.get().isValid) {
-                    userEmail = body.getUserId();
+                    userEmail = body.getEmail();
                     Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Token is valid");
                 }
             }

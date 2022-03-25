@@ -3,16 +3,25 @@ package com.kalsym.userservice.controllers;
 import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.models.Auth;
 import com.kalsym.userservice.models.HttpReponse;
+import com.kalsym.userservice.models.daos.Client;
+import com.kalsym.userservice.models.daos.ClientSession;
 import com.kalsym.userservice.models.daos.RoleAuthority;
 import com.kalsym.userservice.models.daos.CustomerSession;
 import com.kalsym.userservice.models.daos.Customer;
 import com.kalsym.userservice.models.requestbodies.AuthenticationBody;
+import com.kalsym.userservice.models.requestbodies.ValidateOauthRequest;
 import com.kalsym.userservice.repositories.RoleAuthoritiesRepository;
 import com.kalsym.userservice.repositories.CustomerSessionsRepository;
 import com.kalsym.userservice.repositories.CustomersRepository;
+import com.kalsym.userservice.services.AppleAuthService;
 import com.kalsym.userservice.services.EmaiVerificationlHandler;
+import com.kalsym.userservice.services.FacebookAuthService;
+import com.kalsym.userservice.services.GoogleAuthService;
 import com.kalsym.userservice.utils.DateTimeUtil;
 import com.kalsym.userservice.utils.Logger;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,7 +83,19 @@ public class CustomersController {
 
     @Value("${session.expiry:3600}")
     private int expiry;
-
+    
+    @Value("${customer.apple.login.redirect.url:https://customer.symplified.it/applelogin}")
+    private String appleLoginRedirectUrl;
+    
+    @Autowired
+    GoogleAuthService googleAuthService;
+    
+    @Autowired
+    FacebookAuthService facebookAuthService;
+    
+    @Autowired
+    AppleAuthService appleAuthService;
+    
     @GetMapping(path = {"/"}, name = "customers-get")
     @PreAuthorize("hasAnyAuthority('customers-get', 'all')")
     public ResponseEntity<HttpReponse> getCustomers(HttpServletRequest request,
@@ -437,5 +458,128 @@ public class CustomersController {
         response.setStatus(HttpStatus.BAD_REQUEST);
         response.setData(errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+    
+     //authentication
+    @PostMapping(path = "/loginoauth", name = "customers-authenticate")
+    public ResponseEntity loginOauth(@Valid @RequestBody ValidateOauthRequest body,
+            HttpServletRequest request) throws Exception {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "body: " + body);
+        
+        String userEmail = null;
+        
+        if (body.getLoginType().equalsIgnoreCase("GOOGLE")) {
+            //validate token with google
+            Optional<GoogleAuthService.GoogleUserInfo> googleResult = googleAuthService.getUserInfo(body.getToken());
+            if (googleResult.isPresent()) {
+                //authenticated
+                if (googleResult.get().email.equals(body.getEmail())) {
+                    //check if email is same
+                    userEmail = body.getEmail();
+                }
+            }
+        } else if (body.getLoginType().equalsIgnoreCase("FACEBOOK")) {
+            //validate token with facebook
+            Optional<FacebookAuthService.FacebookUserInfo> fbResult = facebookAuthService.getUserInfo(body.getToken());
+            if (fbResult.isPresent()) {
+                //authenticated
+                if (fbResult.get().userId.equals(body.getUserId())) {
+                    //check if email is same
+                    userEmail = body.getEmail();
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "User Id is valid");
+                }
+            }
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userEmail:"+userEmail+" FB response userId:"+fbResult.get().userId+" UserId from request:"+body.getUserId());
+        } else if (body.getLoginType().equalsIgnoreCase("APPLE")) {
+            //validate token with apple
+            Optional<AppleAuthService.AppleUserInfo> appleResult = appleAuthService.validateToken(body.getToken());
+            if (appleResult.isPresent()) {
+                //authenticated
+                if (appleResult.get().isValid) {
+                    userEmail = body.getUserId();
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Token is valid");
+                }
+            }
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userEmail:"+userEmail+" UserId from request:"+body.getUserId());
+        }            
+        
+        if (userEmail==null) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Authentication failed");
+            response.setStatus(HttpStatus.UNAUTHORIZED, "Fail to validate token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client authenticated", "");
+
+        List<Customer> customerList = customersRepository.findByUsernameOrEmail(userEmail, userEmail);
+        
+        Customer customer = null;
+        if (customerList.isEmpty()) {
+            //create new account for customer
+            customer = new Customer();
+            customer.setUsername(userEmail);
+            customer.setRoleId("CUSTOMER");
+            customer.setCreated(DateTimeUtil.currentTimestamp());
+            customer.setUpdated(DateTimeUtil.currentTimestamp());
+            customer.setLocked(false);
+            customer.setDeactivated(false);
+            customer = customersRepository.save(customer);
+        }
+        
+        List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(customer.getRoleId());
+        ArrayList<String> authorities = new ArrayList<>();
+        if (null != roleAuthories) {
+            for (RoleAuthority roleAuthority : roleAuthories) {
+                authorities.add(roleAuthority.getAuthorityId());
+            }
+        }
+
+        CustomerSession session = new CustomerSession();
+        session.setRemoteAddress(request.getRemoteAddr());
+        session.setOwnerId(customer.getId());
+        session.setUsername(customer.getUsername());
+        session.setCreated(DateTimeUtil.currentTimestamp());
+        session.setUpdated(DateTimeUtil.currentTimestamp());
+        session.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
+        session.setStatus("ACTIVE");
+        session.generateTokens();
+
+        session = customerSessionsRepository.save(session);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session created with id: " + session.getId(), "");
+
+        session.setUpdated(null);
+        session.setStatus(null);
+        session.setRemoteAddress(null);
+        session.setId(null);
+
+        Auth authReponse = new Auth();
+        authReponse.setSession(session);
+        authReponse.setAuthorities(authorities);
+        authReponse.setRole(customer.getRoleId());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "generated token", "");
+
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setData(authReponse);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);        
+    }
+    
+    //authentication
+    @PostMapping(path = "/applecallback", name = "customers-authenticate")
+    public ResponseEntity appleCallback(HttpServletRequest request,
+            @RequestParam String state,
+            @RequestParam String code,
+            @RequestParam String id_token) throws Exception {
+        String logprefix = request.getRequestURI();
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "state: " + state);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "code: " + code);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "id_token: " + id_token);
+        
+        //redirect to front-end url      
+        return ResponseEntity.status(HttpStatus.FOUND)
+        .location(URI.create(appleLoginRedirectUrl+"?state="+URLEncoder.encode(state,StandardCharsets.UTF_8.toString())+"&code="+URLEncoder.encode(code,StandardCharsets.UTF_8.toString())+"&id_token="+URLEncoder.encode(id_token,StandardCharsets.UTF_8.toString())))
+        .build();
     }
 }

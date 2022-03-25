@@ -33,6 +33,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
@@ -99,7 +101,7 @@ public class ClientsController {
     @Value("${email.verification.enabled:false}")
     private Boolean emailVerificationEnabled;
     
-    @Value("${apple.login.redirect.url:https://merchant.symplified.it/applelogin}")
+    @Value("${client.apple.login.redirect.url:https://merchant.symplified.it/applelogin}")
     private String appleLoginRedirectUrl;
     
     @Autowired
@@ -668,8 +670,7 @@ public class ClientsController {
         if (client == null) {
             //create new account
             client = new Client();
-            client.setEmail(userEmail);
-            client.setRoleId(logprefix);
+            client.setEmail(userEmail);            
             client.setUsername(userEmail);
             client.setLocked(false);
             client.setDeactivated(false);
@@ -733,7 +734,7 @@ public class ClientsController {
         
         //redirect to front-end url      
         return ResponseEntity.status(HttpStatus.FOUND)
-        .location(URI.create(appleLoginRedirectUrl+"?state="+state+"&code="+code+"&id_token="+id_token))
+        .location(URI.create(appleLoginRedirectUrl+"?state="+URLEncoder.encode(state,StandardCharsets.UTF_8.toString())+"&code="+URLEncoder.encode(code,StandardCharsets.UTF_8.toString())+"&id_token="+URLEncoder.encode(id_token,StandardCharsets.UTF_8.toString())))
         .build();
     }
     

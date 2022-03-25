@@ -46,7 +46,6 @@ public class Client implements Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @NotBlank(message = "name is required")
     private String name;
 
     @NotBlank(message = "email is required")

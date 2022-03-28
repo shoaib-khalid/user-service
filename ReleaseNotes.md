@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.5-SNAPSHOT | 28-March-2022
+##################################################
+Add AddResponseHeaderFilter class to add customer http header in response
+
+
+##################################################
 # user-service-3.2.4-SNAPSHOT | 25-March-2022
 ##################################################
 Loginoauth for customer 

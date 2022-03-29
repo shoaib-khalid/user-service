@@ -28,6 +28,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
@@ -36,6 +39,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -405,7 +409,23 @@ public class CustomersController {
 
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(authReponse);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        
+        //set extra headers
+        HttpHeaders responseHeaders = new HttpHeaders();
+        Date expiry = DateTimeUtil.expiryTimestamp(3600);
+        //Date format : Wed, 13 Jan 2021 22:23:01 GMT
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
+        String expiryTimestamp = formatter.format(expiry);
+        responseHeaders.set("Set-Cookie", 
+                        "LSID="+user.getId()+"; Path=/accounts; Expires="+expiryTimestamp+"; Secure; HttpOnly");
+        responseHeaders.set("Set-Cookie", 
+                        "HSID="+user.getId()+"; Domain=.symplified.it; Path=/; Expires="+expiryTimestamp+"; HttpOnly");
+        responseHeaders.set("Set-Cookie", 
+                        "SSID="+user.getId()+"; Domain=symplified.it; Path=/; Expires="+expiryTimestamp+"; Secure; HttpOnly");
+        
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .headers(responseHeaders)
+                .body(response);
     }
 
     @GetMapping(path = {"/{email}/password_reset"}, name = "customer-password_reset-post-by-id")

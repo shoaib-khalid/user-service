@@ -27,7 +27,9 @@ public class AddResponseHeaderFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
  
-        res.addHeader("Access-Control-Allow-Origin", "*");
+        //add any http header globally
+        //res.addHeader("Access-Control-Allow-Origin", "*");
+        
         chain.doFilter(req, res);
     }
 }

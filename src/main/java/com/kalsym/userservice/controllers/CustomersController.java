@@ -417,7 +417,7 @@ public class CustomersController {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
         String expiryTimestamp = formatter.format(expiry);
         responseHeaders.add("Set-Cookie", 
-                        "UUID="+user.getId()+"; Path=/customers; Expires="+expiryTimestamp+"; Secure; HttpOnly");
+                        "CustomerId="+user.getId()+"; Path=/; Expires="+expiryTimestamp+"; Secure; HttpOnly");
         responseHeaders.add("Set-Cookie", 
                         "AccessToken="+session.getAccessToken()+"; Domain=.symplified.it; Path=/; Expires="+expiryTimestamp+"; HttpOnly");
         responseHeaders.add("Set-Cookie", 

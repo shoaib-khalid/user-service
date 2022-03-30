@@ -417,11 +417,11 @@ public class CustomersController {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
         String expiryTimestamp = formatter.format(expiry);
         responseHeaders.add("Set-Cookie", 
-                        "LSID="+user.getId()+"; Path=/customers; Expires="+expiryTimestamp+"; Secure; HttpOnly");
+                        "UUID="+user.getId()+"; Path=/customers; Expires="+expiryTimestamp+"; Secure; HttpOnly");
         responseHeaders.add("Set-Cookie", 
-                        "HSID="+user.getId()+"; Domain=.symplified.it; Path=/; Expires="+expiryTimestamp+"; HttpOnly");
+                        "AccessToken="+session.getAccessToken()+"; Domain=.symplified.it; Path=/; Expires="+expiryTimestamp+"; HttpOnly");
         responseHeaders.add("Set-Cookie", 
-                        "SSID="+user.getId()+"; Domain=symplified.it; Path=/; Expires="+expiryTimestamp+"; Secure; HttpOnly");
+                        "RefreshToken="+session.getRefreshToken()+"; Domain=symplified.it; Path=/; Expires="+expiryTimestamp+"; Secure; HttpOnly");
         responseHeaders.add("access-control-expose-headers","Set-Cookie");
         
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Add custom httpHeaders in response");

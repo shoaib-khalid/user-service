@@ -101,12 +101,9 @@ public class ClientsController {
     @Value("${email.verification.enabled:false}")
     private Boolean emailVerificationEnabled;
     
-    @Value("${client.apple.login.redirect.url.symplified:https://merchant.symplified.it/applelogin}")
-    private String appleLoginRedirectUrlSymplified;
-    
-    @Value("${client.apple.login.redirect.url.easydukan:https://merchant2.symplified.it/applelogin}")
-    private String appleLoginRedirectUrlEasydukan;
-    
+    @Value("${client.apple.login.redirect.path:/applelogin}")
+    private String appleLoginRedirectPath;
+      
     @Autowired
     GoogleAuthService googleAuthService;
     
@@ -736,12 +733,8 @@ public class ClientsController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "code: " + code);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "id_token: " + id_token);
         
-        String redirecUrl = appleLoginRedirectUrlSymplified;
-        if (domain.equalsIgnoreCase("symplified")) {
-            redirecUrl = appleLoginRedirectUrlSymplified;
-        } else if (domain.equalsIgnoreCase("easydukan")) {
-            redirecUrl = appleLoginRedirectUrlEasydukan;
-        } 
+        String redirecUrl = "https://"+domain+appleLoginRedirectPath;
+        
         //redirect to front-end url      
         return ResponseEntity.status(HttpStatus.FOUND)
         .location(URI.create(redirecUrl+"?state="+URLEncoder.encode(state,StandardCharsets.UTF_8.toString())+"&code="+URLEncoder.encode(code,StandardCharsets.UTF_8.toString())+"&id_token="+URLEncoder.encode(id_token,StandardCharsets.UTF_8.toString())))

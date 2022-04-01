@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.6-SNAPSHOT | 01-April-2022
+##################################################
+receive full domain in apple callback
+
+
+##################################################
 # user-service-3.2.5-SNAPSHOT | 28-March-2022
 ##################################################
 Add AddResponseHeaderFilter class to add customer http header in response

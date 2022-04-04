@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.7-SNAPSHOT | 04-April-2022
+##################################################
+Receive domain in customer login used to set cookies
+
+
+##################################################
 # user-service-3.2.6-SNAPSHOT | 01-April-2022
 ##################################################
 receive full domain in apple callback

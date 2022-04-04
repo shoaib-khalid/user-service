@@ -419,6 +419,10 @@ public class CustomersController {
         //Date format : Wed, 13 Jan 2021 22:23:01 GMT
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
         String expiryTimestamp = formatter.format(expiry);
+        
+        if (body.getDomain()!=null) {
+            customerCookieDomain = body.getDomain();
+        }
         responseHeaders.add("Set-Cookie", 
                         "CustomerId="+user.getId()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure; HttpOnly");
         responseHeaders.add("Set-Cookie", 

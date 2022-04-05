@@ -345,25 +345,24 @@ public class CustomersController {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "body: " + body);
 
-        Authentication auth = null;
         try {
-            auth = authenticationManager.authenticate(
+            authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
             );
 
         } catch (BadCredentialsException e) {
-            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error validating user", "", e);
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error validating customer", "", e);
             response.setStatus(HttpStatus.UNAUTHORIZED, "Bad Craedentiails");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (AuthenticationException e) {
-            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error validating user", "", e);
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error validating customer", "", e);
             response.setStatus(HttpStatus.UNAUTHORIZED, e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user authenticated", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer authenticated", "");
 
         List<Customer> userList = customersRepository.findByUsernameOrEmail(body.getUsername(), body.getUsername());
         

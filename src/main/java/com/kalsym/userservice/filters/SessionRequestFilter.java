@@ -76,7 +76,8 @@ public class SessionRequestFilter extends OncePerRequestFilter {
             CustomerSession customerSession = customerSessionsRepository.findByAccessToken(accessToken);
 
             Date expiryTime = null;
-
+            
+            String accessType = "CLIENT";
             String username = null;
             if (null == adminSesion
                     && null == clientSession
@@ -89,19 +90,19 @@ public class SessionRequestFilter extends OncePerRequestFilter {
                 expiryTime = adminSesion.getExpiry();
 
                 username = adminSesion.getUsername();
-
+                accessType = "ADMIN";
             } else if (null != clientSession) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "sessionId valid for client_session", "");
                 expiryTime = clientSession.getExpiry();
 
                 username = clientSession.getUsername();
-
+                accessType = "CLIENT";
             } else if (null != customerSession) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "sessionId valid for customer_session", "");
                 expiryTime = customerSession.getExpiry();
 
                 username = customerSession.getUsername();
-
+                accessType = "CUSTOMER";
             }
 
             if (null != expiryTime && null != username) {
@@ -110,7 +111,7 @@ public class SessionRequestFilter extends OncePerRequestFilter {
                 diff = expiryTime.getTime() - currentTime.getTime();
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "time to session expiry: " + diff + "ms", "");
                 if (0 < diff) {
-                    MySQLUserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+                    MySQLUserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username+","+accessType);
 
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());

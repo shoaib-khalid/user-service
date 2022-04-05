@@ -35,46 +35,62 @@ public class MySQLUserDetailsService implements UserDetailsService {
 
     @Autowired
     private RoleAuthoritiesRepository roleAuthoritiesRepository;
-
+    
     @Override
-    public MySQLUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public MySQLUserDetails loadUserByUsername(String usernameAndAccessType) throws UsernameNotFoundException {
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "username: " + username, "");
-
-        Client client = clientsRepository.findByUsernameOrEmail(username, username);
         
-        Customer customer = null;
-        List<Customer> customerList = customersRepository.findByUsernameOrEmail(username, username);
-        if (customerList.size()>1) {
-            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, "", "Customer with same email address. Found record:"+customerList.size());
-        } else if (customerList.size()>0) {
-            customer = customerList.get(0);
-        }
-        
-        Administrator administrator = administratorsRepository.findByUsernameOrEmail(username, username);
-
         String roleId = null;
         MySQLUserDetails mud = null;
-        if (null == client && null == administrator && null == customer) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
-        } else if (null != client) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "client: " + client, "");
-            roleId = client.getRoleId();
-            List<RoleAuthority> auths = roleAuthoritiesRepository.findByRoleId(roleId);
-            mud = new MySQLUserDetails(client, auths);
-        } else if (null != administrator) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "administrator: " + administrator, "");
+        
+        String[] temp = usernameAndAccessType.split(",");
+        String username = temp[0];
+        String accessType = temp[1];
+        
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "username: " + username, " accessType:"+accessType);
+        
+        if (accessType.equals("CLIENT")) {    
+            Client client = clientsRepository.findByUsernameOrEmail(username, username);
+            if (null != client) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "client: " + client, "");
+                roleId = client.getRoleId();
+                List<RoleAuthority> auths = roleAuthoritiesRepository.findByRoleId(roleId);
+                mud = new MySQLUserDetails(client, auths);
+            } else {
+                throw new UsernameNotFoundException("Client not found with username: " + username);
+            }
+        } else  if (accessType.equals("CUSTOMER")) { 
+            Customer customer = null;
+            List<Customer> customerList = customersRepository.findByUsernameOrEmail(username, username);
+            if (customerList.size()>1) {
+                Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, "", "Customer with same email address. Found record:"+customerList.size());
+            } else if (customerList.size()>0) {
+                customer = customerList.get(0);
+            }
+            
+            if (null != customer) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "customer: " + customer, "");
 
-            roleId = administrator.getRoleId();
-            List<RoleAuthority> auths = roleAuthoritiesRepository.findByRoleId(roleId);
-            mud = new MySQLUserDetails(administrator, auths);
-        } else if (null != customer) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "customer: " + customer, "");
+                roleId = customer.getRoleId();
+                List<RoleAuthority> auths = roleAuthoritiesRepository.findByRoleId(roleId);
+                mud = new MySQLUserDetails(customer, auths);
+            } else {
+                throw new UsernameNotFoundException("Client not found with username: " + username);
+            }
+        } else if (accessType.equals("ADMIN")) {        
+            Administrator administrator = administratorsRepository.findByUsernameOrEmail(username, username);
+            
+            if (null != administrator) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "administrator: " + administrator, "");
 
-            roleId = customer.getRoleId();
-            List<RoleAuthority> auths = roleAuthoritiesRepository.findByRoleId(roleId);
-            mud = new MySQLUserDetails(customer, auths);
+                roleId = administrator.getRoleId();
+                List<RoleAuthority> auths = roleAuthoritiesRepository.findByRoleId(roleId);
+                mud = new MySQLUserDetails(administrator, auths);
+            } else {
+                throw new UsernameNotFoundException("Client not found with username: " + username);
+            }
         }
+               
 
         return mud;
     }

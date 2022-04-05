@@ -424,11 +424,11 @@ public class CustomersController {
             customerCookieDomain = body.getDomain();
         }
         responseHeaders.add("Set-Cookie", 
-                        "CustomerId="+user.getId()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure; HttpOnly");
+                        "CustomerId="+user.getId()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure;");
         responseHeaders.add("Set-Cookie", 
-                        "AccessToken="+session.getAccessToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; HttpOnly");
+                        "AccessToken="+session.getAccessToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; ");
         responseHeaders.add("Set-Cookie", 
-                        "RefreshToken="+session.getRefreshToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure; HttpOnly");
+                        "RefreshToken="+session.getRefreshToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure;");
         responseHeaders.add("access-control-expose-headers","Set-Cookie");
         
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Add custom httpHeaders in response");

@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.8-SNAPSHOT | 05-April-2022
+##################################################
+Remove httpOnly from cookies parameter in authenticateCustomer
+
+
+##################################################
 # user-service-3.2.7-SNAPSHOT | 04-April-2022
 ##################################################
 Receive domain in customer login used to set cookies

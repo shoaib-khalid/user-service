@@ -284,7 +284,7 @@ public class AdministratorsController {
 
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
+                    new UsernamePasswordAuthenticationToken(body.getUsername()+",ADMIN", body.getPassword())
             );
         } catch (BadCredentialsException e) {
             Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error validating user", "");

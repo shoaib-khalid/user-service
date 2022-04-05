@@ -555,7 +555,7 @@ public class ClientsController {
 
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
+                    new UsernamePasswordAuthenticationToken(body.getUsername()+",CLIENT", body.getPassword())
             );
         } catch (BadCredentialsException e) {
             Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "BadCredentialsException exception", e);
@@ -898,7 +898,7 @@ public class ClientsController {
         //verify current password
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(client.getUsername(), body.getCurrentPassword())
+                    new UsernamePasswordAuthenticationToken(client.getUsername()+",CLIENT", body.getCurrentPassword())
             );
         } catch (BadCredentialsException e) {
             Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "BadCredentialsException exception", e);

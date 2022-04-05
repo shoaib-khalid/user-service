@@ -349,7 +349,7 @@ public class CustomersController {
 
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
+                    new UsernamePasswordAuthenticationToken(body.getUsername()+",CUSTOMER", body.getPassword())
             );
 
         } catch (BadCredentialsException e) {

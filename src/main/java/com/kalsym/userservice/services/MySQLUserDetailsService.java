@@ -43,6 +43,7 @@ public class MySQLUserDetailsService implements UserDetailsService {
         String roleId = null;
         MySQLUserDetails mud = null;
         
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, "", "usernameAndAccessType:"+usernameAndAccessType);
         String[] temp = usernameAndAccessType.split(",");
         String username = temp[0];
         String accessType = temp[1];

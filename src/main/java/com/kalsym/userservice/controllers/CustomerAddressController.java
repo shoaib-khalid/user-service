@@ -72,8 +72,30 @@ public class CustomerAddressController {
         response.setData(customerAddressRepository.findAll(example, pageable));
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+    
+    @GetMapping(path = {"/{id}"}, name = "customer-address-get")
+    @PreAuthorize("hasAnyAuthority('customer-address-get', 'all')")
+    public ResponseEntity<HttpReponse> getCustomerAddresssById(HttpServletRequest request,
+            @PathVariable String customerId,
+            @PathVariable String id) {
+        String logprefix = request.getRequestURI();
 
-    @DeleteMapping(path = {""}, name = "customer-address-delete-by-id")
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+
+        Optional<CustomerAddress> optCustomerAddress = customerAddressRepository.findById(id);
+        if (optCustomerAddress.isPresent()) {
+            response.setStatus(HttpStatus.OK);
+            response.setData(optCustomerAddress.get());
+        } else {
+            response.setStatus(HttpStatus.NOT_FOUND);
+        }
+        
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @DeleteMapping(path = {"/{id}"}, name = "customer-address-delete-by-id")
     @PreAuthorize("hasAnyAuthority('customer-address-delete-by-id', 'all')")
     public ResponseEntity<HttpReponse> deleteCustomerAddressById(HttpServletRequest request,
             @PathVariable String id) {
@@ -99,7 +121,7 @@ public class CustomerAddressController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PutMapping(path = {""}, name = "customer-address-put-by-id")
+    @PutMapping(path = {"/{id}"}, name = "customer-address-put-by-id")
     @PreAuthorize("hasAnyAuthority('customer-address-put-by-id', 'all')")
     public ResponseEntity<HttpReponse> putCustomerAddressById(HttpServletRequest request,
             @PathVariable String id,

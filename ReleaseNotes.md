@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.9-SNAPSHOT | 06-April-2022
+##################################################
+Bug fix for customer address API
+
+
+##################################################
 # user-service-3.2.8-SNAPSHOT | 05-April-2022
 ##################################################
 Remove httpOnly from cookies parameter in authenticateCustomer

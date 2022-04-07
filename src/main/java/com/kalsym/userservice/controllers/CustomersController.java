@@ -475,6 +475,45 @@ public class CustomersController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
     
+    @PutMapping(path = {"/{id}/password/{code}/reset"}, name = "customer-password_reset-post-by-id")
+    //@PreAuthorize("hasAnyAuthority('clients-get-by-id', 'all')")
+    public ResponseEntity<HttpReponse> putCustomerPasswordReset(HttpServletRequest request,
+            @PathVariable String id,
+            @PathVariable String code,
+            @RequestBody Client body) {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+
+        Optional<Customer> optCustomer = customersRepository.findById(id);
+
+        if (!optCustomer.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Customer not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        Customer existingCustomer = optCustomer.get();
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Customer found", "");
+
+        boolean verified = emaiVerificationlHandler.verifyPasswordReset(existingCustomer, code);
+
+        if (!verified) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot verify", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            response.setError("Code not valid");
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        existingCustomer.setPassword(bcryptEncoder.encode(body.getPassword()));
+        existingCustomer = customersRepository.save(existingCustomer);
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setData(existingCustomer);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
         String logprefix = request.getRequestURI();

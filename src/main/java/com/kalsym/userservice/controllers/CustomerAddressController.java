@@ -144,7 +144,11 @@ public class CustomerAddressController {
         CustomerAddress customerAddress = optCustomerAddress.get();
 
         customerAddress.update(body);
-
+        
+        if (body.getIsDefault()) {
+            customerAddressRepository.UpdateDefaultAddress(body.getCustomerId(), body.getId());
+        }
+        
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress updated for id: " + id, "");
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(customerAddressRepository.save(customerAddress));
@@ -167,7 +171,10 @@ public class CustomerAddressController {
         body.setCustomerId(customerId);
         body = customerAddressRepository.save(body);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress created with id: " + body.getCustomerId(), "");
-
+        
+        if (body.getIsDefault()) {
+            customerAddressRepository.UpdateDefaultAddress(body.getCustomerId(), body.getId());
+        }
         response.setStatus(HttpStatus.CREATED);
         response.setData(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

@@ -48,7 +48,7 @@ public class CustomerAddress implements Serializable {
 
     private String customerId;
     
-    private Boolean isDefault=false;
+    private Boolean isDefault;
 
     public void update(CustomerAddress customerAddress) {
         if (null != customerAddress.getName()) {

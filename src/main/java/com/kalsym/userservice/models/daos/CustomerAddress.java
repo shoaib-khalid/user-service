@@ -82,6 +82,10 @@ public class CustomerAddress implements Serializable {
         if (null != customerAddress.getAddress()) {
             address = customerAddress.getAddress();
         }
+        
+         if (null != customerAddress.getIsDefault()) {
+            isDefault = customerAddress.getIsDefault();
+        }
     }
 
 }

@@ -146,7 +146,7 @@ public class CustomerAddressController {
         customerAddress.update(body);
         
         if (body.getIsDefault()) {
-            customerAddressRepository.UpdateDefaultAddress(body.getCustomerId(), body.getId());
+            customerAddressRepository.UpdateDefaultAddress(body.getCustomerId(), id);
         }
         
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress updated for id: " + id, "");

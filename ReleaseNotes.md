@@ -1,4 +1,13 @@
 ##################################################
+# user-service-3.2.11-SNAPSHOT | 08-April-2022
+##################################################
+New field for customer address
+
+##DB Changes:
+ALTER TABLE customer_address ADD isDefault TINYINT(1) NOT NULL DEFAULT 0;
+
+
+##################################################
 # user-service-3.2.10-SNAPSHOT | 07-April-2022
 ##################################################
 Bug fix for customer reset password

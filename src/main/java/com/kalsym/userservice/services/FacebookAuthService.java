@@ -40,10 +40,10 @@ public class FacebookAuthService {
     @Value("${fb.generate.access.token.url:https://graph.facebook.com/access_token}")
     private String fbGenerateAccessTokenUrl;
     
-    @Value("${fb.verify.appid:283489330438468}")
+    @Value("${fb.verify.appid:2915126152079198}")
     private String fbAppId;
     
-    @Value("${fb.verify.appSecret:519e90e18180c6b69e1ec1013139e2e4}")
+    @Value("${fb.verify.appSecret:2a9f0365d6777a36f509c8d9deefcc83}")
     private String fbAppSecret;
     
     

@@ -52,6 +52,7 @@ public class GoogleAuthService {
         try {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Verify token -> googleClientId:"+googleClientId+" Token:"+token);
             GoogleIdToken verifiedToken = verifier.verify(token);
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Google response verifiedToken:"+verifiedToken.toString());
             GoogleIdToken.Payload tokenPayload = verifiedToken.getPayload();
             String subject = tokenPayload.getSubject();
             String email = tokenPayload.getEmail();

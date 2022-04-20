@@ -653,7 +653,10 @@ public class CustomersController {
         
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(authReponse);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);        
+        
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .headers(responseHeaders)
+                .body(response);
     }
     
     //authentication
@@ -754,7 +757,10 @@ public class CustomersController {
         
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(authReponse);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .headers(responseHeaders)
+                .body(response);
     }
     
     

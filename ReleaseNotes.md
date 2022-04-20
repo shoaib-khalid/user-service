@@ -3,6 +3,10 @@
 ##################################################
 Bug fix for customer oauth login
 Bug for for customer sign up
+Add cookie for refreshToken & loginoauth
+
+##DB Changes:
+ALTER TABLE customer_session ADD domain VARCHAR(100);
 
 
 ##################################################

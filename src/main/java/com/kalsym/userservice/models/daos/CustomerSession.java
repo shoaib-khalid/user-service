@@ -19,6 +19,6 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "customer_session")
 public class CustomerSession extends Session implements Serializable {
 
-  
+   private String domain;
 
 }

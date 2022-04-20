@@ -392,6 +392,7 @@ public class CustomersController {
         session.setUpdated(DateTimeUtil.currentTimestamp());
         session.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
         session.setStatus("ACTIVE");
+        session.setDomain(body.getDomain());
         session.generateTokens();
 
         session = customerSessionsRepository.save(session);
@@ -614,6 +615,7 @@ public class CustomersController {
         session.setUpdated(DateTimeUtil.currentTimestamp());
         session.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
         session.setStatus("ACTIVE");
+        session.setDomain(body.getDomain());
         session.generateTokens();
 
         session = customerSessionsRepository.save(session);
@@ -673,7 +675,6 @@ public class CustomersController {
     
     @PostMapping(path = "session/refresh", name = "customers-session-refresh")
     public ResponseEntity refreshSession(@Valid @RequestBody String refreshToken,
-            @RequestBody String domain,
             HttpServletRequest request) throws Exception {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
@@ -712,6 +713,7 @@ public class CustomersController {
         newSession.setUpdated(DateTimeUtil.currentTimestamp());
         newSession.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
         newSession.setStatus("ACTIVE");
+        newSession.setDomain(session.getDomain());
         newSession.generateTokens();
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session: " + newSession, "");
@@ -739,15 +741,15 @@ public class CustomersController {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
         String expiryTimestamp = formatter.format(expiry);
         
-        if (domain!=null) {
-            customerCookieDomain = domain;
+        if (session.getDomain()!=null) {
+            customerCookieDomain = session.getDomain();
         }
         responseHeaders.add("Set-Cookie", 
                         "CustomerId="+optCustomer.get().getId()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure;");
         responseHeaders.add("Set-Cookie", 
-                        "AccessToken="+session.getAccessToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; ");
+                        "AccessToken="+newSession.getAccessToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; ");
         responseHeaders.add("Set-Cookie", 
-                        "RefreshToken="+session.getRefreshToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure;");
+                        "RefreshToken="+newSession.getRefreshToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure;");
         responseHeaders.add("access-control-expose-headers","Set-Cookie");
         
         response.setStatus(HttpStatus.ACCEPTED);

@@ -630,7 +630,25 @@ public class CustomersController {
         authReponse.setRole(customer.getRoleId());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "generated token", "");
-
+        
+        //set extra headers
+        HttpHeaders responseHeaders = new HttpHeaders();
+        Date expiry = DateTimeUtil.expiryTimestamp(3600);
+        //Date format : Wed, 13 Jan 2021 22:23:01 GMT
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
+        String expiryTimestamp = formatter.format(expiry);
+        
+        if (body.getDomain()!=null) {
+            customerCookieDomain = body.getDomain();
+        }
+        responseHeaders.add("Set-Cookie", 
+                        "CustomerId="+customer.getId()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure;");
+        responseHeaders.add("Set-Cookie", 
+                        "AccessToken="+session.getAccessToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; ");
+        responseHeaders.add("Set-Cookie", 
+                        "RefreshToken="+session.getRefreshToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure;");
+        responseHeaders.add("access-control-expose-headers","Set-Cookie");
+        
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);        
@@ -655,6 +673,7 @@ public class CustomersController {
     
     @PostMapping(path = "session/refresh", name = "customers-session-refresh")
     public ResponseEntity refreshSession(@Valid @RequestBody String refreshToken,
+            @RequestBody String domain,
             HttpServletRequest request) throws Exception {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
@@ -712,7 +731,25 @@ public class CustomersController {
         authReponse.setRole(optCustomer.get().getRoleId());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "generated token", "");
-
+        
+        //set extra headers
+        HttpHeaders responseHeaders = new HttpHeaders();
+        Date expiry = DateTimeUtil.expiryTimestamp(3600);
+        //Date format : Wed, 13 Jan 2021 22:23:01 GMT
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
+        String expiryTimestamp = formatter.format(expiry);
+        
+        if (domain!=null) {
+            customerCookieDomain = domain;
+        }
+        responseHeaders.add("Set-Cookie", 
+                        "CustomerId="+optCustomer.get().getId()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure;");
+        responseHeaders.add("Set-Cookie", 
+                        "AccessToken="+session.getAccessToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; ");
+        responseHeaders.add("Set-Cookie", 
+                        "RefreshToken="+session.getRefreshToken()+"; Domain="+customerCookieDomain+"; Path=/; Expires="+expiryTimestamp+"; Secure;");
+        responseHeaders.add("access-control-expose-headers","Set-Cookie");
+        
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);

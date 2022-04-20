@@ -2,6 +2,7 @@
 # user-service-3.2.13-SNAPSHOT | 20-April-2022
 ##################################################
 Bug fix for customer oauth login
+Bug for for customer sign up
 
 
 ##################################################

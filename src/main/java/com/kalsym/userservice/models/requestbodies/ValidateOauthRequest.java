@@ -28,5 +28,7 @@ public class ValidateOauthRequest {
     
     @NotBlank(message = "country is required")
     private String country;
+    
+    private String domain;
 
 }

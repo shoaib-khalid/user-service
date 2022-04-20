@@ -268,26 +268,25 @@ public class CustomersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         List<String> errors = new ArrayList<>();
-
-        List<Customer> customers = customersRepository.findAll();
-
-        for (Customer existingCustomer : customers) {
-            if (existingCustomer.getUsername().equals(body.getUsername())) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-                response.setStatus(HttpStatus.CONFLICT);
-                errors.add("username already exists");
-                response.setData(errors);
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-            }
-            if (existingCustomer.getEmail().equals(body.getEmail())) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
-                response.setStatus(HttpStatus.CONFLICT);
-                errors.add("email already exists");
-                response.setData(errors);
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-            }
+        
+        Customer customer = customersRepository.findByUsername(body.getUsername());
+        if (customer!=null) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Username already exists", "");
+            response.setStatus(HttpStatus.CONFLICT);
+            errors.add("Username already exists");
+            response.setData(errors);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
-
+        
+        List<Customer> customerList = customersRepository.findByEmail(body.getEmail());
+        if (customerList.size()>0) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Email already exists", "");
+            response.setStatus(HttpStatus.CONFLICT);
+            errors.add("Email already exists");
+            response.setData(errors);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
+        
         if (body.getPassword() != null) {
             String password = bcryptEncoder.encode(body.getPassword());
             body.setPassword(password);

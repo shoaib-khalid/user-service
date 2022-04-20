@@ -595,6 +595,8 @@ public class CustomersController {
             customer.setLocked(false);
             customer.setDeactivated(false);
             customer = customersRepository.save(customer);
+        } else {
+            customer = customerList.get(0);
         }
         
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(customer.getRoleId());

@@ -211,38 +211,30 @@ public class CustomersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
         Customer user = optCustomer.get();
         List<String> errors = new ArrayList<>();
-
-        List<Customer> customers = customersRepository.findAll();
-
-        for (Customer existingCustomer : customers) {
-            if (!user.equals(existingCustomer)) {
-                if (existingCustomer.getUsername().equals(body.getUsername())) {
-                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-                    response.setStatus(HttpStatus.CONFLICT);
-                    errors.add("username already exists");
-                    response.setData(errors);
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-                }
-                if (existingCustomer.getEmail().equals(body.getEmail())) {
-                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
-                    response.setStatus(HttpStatus.CONFLICT);
-                    errors.add("email already exists");
-                    response.setData(errors);
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-                }
-                if (null != body.getId()) {
-                    if (existingCustomer.getEmail().equals(body.getEmail())) {
-                        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId already exists", "");
-                        response.setStatus(HttpStatus.CONFLICT);
-                        errors.add("userId already exists");
-                        response.setData(errors);
-                        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-                    }
-                }
+        
+        Customer customer = customersRepository.findByUsername(body.getUsername());
+        if (customer!=null) {
+            if (!customer.getId().equals(id)) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Username already exists", "");
+                response.setStatus(HttpStatus.CONFLICT);
+                errors.add("Username already exists");
+                response.setData(errors);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
-
         }
-
+        
+        List<Customer> customerList = customersRepository.findByEmail(body.getEmail());
+        if (customerList.size()>0) {
+            Customer existingCustomer = customerList.get(0);
+            if (!existingCustomer.getId().equals(id)) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Email already exists", "");
+                response.setStatus(HttpStatus.CONFLICT);
+                errors.add("Email already exists");
+                response.setData(errors);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            }
+        }       
+        
         if (null != body.getPassword() && body.getPassword().length() > 0) {
             body.setPassword(bcryptEncoder.encode(body.getPassword()));
         } else {

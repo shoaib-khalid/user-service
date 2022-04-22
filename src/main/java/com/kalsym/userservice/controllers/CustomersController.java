@@ -158,10 +158,17 @@ public class CustomersController {
             response.setStatus(HttpStatus.NOT_FOUND);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-
+        
+        Customer customer = optCustomer.get();
+        if (customer.getName()==null) {
+            customer.setName(customer.getUsername());
+        }
+        if (customer.getEmail()==null) {
+            customer.setEmail(customer.getUsername());
+        }
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
         response.setStatus(HttpStatus.OK);
-        response.setData(optCustomer.get());
+        response.setData(customer);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

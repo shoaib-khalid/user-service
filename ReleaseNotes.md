@@ -2,6 +2,7 @@
 # user-service-3.2.14-SNAPSHOT | 22-April-2022
 ##################################################
 Bug fix for customer PUT
+Bug fix for customer GET for FB, apple & google
 
 
 ##################################################

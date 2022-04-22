@@ -71,7 +71,7 @@ public class CustomerAddress implements Serializable {
             city = customerAddress.getCity();
         }
 
-        if (null != customerAddress.getCountry()) {
+        if (null != customerAddress.getPhoneNumber()) {
             phoneNumber = customerAddress.getPhoneNumber();
         }
 

@@ -219,9 +219,9 @@ public class CustomersController {
         Customer user = optCustomer.get();
         List<String> errors = new ArrayList<>();
         
-        Customer customer = customersRepository.findByUsername(body.getUsername());
-        if (customer!=null) {
-            if (!customer.getId().equals(id)) {
+        List<Customer> customerList = customersRepository.findByUsername(body.getUsername());
+        if (customerList.size()>0) {
+            if (!customerList.get(0).getId().equals(id)) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Username already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
                 errors.add("Username already exists");
@@ -230,9 +230,9 @@ public class CustomersController {
             }
         }
         
-        List<Customer> customerList = customersRepository.findByEmail(body.getEmail());
-        if (customerList.size()>0) {
-            Customer existingCustomer = customerList.get(0);
+        List<Customer> customerList2 = customersRepository.findByEmail(body.getEmail());
+        if (customerList2.size()>0) {
+            Customer existingCustomer = customerList2.get(0);
             if (!existingCustomer.getId().equals(id)) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Email already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
@@ -268,27 +268,36 @@ public class CustomersController {
 
         List<String> errors = new ArrayList<>();
         
-        Customer customer = customersRepository.findByUsername(body.getUsername());
-        if (customer!=null) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Username already exists", "");
-            response.setStatus(HttpStatus.CONFLICT);
-            errors.add("Username already exists");
-            response.setData(errors);
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        List<Customer> customerList = customersRepository.findByUsername(body.getUsername());
+        if (customerList.size()>0) {
+            if (customerList.get(0).getIsActivated()) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Username already exists", "");
+                response.setStatus(HttpStatus.CONFLICT);
+                errors.add("Username already exists");
+                response.setData(errors);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            }
         }
         
-        List<Customer> customerList = customersRepository.findByEmail(body.getEmail());
-        if (customerList.size()>0) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Email already exists", "");
-            response.setStatus(HttpStatus.CONFLICT);
-            errors.add("Email already exists");
-            response.setData(errors);
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        List<Customer> customerList2 = customersRepository.findByEmail(body.getEmail());
+        if (customerList2.size()>0) {
+            if (customerList2.get(0).getIsActivated()) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Email already exists", "");
+                response.setStatus(HttpStatus.CONFLICT);
+                errors.add("Email already exists");
+                response.setData(errors);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            } else {
+                Customer existingCustomer = customerList2.get(0);
+                //update customer info if already exist but not activated
+                body.setId(existingCustomer.getId());
+            }
         }
         
         if (body.getPassword() != null) {
             String password = bcryptEncoder.encode(body.getPassword());
             body.setPassword(password);
+            body.setIsActivated(Boolean.TRUE);
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Set password:"+password);
         }
         body.setCreated(DateTimeUtil.currentTimestamp());

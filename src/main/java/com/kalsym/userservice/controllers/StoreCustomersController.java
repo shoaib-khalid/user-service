@@ -102,7 +102,8 @@ public class StoreCustomersController {
         user.setEmail(email);
         user.setRoleId(roleId);
         user.setLocked(locked);
-        user.setStoreId(storeId);
+        //remove store id from customer table
+        //user.setStoreId(storeId);
         user.setPhoneNumber(phoneNumber);
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, user + "", "");
@@ -196,37 +197,28 @@ public class StoreCustomersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
         Customer user = optCustomer.get();
         List<String> errors = new ArrayList<>();
-
-        List<Customer> customers = customersRepository.findByStoreId(storeId);
-
-        for (Customer existingCustomer : customers) {
-            if (!user.equals(existingCustomer)) {
-                if (existingCustomer.getUsername() != null && existingCustomer.getUsername().equals(body.getUsername())) {
-                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-                    response.setStatus(HttpStatus.CONFLICT);
-                    errors.add("username already exists");
-                    response.setData(errors);
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-                }
-                if (existingCustomer.getEmail() != null && existingCustomer.getEmail().equals(body.getEmail())) {
-                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
-                    response.setStatus(HttpStatus.CONFLICT);
-                    errors.add("email already exists");
-                    response.setData(errors);
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-                }
-                if (null != body.getId()) {
-                    if (existingCustomer.getEmail().equals(body.getEmail())) {
-                        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId already exists", "");
-                        response.setStatus(HttpStatus.CONFLICT);
-                        errors.add("userId already exists");
-                        response.setData(errors);
-                        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-                    }
-                }
+        
+        List<Customer> customer = customersRepository.findByUsername(body.getUsername());
+        if (customer!=null) {
+            if (!customer.get(0).getId().equals(user.getId())) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
+                response.setStatus(HttpStatus.CONFLICT);
+                errors.add("username already exists");
+                response.setData(errors);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
-
         }
+        
+        List<Customer> customer2 = customersRepository.findByEmail(body.getEmail());
+        if (customer2!=null) {
+            if (!customer2.get(0).getId().equals(user.getId())) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
+                response.setStatus(HttpStatus.CONFLICT);
+                errors.add("email already exists");
+                response.setData(errors);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            }
+        }               
 
         if (null != body.getPassword() && body.getPassword().length() > 0) {
             body.setPassword(bcryptEncoder.encode(body.getPassword()));
@@ -255,27 +247,29 @@ public class StoreCustomersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         List<String> errors = new ArrayList<>();
-
-        List<Customer> customers = customersRepository.findByStoreId(storeId);
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "this store has " + customers.size() + " customers", "");
-
-        for (Customer existingCustomer : customers) {
-            if (existingCustomer.getUsername() != null && existingCustomer.getUsername().equals(body.getUsername())) {
+        
+        List<Customer> customer = customersRepository.findByUsername(body.getUsername());
+        if (customer!=null) {
+            if (customer.size()>0) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
                 errors.add("username already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
-            if (existingCustomer.getEmail() != null && existingCustomer.getEmail().equals(body.getEmail())) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
+        }
+        
+        List<Customer> customer2 = customersRepository.findByEmail(body.getEmail());
+        if (customer2!=null) {
+            if (customer2.size()>0) {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
                 errors.add("email already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
-        }
-
+        }  
+        
         if (body.getPassword() != null) {
             body.setPassword(bcryptEncoder.encode(body.getPassword()));
         }
@@ -307,8 +301,13 @@ public class StoreCustomersController {
         Authentication auth = null;
         Customer user = null;
         try {
-
-            user = customersRepository.findByUsernameAndStoreId(body.getUsername(), storeId);
+            
+            //remove store id from customer
+            //user = customersRepository.findByUsernameAndStoreId(body.getUsername(), storeId);
+            
+            List<Customer> userList = customersRepository.findByUsername(body.getUsername());
+            user = userList.get(0);
+            
 //            auth = authenticationManager.authenticate(
 //                    new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
 //            );

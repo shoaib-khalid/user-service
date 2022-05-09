@@ -53,6 +53,10 @@ public class Customer implements Serializable {
 
     private Boolean locked;
     private Boolean deactivated;
+    private Boolean isActivated;
+    
+    private String countryId;
+    
     Date created;
     Date updated;
 

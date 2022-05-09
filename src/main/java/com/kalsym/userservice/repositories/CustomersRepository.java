@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CustomersRepository extends JpaRepository<Customer, String>, PagingAndSortingRepository<Customer, String> {
 
-    Customer findByUsername(String userName);
+    List<Customer> findByUsername(String userName);
 
     List<Customer> findByUsernameOrEmail(String userName, String email);
 

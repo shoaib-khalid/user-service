@@ -5,6 +5,9 @@ Remove storeId from customer relationship for marketplace feature
 Activate customer account if login via Google/FB/Apple
 Claim newuser voucher for newly activated account
 
+##Config changes:
+orderService.claimnewuservoucher.URL=https://api.symplified.it/order-service/v1/voucher/claim/newuser/<customerId>
+
 
 ##################################################
 # user-service-3.2.14-SNAPSHOT | 22-April-2022

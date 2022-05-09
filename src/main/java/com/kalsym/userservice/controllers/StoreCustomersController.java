@@ -199,7 +199,7 @@ public class StoreCustomersController {
         List<String> errors = new ArrayList<>();
         
         List<Customer> customer = customersRepository.findByUsername(body.getUsername());
-        if (customer!=null) {
+        if (customer.size()>0) {
             if (!customer.get(0).getId().equals(user.getId())) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
@@ -210,7 +210,7 @@ public class StoreCustomersController {
         }
         
         List<Customer> customer2 = customersRepository.findByEmail(body.getEmail());
-        if (customer2!=null) {
+        if (customer2.size()>0) {
             if (!customer2.get(0).getId().equals(user.getId())) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
@@ -249,27 +249,24 @@ public class StoreCustomersController {
         List<String> errors = new ArrayList<>();
         
         List<Customer> customer = customersRepository.findByUsername(body.getUsername());
-        if (customer!=null) {
-            if (customer.size()>0) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-                response.setStatus(HttpStatus.CONFLICT);
-                errors.add("username already exists");
-                response.setData(errors);
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-            }
+        if (customer.size()>0) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
+            response.setStatus(HttpStatus.CONFLICT);
+            errors.add("username already exists");
+            response.setData(errors);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
-        
+
+
         List<Customer> customer2 = customersRepository.findByEmail(body.getEmail());
-        if (customer2!=null) {
-            if (customer2.size()>0) {
+        if (customer2.size()>0) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
                 errors.add("email already exists");
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-            }
-        }  
-        
+        }
+                  
         if (body.getPassword() != null) {
             body.setPassword(bcryptEncoder.encode(body.getPassword()));
         }

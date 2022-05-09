@@ -18,6 +18,7 @@ import com.kalsym.userservice.services.AppleAuthService;
 import com.kalsym.userservice.services.EmaiVerificationlHandler;
 import com.kalsym.userservice.services.FacebookAuthService;
 import com.kalsym.userservice.services.GoogleAuthService;
+import com.kalsym.userservice.services.OrderService;
 import com.kalsym.userservice.utils.DateTimeUtil;
 import com.kalsym.userservice.utils.Logger;
 import java.net.URI;
@@ -100,6 +101,9 @@ public class CustomersController {
     
     @Autowired
     AppleAuthService appleAuthService;
+    
+    @Autowired
+    OrderService orderService;
     
     @Value("${customer.cookie.domain:.symplified.it}")
     private String customerCookieDomain;
@@ -294,11 +298,13 @@ public class CustomersController {
             }
         }
         
+        boolean activateAccount=false;
         if (body.getPassword() != null) {
             String password = bcryptEncoder.encode(body.getPassword());
             body.setPassword(password);
             body.setIsActivated(Boolean.TRUE);
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Set password:"+password);
+            activateAccount=true;
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Set password:"+password);     
         } else {
             body.setIsActivated(Boolean.FALSE);
         }
@@ -308,6 +314,12 @@ public class CustomersController {
         body.setLocked(false);
         body.setDeactivated(false);
         body = customersRepository.save(body);
+        
+        if (activateAccount) {
+            //send to order-service to claim 'newuser' voucher
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Claim new user voucher");     
+            orderService.claimNewUserVoucher(body.getId());
+        }
         
         emaiVerificationlHandler.sendVerificationEmail(body, null);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");
@@ -607,6 +619,11 @@ public class CustomersController {
             customer.setDeactivated(false);
             customer.setIsActivated(Boolean.TRUE);
             customer = customersRepository.save(customer);
+            
+            //send to order-service to claim 'newuser' voucher
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Claim new user voucher");     
+            orderService.claimNewUserVoucher(customer.getId());
+            
         } else {
             customer = customerList.get(0);
             customer.setIsActivated(Boolean.TRUE);

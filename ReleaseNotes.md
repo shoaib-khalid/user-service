@@ -3,6 +3,7 @@
 ##################################################
 Remove storeId from customer relationship for marketplace feature
 Activate customer account if login via Google/FB/Apple
+Claim newuser voucher for newly activated account
 
 
 ##################################################

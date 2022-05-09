@@ -269,7 +269,11 @@ public class StoreCustomersController {
                   
         if (body.getPassword() != null) {
             body.setPassword(bcryptEncoder.encode(body.getPassword()));
+            body.setIsActivated(Boolean.TRUE);
+        } else {
+            body.setIsActivated(Boolean.FALSE);
         }
+        
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
         body.setLocked(false);

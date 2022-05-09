@@ -299,7 +299,10 @@ public class CustomersController {
             body.setPassword(password);
             body.setIsActivated(Boolean.TRUE);
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Set password:"+password);
+        } else {
+            body.setIsActivated(Boolean.FALSE);
         }
+        
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
         body.setLocked(false);

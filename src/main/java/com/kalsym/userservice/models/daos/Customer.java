@@ -97,6 +97,10 @@ public class Customer implements Serializable {
         if (null != user.getLocked()) {
             locked = user.getLocked();
         }
+        
+        if (null != user.getIsActivated()) {
+            isActivated = user.getIsActivated();
+        }
     }
 
     @Override

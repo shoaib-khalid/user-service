@@ -605,9 +605,12 @@ public class CustomersController {
             customer.setUpdated(DateTimeUtil.currentTimestamp());
             customer.setLocked(false);
             customer.setDeactivated(false);
+            customer.setIsActivated(Boolean.TRUE);
             customer = customersRepository.save(customer);
         } else {
             customer = customerList.get(0);
+            customer.setIsActivated(Boolean.TRUE);
+            customersRepository.save(customer);
         }
         
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(customer.getRoleId());

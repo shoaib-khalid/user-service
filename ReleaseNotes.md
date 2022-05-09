@@ -2,6 +2,7 @@
 # user-service-3.2.15-SNAPSHOT | 9-May-2022
 ##################################################
 Remove storeId from customer relationship for marketplace feature
+Activate customer account if login via Google/FB/Apple
 
 
 ##################################################

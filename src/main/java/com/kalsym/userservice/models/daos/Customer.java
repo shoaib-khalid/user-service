@@ -67,6 +67,8 @@ public class Customer implements Serializable {
     private String storeId;
         
     private String domain;
+    
+    private String channel;
         
     public void update(Customer user) {
         if (null != user.getEmail()) {

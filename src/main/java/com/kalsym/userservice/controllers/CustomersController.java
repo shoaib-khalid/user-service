@@ -312,7 +312,8 @@ public class CustomersController {
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
         body.setLocked(false);
-        body.setDeactivated(false);        
+        body.setDeactivated(false); 
+        body.setChannel("INTERNAL");
         body = customersRepository.save(body);
         
         if (activateAccount) {
@@ -618,6 +619,7 @@ public class CustomersController {
             customer.setLocked(false);
             customer.setDeactivated(false);
             customer.setIsActivated(Boolean.TRUE);
+            customer.setChannel(body.getLoginType());
             customer = customersRepository.save(customer);
             
             //send to order-service to claim 'newuser' voucher

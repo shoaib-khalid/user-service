@@ -5,9 +5,11 @@ Remove storeId from customer relationship for marketplace feature
 Activate customer account if login via Google/FB/Apple
 Claim newuser voucher for newly activated account
 Add domain to customer profile
+Add channel to customer profile
 
 ##DB Changes:
 ALTER TABLE customer ADD domain VARCHAR(100);
+ALTER TABLE customer ADD channel VARCHAR(100);
 
 ##Config changes:
 orderService.claimnewuservoucher.URL=https://api.symplified.it/order-service/v1/voucher/claim/newuser/<customerId>

@@ -312,7 +312,7 @@ public class CustomersController {
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
         body.setLocked(false);
-        body.setDeactivated(false);
+        body.setDeactivated(false);        
         body = customersRepository.save(body);
         
         if (activateAccount) {
@@ -321,7 +321,7 @@ public class CustomersController {
             orderService.claimNewUserVoucher(body.getId());
         }
         
-        emaiVerificationlHandler.sendVerificationEmail(body, null);
+        emaiVerificationlHandler.sendVerificationEmail(body, body.getDomain());
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");
         response.setStatus(HttpStatus.CREATED);
         response.setData(body);

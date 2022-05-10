@@ -1,9 +1,13 @@
 ##################################################
-# user-service-3.2.15-SNAPSHOT | 9-May-2022
+# user-service-3.2.15-SNAPSHOT | 10-May-2022
 ##################################################
 Remove storeId from customer relationship for marketplace feature
 Activate customer account if login via Google/FB/Apple
 Claim newuser voucher for newly activated account
+Add domain to customer profile
+
+##DB Changes:
+ALTER TABLE customer ADD domain VARCHAR(100);
 
 ##Config changes:
 orderService.claimnewuservoucher.URL=https://api.symplified.it/order-service/v1/voucher/claim/newuser/<customerId>

@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -64,6 +65,8 @@ public class Customer implements Serializable {
     private String roleId;
 
     private String storeId;
+        
+    private String domain;
         
     public void update(Customer user) {
         if (null != user.getEmail()) {

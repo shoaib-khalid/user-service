@@ -620,6 +620,7 @@ public class CustomersController {
             customer.setDeactivated(false);
             customer.setIsActivated(Boolean.TRUE);
             customer.setChannel(body.getLoginType());
+            customer.setCountryId(body.getCountry());
             customer = customersRepository.save(customer);
             
             //send to order-service to claim 'newuser' voucher

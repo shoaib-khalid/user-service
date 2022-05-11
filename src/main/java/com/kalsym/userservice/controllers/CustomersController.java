@@ -493,6 +493,7 @@ public class CustomersController {
         if (customerList.isEmpty()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
+            response.setMessage("Email does not found! Are you sure you are already a member?");
             return ResponseEntity.status(response.getStatus()).body(response);
         }
 
@@ -501,7 +502,15 @@ public class CustomersController {
         Customer customer = null;
         try {
             customer = customerList.get(0);
-            emaiVerificationlHandler.sendPasswordReset(customer, domain, reseturl);
+            if (customer.getChannel().equalsIgnoreCase("INTERNAL")) {
+                emaiVerificationlHandler.sendPasswordReset(customer, domain, reseturl);
+            } else {
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "", "");
+
+                response.setStatus(HttpStatus.CONFLICT);
+                response.setMessage("You have signed up with us via a third-party account.");
+                return ResponseEntity.status(response.getStatus()).body(response);
+            }
         } catch (Exception e) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error sending email ", "", e);
 

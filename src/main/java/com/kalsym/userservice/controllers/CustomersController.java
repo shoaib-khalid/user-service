@@ -613,6 +613,7 @@ public class CustomersController {
             //create new account for customer
             customer = new Customer();
             customer.setUsername(userEmail);
+            customer.setEmail(userEmail);
             customer.setRoleId("CUSTOMER");
             customer.setCreated(DateTimeUtil.currentTimestamp());
             customer.setUpdated(DateTimeUtil.currentTimestamp());

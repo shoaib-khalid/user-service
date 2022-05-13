@@ -298,18 +298,20 @@ public class CustomersController {
             }
         }
         
-        List<Customer> customerList3 = customersRepository.findByPhoneNumber(body.getPhoneNumber());
-        if (customerList3.size()>0) {
-            if (customerList3.get(0).getIsActivated()) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Phone number already exists", "");
-                response.setStatus(HttpStatus.CONFLICT);
-                errors.add("Phoner number already exists");
-                response.setData(errors);
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-            } else {
-                Customer existingCustomer = customerList3.get(0);
-                //update customer info if already exist but not activated
-                body.setId(existingCustomer.getId());
+        if (body.getPhoneNumber()!=null) {
+            List<Customer> customerList3 = customersRepository.findByPhoneNumber(body.getPhoneNumber());
+            if (customerList3.size()>0) {
+                if (customerList3.get(0).getIsActivated()) {
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Phone number already exists", "");
+                    response.setStatus(HttpStatus.CONFLICT);
+                    errors.add("Phoner number already exists");
+                    response.setData(errors);
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+                } else {
+                    Customer existingCustomer = customerList3.get(0);
+                    //update customer info if already exist but not activated
+                    body.setId(existingCustomer.getId());
+                }
             }
         }
         

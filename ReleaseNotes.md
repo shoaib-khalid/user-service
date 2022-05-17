@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.16-SNAPSHOT | 17-May-2022
+##################################################
+Set sender email address & sender name when sending email to email-service
+
+
+##################################################
 # user-service-3.2.15-SNAPSHOT | 13-May-2022
 ##################################################
 Remove storeId from customer relationship for marketplace feature

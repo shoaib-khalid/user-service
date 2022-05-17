@@ -12,9 +12,11 @@ import com.kalsym.userservice.models.daos.ClientEmailVerification;
 import com.kalsym.userservice.models.daos.ClientPasswordReset;
 import com.kalsym.userservice.models.daos.Client;
 import com.kalsym.userservice.models.daos.PasswordReset.PasswordResetStatus;
+import com.kalsym.userservice.models.daos.RegionVertical;
 import com.kalsym.userservice.repositories.ClientEmailVerificationsRepository;
 import com.kalsym.userservice.repositories.ClientPasswordResetsRepository;
 import com.kalsym.userservice.repositories.CustomerEmailVerificationsRepository;
+import com.kalsym.userservice.repositories.RegionVerticalRepository;
 import com.kalsym.userservice.utils.Logger;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +45,9 @@ public class EmaiVerificationlHandler {
 
     @Autowired
     ClientPasswordResetsRepository clientPasswordResetsRepository;
+    
+    @Autowired
+    RegionVerticalRepository regionVerticalRepository;
 
     @Value("${symplified.email.service.url:http://209.58.160.20:2001}")
     private String emailServiceUrl;
@@ -62,6 +67,20 @@ public class EmaiVerificationlHandler {
 
         email.setTo(recipients);
         email.setDomain(domain);
+        
+        if (domain!=null) {
+            List<RegionVertical> regionVerticalList = null;
+            if (domain.startsWith(".")) {
+                regionVerticalList = regionVerticalRepository.findByDomain(domain.substring(1));
+            } else {
+                regionVerticalList = regionVerticalRepository.findByDomain(domain);
+            }
+            if (regionVerticalList.size()>0) {
+                email.setFrom(regionVerticalList.get(0).getSenderEmailAdress());
+                email.setFromName(regionVerticalList.get(0).getSenderEmailName());
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Set sender email:"+email.getFrom()+" name:"+email.getFromName());
+            }            
+        }       
         
         AccountVerificationEmailBody aveb = new AccountVerificationEmailBody();
         if (actionType.equals("RESET"))

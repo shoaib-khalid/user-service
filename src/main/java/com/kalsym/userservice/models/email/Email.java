@@ -25,6 +25,8 @@ public class Email {
     private String[] to;
     private String subject;
     private AccountVerificationEmailBody userAccountBody;
+    private String from;
+    private String fromName;    
     private String domain;
 
 }

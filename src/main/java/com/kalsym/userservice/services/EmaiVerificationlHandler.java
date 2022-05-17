@@ -76,8 +76,8 @@ public class EmaiVerificationlHandler {
                 regionVerticalList = regionVerticalRepository.findByDomain(domain);
             }
             if (regionVerticalList.size()>0) {
-                email.setFrom(regionVerticalList.get(0).getSenderEmailAdress());
-                email.setFromName(regionVerticalList.get(0).getSenderEmailName());
+                email.setFrom(regionVerticalList.get(0).getSenderEmailAdress().replaceAll("orders", "no-reply"));
+                email.setFromName(regionVerticalList.get(0).getSenderEmailName().replaceAll("Orders", ""));
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Set sender email:"+email.getFrom()+" name:"+email.getFromName());
             }            
         }       

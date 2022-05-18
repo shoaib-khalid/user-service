@@ -1,8 +1,8 @@
 ##################################################
-# user-service-3.2.16-SNAPSHOT | 17-May-2022
+# user-service-3.2.16-SNAPSHOT | 18-May-2022
 ##################################################
 Set sender email address & sender name when sending email to email-service
-
+Bug fix for PUT customer
 
 ##################################################
 # user-service-3.2.15-SNAPSHOT | 13-May-2022

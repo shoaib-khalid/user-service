@@ -659,7 +659,15 @@ public class CustomersController {
             orderService.claimNewUserVoucher(customer.getId());
             
         } else {
+            
             customer = customerList.get(0);
+            
+            if (customer.getIsActivated()==false) {
+                //send to order-service to claim 'newuser' voucher
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Claim new user voucher");     
+                orderService.claimNewUserVoucher(customer.getId());
+            }
+            
             customer.setIsActivated(Boolean.TRUE);
             customersRepository.save(customer);
         }

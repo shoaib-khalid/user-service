@@ -90,8 +90,8 @@ public class CustomersController {
     @Value("${session.expiry:3600}")
     private int expiry;
     
-    @Value("${customer.apple.login.redirect.url:https://customer.symplified.it/applelogin}")
-    private String appleLoginRedirectUrl;
+    @Value("${customer.apple.login.redirect.url:/applelogin}")
+    private String appleLoginRedirectPath;
     
     @Autowired
     GoogleAuthService googleAuthService;
@@ -738,7 +738,7 @@ public class CustomersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "code: " + code);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "id_token: " + id_token);
         
-        String redirecUrl = "https://"+domain+appleLoginRedirectUrl;
+        String redirecUrl = "https://"+domain+appleLoginRedirectPath;
         
         //redirect to front-end url      
         return ResponseEntity.status(HttpStatus.FOUND)

@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.17-SNAPSHOT | 19-May-2022
+##################################################
+Bug fix for apple login for customer
+
+
+##################################################
 # user-service-3.2.16-SNAPSHOT | 18-May-2022
 ##################################################
 Set sender email address & sender name when sending email to email-service

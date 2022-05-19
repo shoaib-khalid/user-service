@@ -725,20 +725,26 @@ public class CustomersController {
     }
     
     //authentication
-    @PostMapping(path = "/applecallback", name = "customers-authenticate")
+    @PostMapping(path = "/applecallback/{domain}", name = "customers-authenticate")
     public ResponseEntity appleCallback(HttpServletRequest request,
+            @PathVariable(required = true) String domain,
             @RequestParam String state,
             @RequestParam String code,
             @RequestParam String id_token) throws Exception {
         String logprefix = request.getRequestURI();
+        
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "domain: " + domain);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "state: " + state);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "code: " + code);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "id_token: " + id_token);
         
+        String redirecUrl = "https://"+domain+appleLoginRedirectUrl;
+        
         //redirect to front-end url      
         return ResponseEntity.status(HttpStatus.FOUND)
-        .location(URI.create(appleLoginRedirectUrl+"?state="+URLEncoder.encode(state,StandardCharsets.UTF_8.toString())+"&code="+URLEncoder.encode(code,StandardCharsets.UTF_8.toString())+"&id_token="+URLEncoder.encode(id_token,StandardCharsets.UTF_8.toString())))
+        .location(URI.create(redirecUrl+"?state="+URLEncoder.encode(state,StandardCharsets.UTF_8.toString())+"&code="+URLEncoder.encode(code,StandardCharsets.UTF_8.toString())+"&id_token="+URLEncoder.encode(id_token,StandardCharsets.UTF_8.toString())))
         .build();
+             
     }
     
     @PostMapping(path = "session/refresh", name = "customers-session-refresh")

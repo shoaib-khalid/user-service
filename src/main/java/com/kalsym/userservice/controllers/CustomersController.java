@@ -652,6 +652,7 @@ public class CustomersController {
             customer.setIsActivated(Boolean.TRUE);
             customer.setChannel(body.getLoginType());
             customer.setCountryId(body.getCountry());
+            customer.setDomain(body.getDomain());
             customer = customersRepository.save(customer);
             
             //send to order-service to claim 'newuser' voucher
@@ -668,6 +669,7 @@ public class CustomersController {
                 customer.setChannel(body.getLoginType());
                 customer.setCountryId(body.getCountry());
                 customer.setIsActivated(Boolean.TRUE);
+                customer.setDomain(body.getDomain());
                 customersRepository.save(customer);
                 
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Claim new user voucher");     

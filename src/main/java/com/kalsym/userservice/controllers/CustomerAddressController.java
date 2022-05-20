@@ -169,6 +169,7 @@ public class CustomerAddressController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
 
         body.setCustomerId(customerId);
+        if (body.getIsDefault()==null) { body.setIsDefault(Boolean.FALSE); }
         body = customerAddressRepository.save(body);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress created with id: " + body.getCustomerId(), "");
         

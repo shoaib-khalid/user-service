@@ -664,15 +664,21 @@ public class CustomersController {
             
             if (customer.getIsActivated()==false) {
                 //send to order-service to claim 'newuser' voucher
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Claim new user voucher");     
-                orderService.claimNewUserVoucher(customer.getId());
                 customer.setUpdated(DateTimeUtil.currentTimestamp());
                 customer.setChannel(body.getLoginType());
                 customer.setCountryId(body.getCountry());
+                customer.setIsActivated(Boolean.TRUE);
+                customersRepository.save(customer);
+                
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Claim new user voucher");     
+                orderService.claimNewUserVoucher(customer.getId());
+                
+            } else {
+                customer.setIsActivated(Boolean.TRUE);
+                customersRepository.save(customer);
             }
             
-            customer.setIsActivated(Boolean.TRUE);
-            customersRepository.save(customer);
+            
         }
         
         List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(customer.getRoleId());

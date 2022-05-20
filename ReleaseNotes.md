@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.18-SNAPSHOT | 20-May-2022
+##################################################
+Bug fix for newuser voucher for gooogle/fb/apple loginoauth
+
+
+##################################################
 # user-service-3.2.17-SNAPSHOT | 19-May-2022
 ##################################################
 Bug fix for apple login for customer

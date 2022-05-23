@@ -569,7 +569,7 @@ public class CustomersController {
 
                 response.setStatus(HttpStatus.CONFLICT);
                 
-                String message;
+                String message=null;
                 if (customer.getChannel().equals("APPLE")) {
                     message = "You have signed up with us via Apple ID.";
                 } else if (customer.getChannel().equals("GOOGLE")) {

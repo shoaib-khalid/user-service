@@ -85,11 +85,60 @@ public class EmaiVerificationlHandler {
         AccountVerificationEmailBody aveb = new AccountVerificationEmailBody();
         if (actionType.equals("RESET"))
             aveb.setActionType(AccountVerificationEmailBody.ActionType.PASSWORD_RESET);
-        else
+        else if (actionType.equals("VERIFY"))
             aveb.setActionType(AccountVerificationEmailBody.ActionType.EMAIL_VERIFICATION);
+        else if (actionType.equals("NOTIFICATION"))
+            aveb.setActionType(AccountVerificationEmailBody.ActionType.ACCOUNT_CREATED_NOTIFICATION);
+        
         aveb.setLink(body);
         email.setUserAccountBody(aveb);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer accessToken");
 
+        HttpEntity<Email> httpEntity = new HttpEntity<>(email, headers);
+        String url = emailServiceUrl + "/email/no-reply/user-account";
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "url: " + url, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "httpEntity: " + httpEntity, "");
+
+        ResponseEntity<String> res = restTemplate.postForEntity(url, httpEntity, String.class);
+
+        if (res.getStatusCode() == HttpStatus.ACCEPTED || res.getStatusCode() == HttpStatus.OK) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "res: " + res.getBody(), "");
+            return true;
+        } else {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "could not send verification email res: " + res, "");
+            return false;
+        }
+
+    }
+    
+    
+    public boolean sendNotificationEmail(String[] recipients, String body, String domain) throws Exception {
+        String logprefix = "sendEmail";
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        Email email = new Email();
+
+        email.setTo(recipients);
+        email.setDomain(domain);
+        email.setSubject("Congratulation! Your DeliverIn account is created.");
+        
+        if (domain!=null) {
+            List<RegionVertical> regionVerticalList = null;
+            if (domain.startsWith(".")) {
+                regionVerticalList = regionVerticalRepository.findByDomain(domain.substring(1));
+            } else {
+                regionVerticalList = regionVerticalRepository.findByDomain(domain);
+            }
+            if (regionVerticalList.size()>0) {
+                email.setFrom(regionVerticalList.get(0).getSenderEmailAdress().replaceAll("orders", "no-reply"));
+                email.setFromName(regionVerticalList.get(0).getSenderEmailName().replaceAll("Orders", ""));
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Set sender email:"+email.getFrom()+" name:"+email.getFromName());
+            }            
+        }       
+                
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer accessToken");
 
@@ -187,7 +236,46 @@ public class EmaiVerificationlHandler {
 
         String[] recipients = {email};
 
-        return sendEmail(recipients, verificationUrl, "VERIFY", domain);
+      return sendEmail(recipients, verificationUrl, "VERIFY", domain);
+    }
+    
+    
+    public boolean sendNotificationEmail(Object user, String domain) throws Exception {
+        String logprefix = "sendNotificationEmail";
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+
+        String email = null;
+        String userId = null;
+
+        Customer customer = null;
+        Client client = null;
+        try {
+            customer = (Customer) user;
+            email = customer.getEmail();
+            userId = customer.getId();
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user is a customer", "");
+
+        } catch (Exception e) {
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot cast user to customer", "");
+
+        }
+
+        try {
+            client = (Client) user;
+            email = client.getEmail();
+            userId = client.getId();
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user is a client", "");
+
+        } catch (Exception e) {
+            Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "cannot cast user to client", "");
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "userId: " + userId + " email: " + email, "");
+
+        String[] recipients = {email};
+        
+        return sendEmail(recipients, null, "NOTIFICATION", domain);
     }
 
     public boolean verifyEmail(Object user, String code) {

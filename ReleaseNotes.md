@@ -1,4 +1,11 @@
 ##################################################
+# user-service-3.2.19-SNAPSHOT | 23-May-2022
+##################################################
+Disable email verification for new customer created account
+Send email notification for new customer created account
+
+
+##################################################
 # user-service-3.2.18-SNAPSHOT | 20-May-2022
 ##################################################
 Bug fix for newuser voucher for gooogle/fb/apple loginoauth

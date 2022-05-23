@@ -24,6 +24,7 @@ public class AccountVerificationEmailBody {
 
     public enum ActionType {
         EMAIL_VERIFICATION("Email Verification"),
+        ACCOUNT_CREATED_NOTIFICATION("Congratulation! Your DeliverIn account is created."),
         PASSWORD_RESET("Password Reset");
 
         public final String label;

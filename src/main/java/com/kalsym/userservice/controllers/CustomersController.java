@@ -343,7 +343,11 @@ public class CustomersController {
             orderService.claimNewUserVoucher(body.getId());
         }
         
-        emaiVerificationlHandler.sendVerificationEmail(body, body.getDomain());
+        //disable email verification for now
+        //emaiVerificationlHandler.sendVerificationEmail(body, body.getDomain());
+        
+        emaiVerificationlHandler.sendNotificationEmail(body, body.getDomain());
+        
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");
         response.setStatus(HttpStatus.CREATED);
         response.setData(body);

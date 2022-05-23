@@ -281,22 +281,23 @@ public class CustomersController {
             if (customerList.get(0).getIsActivated()) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Username already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
-                                
+
+                String message;
                 if (customerList.get(0).getChannel()!=null) {
                     if (customerList.get(0).getChannel().equals("APPLE")) {
-                        errors.add("You have signed up with us via Apple ID.");
+                        message = "You have signed up with us via Apple ID.";
                     } else if (customerList.get(0).getChannel().equals("GOOGLE")) {
-                        errors.add("You have signed up with us via Google account.");
+                        message = "You have signed up with us via Google account.";
                     } else if (customerList.get(0).getChannel().equals("FACEBOOK")) {
-                        errors.add("You have signed up with us via Facebook account.");
+                        message = "You have signed up with us via Facebook account.";
                     } else {
-                        errors.add("Username already exists");
+                        message = "Username already exists";
                     }
                 } else {
-                    errors.add("Username already exists");
+                    message = "Username already exists";
                 }
                 
-                response.setData(errors);
+                response.setMessage(message);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
         }
@@ -307,21 +308,22 @@ public class CustomersController {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Email already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
                 
+                String message;
                 if (customerList.get(0).getChannel()!=null) {
                     if (customerList.get(0).getChannel().equals("APPLE")) {
-                        errors.add("You have signed up with us via Apple ID.");
+                        message = "You have signed up with us via Apple ID.";
                     } else if (customerList.get(0).getChannel().equals("GOOGLE")) {
-                        errors.add("You have signed up with us via Google account.");
+                        message = "You have signed up with us via Google account.";
                     } else if (customerList.get(0).getChannel().equals("FACEBOOK")) {
-                        errors.add("You have signed up with us via Facebook account.");
+                        message = "You have signed up with us via Facebook account.";
                     } else {
-                        errors.add("Email already exists");
+                        message = "Email already exists";
                     }
                 } else {
-                    errors.add("Email already exists");
+                    message = "Email already exists";
                 }
                                  
-                response.setData(errors);
+                response.setMessage(message);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             } else {
                 Customer existingCustomer = customerList2.get(0);
@@ -435,21 +437,21 @@ public class CustomersController {
             
             List<Customer> customerList = customersRepository.findByUsername(body.getUsername());
             if (customerList.size()>0) {
-                List<String> errors = new ArrayList<>();
+                String message = null;
                 if (customerList.get(0).getChannel()!=null) {
                     if (customerList.get(0).getChannel().equals("APPLE")) {
-                        errors.add("You have signed up with us via Apple ID.");
+                        message = "You have signed up with us via Apple ID.";
                     } else if (customerList.get(0).getChannel().equals("GOOGLE")) {
-                        errors.add("You have signed up with us via Google account.");
+                        message = "You have signed up with us via Google account.";
                     } else if (customerList.get(0).getChannel().equals("FACEBOOK")) {
-                        errors.add("You have signed up with us via Facebook account.");
+                        message = "You have signed up with us via Facebook account.";
                     } else {
-                        errors.add("Email already exists");
+                        message = "Email already exists";
                     }
                 } else {
-                    errors.add("Email already exists");
+                    message = "Email already exists";
                 }
-                response.setData(errors);
+                response.setMessage(message);
             }
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);

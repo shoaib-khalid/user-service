@@ -568,7 +568,16 @@ public class CustomersController {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "", "");
 
                 response.setStatus(HttpStatus.CONFLICT);
-                response.setMessage("You have signed up with us via a third-party account.");
+                
+                String message;
+                if (customer.getChannel().equals("APPLE")) {
+                    message = "You have signed up with us via Apple ID.";
+                } else if (customer.getChannel().equals("GOOGLE")) {
+                    message = "You have signed up with us via Google account.";
+                } else if (customer.getChannel().equals("FACEBOOK")) {
+                    message = "You have signed up with us via Facebook account.";
+                }
+                response.setMessage(message);
                 return ResponseEntity.status(response.getStatus()).body(response);
             }
         } catch (Exception e) {

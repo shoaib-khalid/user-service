@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.2.20-SNAPSHOT | 23-May-2022
+##################################################
+Set different error message for user that register using third party account : fb/apple/google
+
+
+##################################################
 # user-service-3.2.19-SNAPSHOT | 23-May-2022
 ##################################################
 Disable email verification for new customer created account

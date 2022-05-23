@@ -281,7 +281,21 @@ public class CustomersController {
             if (customerList.get(0).getIsActivated()) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Username already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
-                errors.add("Username already exists");
+                                
+                if (customerList.get(0).getChannel()!=null) {
+                    if (customerList.get(0).getChannel().equals("APPLE")) {
+                        errors.add("You have signed up with us via Apple ID.");
+                    } else if (customerList.get(0).getChannel().equals("GOOGLE")) {
+                        errors.add("You have signed up with us via Google account.");
+                    } else if (customerList.get(0).getChannel().equals("FACEBOOK")) {
+                        errors.add("You have signed up with us via Facebook account.");
+                    } else {
+                        errors.add("Username already exists");
+                    }
+                } else {
+                    errors.add("Username already exists");
+                }
+                
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
@@ -292,7 +306,21 @@ public class CustomersController {
             if (customerList2.get(0).getIsActivated()) {
                 Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Email already exists", "");
                 response.setStatus(HttpStatus.CONFLICT);
-                errors.add("Email already exists");
+                
+                if (customerList.get(0).getChannel()!=null) {
+                    if (customerList.get(0).getChannel().equals("APPLE")) {
+                        errors.add("You have signed up with us via Apple ID.");
+                    } else if (customerList.get(0).getChannel().equals("GOOGLE")) {
+                        errors.add("You have signed up with us via Google account.");
+                    } else if (customerList.get(0).getChannel().equals("FACEBOOK")) {
+                        errors.add("You have signed up with us via Facebook account.");
+                    } else {
+                        errors.add("Email already exists");
+                    }
+                } else {
+                    errors.add("Email already exists");
+                }
+                                 
                 response.setData(errors);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             } else {
@@ -404,6 +432,26 @@ public class CustomersController {
         } catch (BadCredentialsException e) {
             Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error validating customer", "", e);
             response.setStatus(HttpStatus.UNAUTHORIZED, "Bad Craedentiails");
+            
+            List<Customer> customerList = customersRepository.findByUsername(body.getUsername());
+            if (customerList.size()>0) {
+                List<String> errors = new ArrayList<>();
+                if (customerList.get(0).getChannel()!=null) {
+                    if (customerList.get(0).getChannel().equals("APPLE")) {
+                        errors.add("You have signed up with us via Apple ID.");
+                    } else if (customerList.get(0).getChannel().equals("GOOGLE")) {
+                        errors.add("You have signed up with us via Google account.");
+                    } else if (customerList.get(0).getChannel().equals("FACEBOOK")) {
+                        errors.add("You have signed up with us via Facebook account.");
+                    } else {
+                        errors.add("Email already exists");
+                    }
+                } else {
+                    errors.add("Email already exists");
+                }
+                response.setData(errors);
+            }
+
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (AuthenticationException e) {
             Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error validating customer", "", e);

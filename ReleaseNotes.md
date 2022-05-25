@@ -1,4 +1,14 @@
 ##################################################
+# user-service-3.2.21-SNAPSHOT | 25-May-2022
+##################################################
+Add new field for customer :latitude & longitude
+
+##DB Changes:
+ALTER TABLE customer ADD latitude VARCHAR(20);
+ALTER TABLE customer ADD longitude VARCHAR(20);
+
+
+##################################################
 # user-service-3.2.20-SNAPSHOT | 23-May-2022
 ##################################################
 Set different error message for user that register using third party account : fb/apple/google

@@ -60,6 +60,15 @@ public class CustomerWithDetail implements Serializable {
     private String roleId;
 
     private String storeId;
+    
+    private String domain;
+    
+    private String channel;
+    
+    private String latitude;
+    
+    private String longitude;
+     
 
     @OneToMany(cascade = CascadeType.ALL,
             fetch = FetchType.EAGER)

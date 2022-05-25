@@ -49,7 +49,11 @@ public class CustomerAddress implements Serializable {
     private String customerId;
     
     private Boolean isDefault;
-
+            
+    private String latitude;
+    
+    private String longitude;
+     
     public void update(CustomerAddress customerAddress) {
         if (null != customerAddress.getName()) {
             name = customerAddress.getName();

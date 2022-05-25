@@ -68,11 +68,7 @@ public class Customer implements Serializable {
         
     private String domain;
     
-    private String channel;
-    
-    private String latitude;
-    
-    private String longitude;
+    private String channel;   
         
     public void update(Customer user) {
         if (null != user.getEmail()) {

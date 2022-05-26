@@ -19,6 +19,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,9 +53,8 @@ public class CustomerSearchController {
     @PreAuthorize("hasAnyAuthority('customer-search-get', 'all')")
     public ResponseEntity<HttpReponse> getCustomerSearch(HttpServletRequest request,
             @PathVariable String customerId,
-            @RequestParam(required = false) String storeId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int pageSize) {
+            @RequestParam(required = false) String storeId
+            ) {
         String logprefix = request.getRequestURI();
 
         HttpReponse response = new HttpReponse(request.getRequestURI());
@@ -74,9 +74,11 @@ public class CustomerSearchController {
                 .withIgnoreCase()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
         Example<CustomerSearchHistory> example = Example.of(customerSearch, matcher);
-
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
-        Pageable pageable = PageRequest.of(page, pageSize);
+        
+        int page=0;
+        int pageSize=10;
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");       
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("created").descending());
 
         response.setStatus(HttpStatus.OK);
         response.setData(customerSearchRepository.findAll(example, pageable));
@@ -144,10 +146,24 @@ public class CustomerSearchController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
-
+        
+        //remove previous same text if any
+        customerSearchRepository.deleteBySearchTextAndCustomerId(body.getSearchText(), customerId);
+        
         body.setCustomerId(customerId);
         body = customerSearchRepository.save(body);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress created with id: " + body.getCustomerId(), "");
+        
+        List<CustomerSearchHistory> customerSearchHistoryList = customerSearchRepository.findByCustomerIdOrderByCreatedDesc(customerId);
+        if (customerSearchHistoryList.size()>20) {
+            int count=1;
+            for (int i=0;i<customerSearchHistoryList.size();i++) {
+                if (count>20) {
+                    customerSearchRepository.deleteById(customerSearchHistoryList.get(i).getId());
+                }
+                count++;
+            }
+        }
         
         response.setStatus(HttpStatus.CREATED, Error.RECORD_CREATED, errorCodeRepository);
         response.setData(body);

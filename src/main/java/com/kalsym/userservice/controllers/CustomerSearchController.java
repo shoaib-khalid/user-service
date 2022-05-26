@@ -1,0 +1,170 @@
+package com.kalsym.userservice.controllers;
+
+import com.kalsym.userservice.UserServiceApplication;
+import com.kalsym.userservice.models.HttpReponse;
+import com.kalsym.userservice.models.Error;
+import com.kalsym.userservice.models.daos.CustomerSearchHistory;
+import com.kalsym.userservice.models.daos.ErrorCode;
+import com.kalsym.userservice.repositories.CustomerSearchRepository;
+import com.kalsym.userservice.repositories.ErrorCodeRepository;
+import com.kalsym.userservice.utils.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ *
+ * @author Sarosh
+ */
+@RestController()
+@RequestMapping("/customer/{customerId}/search")
+public class CustomerSearchController {
+
+    @Autowired
+    CustomerSearchRepository customerSearchRepository;
+    
+    @Autowired
+    ErrorCodeRepository errorCodeRepository;
+
+    @GetMapping(path = {""}, name = "customer-search-get")
+    @PreAuthorize("hasAnyAuthority('customer-search-get', 'all')")
+    public ResponseEntity<HttpReponse> getCustomerSearch(HttpServletRequest request,
+            @PathVariable String customerId,
+            @RequestParam(required = false) String storeId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        String logprefix = request.getRequestURI();
+
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+
+        CustomerSearchHistory customerSearch = new CustomerSearchHistory();
+        customerSearch.setCustomerId(customerId);
+        
+        if (storeId!=null) {
+            customerSearch.setStoreId(storeId);
+        }
+        
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, customerSearch + "", "");
+        ExampleMatcher matcher = ExampleMatcher
+                .matchingAll()
+                .withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+        Example<CustomerSearchHistory> example = Example.of(customerSearch, matcher);
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");
+        Pageable pageable = PageRequest.of(page, pageSize);
+
+        response.setStatus(HttpStatus.OK);
+        response.setData(customerSearchRepository.findAll(example, pageable));
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    
+    @GetMapping(path = {"/{id}"}, name = "customer-search-get")
+    @PreAuthorize("hasAnyAuthority('customer-search-get', 'all')")
+    public ResponseEntity<HttpReponse> getCustomerSearchById(HttpServletRequest request,
+            @PathVariable String customerId,
+            @PathVariable String id) {
+        String logprefix = request.getRequestURI();
+
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+
+        Optional<CustomerSearchHistory> optCustomerAddress = customerSearchRepository.findById(id);
+        if (optCustomerAddress.isPresent()) {
+            response.setStatus(HttpStatus.OK);
+            response.setData(optCustomerAddress.get());
+        } else {
+            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+        }
+        
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @DeleteMapping(path = {"/{id}"}, name = "customer-search-delete-by-id")
+    @PreAuthorize("hasAnyAuthority('customer-search-delete-by-id', 'all')")
+    public ResponseEntity<HttpReponse> deleteCustomerSearchById(HttpServletRequest request,
+            @PathVariable String id) {
+        String logprefix = request.getRequestURI();
+
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+
+        Optional<CustomerSearchHistory> optCustomerSearch = customerSearchRepository.findById(id);
+
+        if (!optCustomerSearch.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
+        customerSearchRepository.delete(optCustomerSearch.get());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress deleted", "");
+        response.setStatus(HttpStatus.OK);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    
+
+    @PostMapping(name = "customer-search-post")
+    //@PreAuthorize("hasAnyAuthority('customer-address-post', 'all')")
+    public ResponseEntity<HttpReponse> postCustomerSearch(HttpServletRequest request,
+            @PathVariable String customerId,
+            @Valid @RequestBody CustomerSearchHistory body) throws Exception {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
+
+        body.setCustomerId(customerId);
+        body = customerSearchRepository.save(body);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress created with id: " + body.getCustomerId(), "");
+        
+        response.setStatus(HttpStatus.CREATED, Error.RECORD_CREATED, errorCodeRepository);
+        response.setData(body);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {
+        String logprefix = request.getRequestURI();
+
+        Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "validation failed", "");
+        List<String> errors = e.getBindingResult().getFieldErrors().stream()
+                .map(x -> x.getDefaultMessage())
+                .collect(Collectors.toList());
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+        response.setStatus(HttpStatus.BAD_REQUEST);
+        response.setData(errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+}

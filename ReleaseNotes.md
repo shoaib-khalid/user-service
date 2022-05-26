@@ -1,4 +1,27 @@
 ##################################################
+# user-service-3.3.0-SNAPSHOT | 26-May-2022
+##################################################
+Add new controller : customer search - to store history of search text entered in front-end
+Add error_code table to be used by all backend module to standardize message displayed to customer
+
+##DB Changes:
+CREATE TABLE customer_search_history (
+id VARCHAR(100) PRIMARY KEY,
+customerId VARCHAR(100),
+searchText VARCHAR(200),
+storeId VARCHAR(100),
+created DATETIME
+);
+
+CREATE TABLE error_code (
+errorCode VARCHAR(50) PRIMARY KEY,
+errorDescription VARCHAR(100),
+errorMessage VARCHAR(200)
+);
+
+
+
+##################################################
 # user-service-3.2.21-SNAPSHOT | 25-May-2022
 ##################################################
 Add new field for customer :latitude & longitude

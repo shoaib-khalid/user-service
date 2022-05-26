@@ -2,8 +2,11 @@ package com.kalsym.userservice.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.kalsym.userservice.models.daos.ErrorCode;
+import com.kalsym.userservice.repositories.ErrorCodeRepository;
 import com.kalsym.userservice.utils.DateTimeUtil;
 import java.util.Date;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -28,6 +31,7 @@ public class HttpReponse {
     private String message;
     private Object data;
     private String path;
+    private String errorCode;
 
     /**
      * *
@@ -50,6 +54,23 @@ public class HttpReponse {
     public void setStatus(HttpStatus status, String message) {
         this.status = status.value();
         this.error = status.getReasonPhrase();
+    }
+    
+   
+    /**
+     * *
+     * Sets status and custom message.
+     *
+     * @param status
+     * @param error
+     * @param errorCodeRepository
+     */
+    public void setStatus(HttpStatus status, Error error, ErrorCodeRepository errorCodeRepository) {
+        Optional<ErrorCode> errorCodeOpt = errorCodeRepository.findById(error.errorCode);
+        if (errorCodeOpt.isPresent()) {
+            this.message = errorCodeOpt.get().getErrorMessage();
+            this.errorCode = errorCodeOpt.get().getErrorCode();
+        }
     }
 
 }

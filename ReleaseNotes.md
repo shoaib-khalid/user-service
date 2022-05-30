@@ -27,6 +27,9 @@ INSERT INTO role_authority VALUES ('CUSTOMER','customer-search-get','user-servic
 INSERT INTO role_authority VALUES ('CUSTOMER','customer-search-delete-by-id','user-service');
 INSERT INTO role_authority VALUES ('CUSTOMER','customer-search-post','user-service');
 
+INSERT INTO role_authority VALUES ('STORE_OWNER','customer-search-get','user-service');
+INSERT INTO role_authority VALUES ('STORE_OWNER','customer-search-delete-by-id','user-service');
+INSERT INTO role_authority VALUES ('STORE_OWNER','customer-search-post','user-service');
 
 ##################################################
 # user-service-3.2.21-SNAPSHOT | 25-May-2022

@@ -48,7 +48,7 @@ public class ErrorCodesController {
     ErrorCodeRepository errorCodeRepository;
 
     @GetMapping(path = {""}, name = "error-code-get")
-    @PreAuthorize("hasAnyAuthority('error-code', 'all')")
+    @PreAuthorize("hasAnyAuthority('error-code-get', 'all')")
     public ResponseEntity<HttpReponse> getErrorCodes(HttpServletRequest request
         ) {
         String logprefix = request.getRequestURI();

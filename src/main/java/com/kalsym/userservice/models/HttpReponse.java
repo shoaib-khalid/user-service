@@ -71,7 +71,7 @@ public class HttpReponse {
         this.status = status.value();
         if (errorCodeOpt.isPresent()) {
             this.message = errorCodeOpt.get().getErrorMessage();
-            this.errorCode = errorCodeOpt.get().getErrorCode();
+            this.errorCode = modules+"-"+errorCategory+"-"+errorCodeOpt.get().getErrorCode();
         }
     }
 

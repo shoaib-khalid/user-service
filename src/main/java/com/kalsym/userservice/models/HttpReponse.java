@@ -60,13 +60,14 @@ public class HttpReponse {
     /**
      * *
      * Sets status and custom message.
-     *
+     * @param modules
+     * @param errorCategory
      * @param status
      * @param error
      * @param errorCodeRepository
      */
-    public void setStatus(HttpStatus status, Error error, ErrorCodeRepository errorCodeRepository) {
-        Optional<ErrorCode> errorCodeOpt = errorCodeRepository.findById(error.errorCode);
+    public void setStatus(String modules, String errorCategory, HttpStatus status, Error error, ErrorCodeRepository errorCodeRepository) {
+        Optional<ErrorCode> errorCodeOpt = errorCodeRepository.findByModulesAndErrorCategoryAndErrorCode(modules, errorCategory, error.errorCode);
         this.status = status.value();
         if (errorCodeOpt.isPresent()) {
             this.message = errorCodeOpt.get().getErrorMessage();

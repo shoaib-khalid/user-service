@@ -69,7 +69,7 @@ public class CustomerSearchController {
         Optional<Customer> optCustomer = customerRepository.findById(customerId);
         if (!optCustomer.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
-            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+            response.setStatus("US", "CUS", HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
         
@@ -111,7 +111,7 @@ public class CustomerSearchController {
         Optional<Customer> optCustomer = customerRepository.findById(customerId);
         if (!optCustomer.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
-            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+            response.setStatus("US", "CUS", HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
         
@@ -120,7 +120,7 @@ public class CustomerSearchController {
             response.setStatus(HttpStatus.OK);
             response.setData(optCustomerSearch.get());
         } else {
-            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+            response.setStatus("US", "CSS", HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
         }
         
         return ResponseEntity.status(response.getStatus()).body(response);
@@ -140,7 +140,7 @@ public class CustomerSearchController {
         Optional<Customer> optCustomer = customerRepository.findById(customerId);
         if (!optCustomer.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
-            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+            response.setStatus("US", "CUS", HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
         
@@ -148,7 +148,7 @@ public class CustomerSearchController {
 
         if (!optCustomerSearch.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerSearch not found", "");
-            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+            response.setStatus("US", "CSS", HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
 
@@ -156,6 +156,7 @@ public class CustomerSearchController {
         customerSearchRepository.delete(optCustomerSearch.get());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerSearch deleted", "");
+        response.setStatus("US", "CSS", HttpStatus.CREATED, Error.RECORD_CREATED, errorCodeRepository);
         response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
@@ -175,7 +176,7 @@ public class CustomerSearchController {
         Optional<Customer> optCustomer = customerRepository.findById(customerId);
         if (!optCustomer.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
-            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+            response.setStatus("US", "CUS", HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
         
@@ -197,7 +198,7 @@ public class CustomerSearchController {
             }
         }
         
-        response.setStatus(HttpStatus.CREATED, Error.RECORD_CREATED, errorCodeRepository);
+        response.setStatus("US", "CSS", HttpStatus.CREATED, Error.RECORD_CREATED, errorCodeRepository);
         response.setData(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

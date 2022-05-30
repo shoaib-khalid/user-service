@@ -5,7 +5,9 @@ import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.Error;
 import com.kalsym.userservice.models.daos.CustomerSearchHistory;
 import com.kalsym.userservice.models.daos.ErrorCode;
+import com.kalsym.userservice.models.daos.Customer;
 import com.kalsym.userservice.repositories.CustomerSearchRepository;
+import com.kalsym.userservice.repositories.CustomersRepository;
 import com.kalsym.userservice.repositories.ErrorCodeRepository;
 import com.kalsym.userservice.utils.Logger;
 import java.util.ArrayList;
@@ -47,6 +49,9 @@ public class CustomerSearchController {
     CustomerSearchRepository customerSearchRepository;
     
     @Autowired
+    CustomersRepository customerRepository;
+    
+    @Autowired
     ErrorCodeRepository errorCodeRepository;
 
     @GetMapping(path = {""}, name = "customer-search-get")
@@ -60,7 +65,14 @@ public class CustomerSearchController {
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-
+        
+        Optional<Customer> optCustomer = customerRepository.findById(customerId);
+        if (!optCustomer.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+        
         CustomerSearchHistory customerSearch = new CustomerSearchHistory();
         customerSearch.setCustomerId(customerId);
         
@@ -95,7 +107,14 @@ public class CustomerSearchController {
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-
+        
+        Optional<Customer> optCustomer = customerRepository.findById(customerId);
+        if (!optCustomer.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+        
         Optional<CustomerSearchHistory> optCustomerAddress = customerSearchRepository.findById(id);
         if (optCustomerAddress.isPresent()) {
             response.setStatus(HttpStatus.OK);
@@ -110,13 +129,21 @@ public class CustomerSearchController {
     @DeleteMapping(path = {"/{id}"}, name = "customer-search-delete-by-id")
     @PreAuthorize("hasAnyAuthority('customer-search-delete-by-id', 'all')")
     public ResponseEntity<HttpReponse> deleteCustomerSearchById(HttpServletRequest request,
+            @PathVariable String customerId,
             @PathVariable String id) {
         String logprefix = request.getRequestURI();
 
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-
+        
+        Optional<Customer> optCustomer = customerRepository.findById(customerId);
+        if (!optCustomer.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+        
         Optional<CustomerSearchHistory> optCustomerSearch = customerSearchRepository.findById(id);
 
         if (!optCustomerSearch.isPresent()) {
@@ -145,7 +172,12 @@ public class CustomerSearchController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
+        Optional<Customer> optCustomer = customerRepository.findById(customerId);
+        if (!optCustomer.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
         
         //remove previous same text if any
         customerSearchRepository.deleteBySearchTextAndCustomerId(body.getSearchText(), customerId);

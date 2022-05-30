@@ -1,5 +1,5 @@
 ##################################################
-# user-service-3.3.0-SNAPSHOT | 26-May-2022
+# user-service-3.3.0-SNAPSHOT | 30-May-2022
 ##################################################
 Add new controller : customer search - to store history of search text entered in front-end
 Add error_code table to be used by all backend module to standardize message displayed to customer
@@ -19,6 +19,9 @@ errorDescription VARCHAR(100),
 errorMessage VARCHAR(200)
 );
 
+INSERT INTO role_authority VALUES ('STORE_OWNER','customer-search-get','user-service');
+INSERT INTO role_authority VALUES ('STORE_OWNER','customer-search-delete-by-id','user-service');
+INSERT INTO role_authority VALUES ('STORE_OWNER','customer-search-post','user-service');
 
 
 ##################################################

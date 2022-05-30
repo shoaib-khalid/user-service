@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface CustomerSearchRepository extends JpaRepository<CustomerSearchHistory, String>, PagingAndSortingRepository<CustomerSearchHistory, String> {
    
+   @Transactional
    Long deleteBySearchTextAndCustomerId(@Param("searchText") String searchText, @Param("customerId") String customerId);
    
    List<CustomerSearchHistory> findByCustomerIdOrderByCreatedDesc(@Param("customerId") String customerId);

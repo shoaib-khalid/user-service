@@ -135,7 +135,7 @@ public class CustomerSearchController {
     
 
     @PostMapping(name = "customer-search-post")
-    //@PreAuthorize("hasAnyAuthority('customer-address-post', 'all')")
+    @PreAuthorize("hasAnyAuthority('customer-search-post', 'all')")
     public ResponseEntity<HttpReponse> postCustomerSearch(HttpServletRequest request,
             @PathVariable String customerId,
             @Valid @RequestBody CustomerSearchHistory body) throws Exception {

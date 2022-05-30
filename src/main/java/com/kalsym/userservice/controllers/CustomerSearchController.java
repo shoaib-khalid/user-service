@@ -92,7 +92,7 @@ public class CustomerSearchController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "page: " + page + " pageSize: " + pageSize, "");       
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("created").descending());
 
-        response.setStatus(HttpStatus.OK);
+        response.setStatus("US", "CSS", HttpStatus.OK, Error.RECORD_FETCHED, errorCodeRepository);
         response.setData(customerSearchRepository.findAll(example, pageable));
         return ResponseEntity.status(response.getStatus()).body(response);
     }
@@ -117,7 +117,7 @@ public class CustomerSearchController {
         
         Optional<CustomerSearchHistory> optCustomerSearch = customerSearchRepository.findById(id);
         if (optCustomerSearch.isPresent()) {
-            response.setStatus(HttpStatus.OK);
+            response.setStatus("US", "CSS", HttpStatus.OK, Error.RECORD_FETCHED, errorCodeRepository);
             response.setData(optCustomerSearch.get());
         } else {
             response.setStatus("US", "CSS", HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
@@ -156,7 +156,7 @@ public class CustomerSearchController {
         customerSearchRepository.delete(optCustomerSearch.get());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerSearch deleted", "");
-        response.setStatus("US", "CSS", HttpStatus.CREATED, Error.RECORD_CREATED, errorCodeRepository);
+        response.setStatus("US", "CSS", HttpStatus.CREATED, Error.RECORD_DELETED, errorCodeRepository);
         response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(response.getStatus()).body(response);
     }

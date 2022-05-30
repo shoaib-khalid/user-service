@@ -67,6 +67,7 @@ public class HttpReponse {
      */
     public void setStatus(HttpStatus status, Error error, ErrorCodeRepository errorCodeRepository) {
         Optional<ErrorCode> errorCodeOpt = errorCodeRepository.findById(error.errorCode);
+        this.status = status.value();
         if (errorCodeOpt.isPresent()) {
             this.message = errorCodeOpt.get().getErrorMessage();
             this.errorCode = errorCodeOpt.get().getErrorCode();

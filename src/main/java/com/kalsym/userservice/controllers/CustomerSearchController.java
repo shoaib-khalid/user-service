@@ -115,10 +115,10 @@ public class CustomerSearchController {
             return ResponseEntity.status(response.getStatus()).body(response);
         }
         
-        Optional<CustomerSearchHistory> optCustomerAddress = customerSearchRepository.findById(id);
-        if (optCustomerAddress.isPresent()) {
+        Optional<CustomerSearchHistory> optCustomerSearch = customerSearchRepository.findById(id);
+        if (optCustomerSearch.isPresent()) {
             response.setStatus(HttpStatus.OK);
-            response.setData(optCustomerAddress.get());
+            response.setData(optCustomerSearch.get());
         } else {
             response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
         }
@@ -147,15 +147,15 @@ public class CustomerSearchController {
         Optional<CustomerSearchHistory> optCustomerSearch = customerSearchRepository.findById(id);
 
         if (!optCustomerSearch.isPresent()) {
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress not found", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerSearch not found", "");
             response.setStatus(HttpStatus.NOT_FOUND, Error.RECORD_NOT_FOUND, errorCodeRepository);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress found", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerSearch found", "");
         customerSearchRepository.delete(optCustomerSearch.get());
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress deleted", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerSearch deleted", "");
         response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(response.getStatus()).body(response);
     }

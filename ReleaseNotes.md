@@ -11,13 +11,17 @@ customerId VARCHAR(100),
 searchText VARCHAR(200),
 storeId VARCHAR(100),
 created DATETIME
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
-CREATE TABLE error_code (
-errorCode VARCHAR(50) PRIMARY KEY,
-errorDescription VARCHAR(100),
-errorMessage VARCHAR(200)
-);
+CREATE TABLE `error_code` (
+  `modules` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `errorCategory` varchar(100) NOT NULL,
+  `errorCode` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `errorMessage` varchar(200) DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  `errorDescription` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  PRIMARY KEY (`errorCode`,`errorCategory`,`modules`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 INSERT INTO role_authority VALUES ('STORE_OWNER','customer-search-get','user-service');
 INSERT INTO role_authority VALUES ('STORE_OWNER','customer-search-delete-by-id','user-service');
@@ -27,9 +31,8 @@ INSERT INTO role_authority VALUES ('CUSTOMER','customer-search-get','user-servic
 INSERT INTO role_authority VALUES ('CUSTOMER','customer-search-delete-by-id','user-service');
 INSERT INTO role_authority VALUES ('CUSTOMER','customer-search-post','user-service');
 
-INSERT INTO role_authority VALUES ('STORE_OWNER','customer-search-get','user-service');
-INSERT INTO role_authority VALUES ('STORE_OWNER','customer-search-delete-by-id','user-service');
-INSERT INTO role_authority VALUES ('STORE_OWNER','customer-search-post','user-service');
+INSERT INTO role_authority VALUES ('STORE_OWNER','error-code-get','user-service');
+
 
 ##################################################
 # user-service-3.2.21-SNAPSHOT | 25-May-2022

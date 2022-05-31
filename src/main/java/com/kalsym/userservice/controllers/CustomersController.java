@@ -446,14 +446,14 @@ public class CustomersController {
                     } else if (customerList.get(0).getChannel().equals("FACEBOOK")) {
                         message = "You have signed up with us via Facebook account.";
                     } else {
-                        message = "Wrong password";
+                        message = "Sorry, invalid password";
                     }
                 } else {
-                    message = "Wrong password";
+                    message = "Sorry, invalid password";
                 }
                 response.setMessage(message);
             } else {
-                String message = "You are not registered with us";
+                String message = "This email address has not been signed up with us. Let's create your account now.";
                 response.setMessage(message);
             }
 

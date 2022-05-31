@@ -446,11 +446,14 @@ public class CustomersController {
                     } else if (customerList.get(0).getChannel().equals("FACEBOOK")) {
                         message = "You have signed up with us via Facebook account.";
                     } else {
-                        message = "Email already exists";
+                        message = "Wrong password";
                     }
                 } else {
-                    message = "Email already exists";
+                    message = "Wrong password";
                 }
+                response.setMessage(message);
+            } else {
+                String message = "You are not registered with us";
                 response.setMessage(message);
             }
 

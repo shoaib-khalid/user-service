@@ -556,7 +556,8 @@ public class CustomersController {
         if (customerList.isEmpty()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
             response.setStatus(HttpStatus.NOT_FOUND);
-            response.setMessage("Email does not found! Are you sure you are already a member?");
+            String message = "This email address has not been signed up with us. Let's create your account now.";
+            response.setMessage(message);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
 

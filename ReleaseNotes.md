@@ -1,8 +1,9 @@
 ##################################################
-# user-service-3.3.0-SNAPSHOT | 30-May-2022
+# user-service-3.3.0-SNAPSHOT | 31-May-2022
 ##################################################
 Add new controller : customer search - to store history of search text entered in front-end
 Add error_code table to be used by all backend module to standardize message displayed to customer
+Bug fix for message display to user when user not registered during login & reset password
 
 ##DB Changes:
 CREATE TABLE customer_search_history (

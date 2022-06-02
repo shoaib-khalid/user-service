@@ -1,4 +1,13 @@
 ##################################################
+# user-service-3.3.1-SNAPSHOT | 2-June-2022
+##################################################
+New field for customer search history
+
+ALTER TABLE customer_search_history ADD domain VARCHAR(100);
+ALTER TABLE customer_search_history ADD image VARCHAR(100);
+
+
+##################################################
 # user-service-3.3.0-SNAPSHOT | 31-May-2022
 ##################################################
 Add new controller : customer search - to store history of search text entered in front-end

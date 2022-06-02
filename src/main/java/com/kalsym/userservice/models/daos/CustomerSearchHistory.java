@@ -36,6 +36,8 @@ public class CustomerSearchHistory implements Serializable {
     private String customerId;    
     private String searchText;    
     private String storeId;
+    private String domain;
+    private String image;
     
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

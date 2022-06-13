@@ -517,10 +517,10 @@ public class CustomersController {
         
         //set extra headers
         HttpHeaders responseHeaders = new HttpHeaders();
-        Date expiry = DateTimeUtil.expiryTimestamp(3600);
+        Date expiryDt = DateTimeUtil.expiryTimestamp(expiry);
         //Date format : Wed, 13 Jan 2021 22:23:01 GMT
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
-        String expiryTimestamp = formatter.format(expiry);
+        String expiryTimestamp = formatter.format(expiryDt);
         
         if (body.getDomain()!=null) {
             customerCookieDomain = body.getDomain();
@@ -786,10 +786,10 @@ public class CustomersController {
         
         //set extra headers
         HttpHeaders responseHeaders = new HttpHeaders();
-        Date expiry = DateTimeUtil.expiryTimestamp(3600);
+        Date expiryDt = DateTimeUtil.expiryTimestamp(expiry);
         //Date format : Wed, 13 Jan 2021 22:23:01 GMT
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
-        String expiryTimestamp = formatter.format(expiry);
+        String expiryTimestamp = formatter.format(expiryDt);
         
         if (body.getDomain()!=null) {
             customerCookieDomain = body.getDomain();
@@ -896,10 +896,10 @@ public class CustomersController {
         
         //set extra headers
         HttpHeaders responseHeaders = new HttpHeaders();
-        Date expiry = DateTimeUtil.expiryTimestamp(3600);
+        Date expiryDt = DateTimeUtil.expiryTimestamp(expiry);
         //Date format : Wed, 13 Jan 2021 22:23:01 GMT
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
-        String expiryTimestamp = formatter.format(expiry);
+        String expiryTimestamp = formatter.format(expiryDt);
         
         if (session.getDomain()!=null) {
             customerCookieDomain = session.getDomain();

@@ -1,4 +1,20 @@
 ##################################################
+# user-service-3.4.0-SNAPSHOT | 27-June-2022
+##################################################
+New API to generate guest session
+
+##DB Changes:
+CREATE TABLE guest_session (
+id VARCHAR(100) PRIMARY KEY,
+ip VARCHAR(20),
+os VARCHAR(20),
+device VARCHAR(20),
+created DATETIME,
+updated DATETIME
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+##################################################
 # user-service-3.3.2-SNAPSHOT | 13-June-2022
 ##################################################
 Fix cookies expiry date

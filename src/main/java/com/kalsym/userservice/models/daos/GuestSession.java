@@ -20,7 +20,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Getter
 @Setter
 @Table(name = "guest_session")
-public class GuestSession extends Session implements Serializable {
+public class GuestSession implements Serializable {
     
     @Id
     @GeneratedValue(generator = "uuid2")

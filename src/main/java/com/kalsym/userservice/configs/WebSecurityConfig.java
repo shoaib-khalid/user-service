@@ -57,6 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeRequests().antMatchers(
+                        "/guest/**",
                         "/clients/session/refresh",
                         "/clients/authenticate",
                         "/clients/loginoauth",

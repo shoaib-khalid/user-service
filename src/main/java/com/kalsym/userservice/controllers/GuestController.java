@@ -33,7 +33,7 @@ public class GuestController {
     @Autowired
     GuestSessionsRepository guestSessionRepository;
     
-    @PostMapping(name = "generate-session")    
+    @PostMapping(path = {"/generateSession"}, name = "generate-session")    
     public ResponseEntity<HttpReponse> generateSession(HttpServletRequest request, @Valid @RequestBody GuestSession body) throws Exception {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());

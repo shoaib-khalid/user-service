@@ -11,6 +11,7 @@ import com.kalsym.userservice.repositories.GuestSessionsRepository;
 import com.kalsym.userservice.utils.Logger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,21 @@ public class GuestController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "Generate Session for Guest:"+body.toString());
         
-        body = guestSessionRepository.save(body);
+        if (body.getId()!=null) {
+            //update updated
+            Optional<GuestSession> currentSession = guestSessionRepository.findById(body.getId());
+            if (currentSession.isPresent()) {
+                GuestSession session = currentSession.get();
+                session.setUpdated(body.getUpdated());
+                body = guestSessionRepository.save(session);        
+            } else {
+                //create new
+                body = guestSessionRepository.save(body); 
+            }
+        } else {
+            //create new
+            body = guestSessionRepository.save(body);        
+        }
                 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Guest Session created with id: " + body.getId(), "");
         response.setStatus(HttpStatus.CREATED);

@@ -32,10 +32,10 @@ public class GuestSession implements Serializable {
     private String device;
     
     @CreationTimestamp
-    Date created;
+    private Date created;
 
     @UpdateTimestamp
-    Date updated;
+    private Date updated;
   
 
 }

@@ -90,6 +90,14 @@ public class CustomerAddress implements Serializable {
          if (null != customerAddress.getIsDefault()) {
             isDefault = customerAddress.getIsDefault();
         }
+         
+         if (null != customerAddress.getLatitude()) {
+            latitude = customerAddress.getLatitude();
+        }
+         
+          if (null != customerAddress.getLongitude()) {
+            longitude = customerAddress.getLongitude();
+        }
     }
 
 }

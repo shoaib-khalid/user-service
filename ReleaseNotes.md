@@ -8,6 +8,11 @@ New api to receive ping response from mobileapp : PUT /clients/{id}/pingresponse
 ALTER TABLE `client` ADD mobilePingTxnId VARCHAR(50);
 ALTER TABLE `client` ADD mobilePingLastResponse DATETIME;
 
+##Config changes:
+#enable scheduler to push FCM for heartbeat
+mobileapp.heartbeat.scheduler.enabled=true
+#sleep between batch during push FCM to mobile app
+mobileapp.heartbeat.scheduler.sleep=1
 
 ##################################################
 # user-service-3.4.2-SNAPSHOT | 13-July-2022

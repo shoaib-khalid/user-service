@@ -42,7 +42,7 @@ public class SendHeartbeatScheduler {
     @Value("${mobileapp.heartbeat.scheduler.sleep:1}")
     private int sleepInMinutes;
    
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedDelay = 600000)
     public void sendHeartbeat() throws Exception {
         if (isEnabled) {
             String logprefix = "SendHeartbeatScheduler";            

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,6 +185,7 @@ public class CustomerSearchController {
         customerSearchRepository.deleteBySearchTextAndCustomerId(body.getSearchText(), customerId);
         
         body.setCustomerId(customerId);
+        body.setCreated(new Date());
         body = customerSearchRepository.save(body);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customerAddress created with id: " + body.getCustomerId(), "");
         

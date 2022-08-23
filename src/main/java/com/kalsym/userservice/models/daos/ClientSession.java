@@ -16,6 +16,5 @@ import lombok.Setter;
 @Table(name = "client_session")
 public class ClientSession extends Session implements Serializable {
 
-  
 
 }

@@ -33,4 +33,12 @@ public class DateTimeUtil {
         Date expiryDate = Date.from(Instant.now().plusSeconds(seconds));
         return expiryDate;
     }
+    
+    
+    public static String currentTimestampString() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date currentDate = new Date();
+        String currentTimeStamp = sdf.format(currentDate);
+        return currentTimeStamp;
+    }
 }

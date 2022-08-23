@@ -16,6 +16,6 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface StoreRepository extends PagingAndSortingRepository<Store, String>, JpaRepository<Store, String> {
 
-    
+    List<Store> findByClientId(String clientId);
 
 }

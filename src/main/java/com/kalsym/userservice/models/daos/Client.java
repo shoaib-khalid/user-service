@@ -72,6 +72,9 @@ public class Client implements Serializable {
     @JoinColumn(name = "countryId", insertable = false, updatable = false, nullable = true)    
     private RegionCountry regionCountry;
     
+    private String mobilePingTxnId;
+    private Date mobilePingLastResponse;
+    
     public void update(Client user) {
         if (null != user.getEmail()) {
             email = user.getEmail();

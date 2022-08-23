@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
@@ -589,7 +590,7 @@ public class ClientsController {
         session.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
         session.setStatus("ACTIVE");
         session.generateTokens();
-
+        
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session: " + session, "");
 
         session = clientSessionsRepository.save(session);
@@ -925,6 +926,40 @@ public class ClientsController {
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(clientsRepository.save(client));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+    
+    
+    @PutMapping(path = {"/{id}/pingresponse/{transactionId}"}, name = "clients-get-by-id")
+    //@PreAuthorize("hasAnyAuthority('clients-get-by-id', 'all')")
+    public ResponseEntity<HttpReponse> putClientPingResponse(HttpServletRequest request,
+            @PathVariable String id,
+            @PathVariable String transactionId) {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+
+        Optional<Client> clientOpt = clientsRepository.findById(id);
+
+        if (!clientOpt.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client not found for id:"+id, "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+        
+        Client client = clientOpt.get();
+        if (!client.getMobilePingTxnId().equals(transactionId)) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "TransactionId not found for transactionId:"+transactionId, "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+        
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "TransactionId found", "Update mobilePingLastResponse for clientId:"+client.getId()+" clientName:"+client.getName());
+        client.setMobilePingLastResponse(new Date());
+        client = clientsRepository.save(client);
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setData(client);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
     
     

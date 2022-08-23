@@ -1,4 +1,15 @@
 ##################################################
+# user-service-3.4.3-SNAPSHOT | 22-Aug-2022
+##################################################
+New feature : send ping to mobileapp in scheduler
+New api to receive ping response from mobileapp : PUT /clients/{id}/pingresponse/{transactionId}
+
+##DB Changes
+ALTER TABLE `client` ADD mobilePingTxnId VARCHAR(50);
+ALTER TABLE `client` ADD mobilePingLastResponse DATETIME;
+
+
+##################################################
 # user-service-3.4.2-SNAPSHOT | 13-July-2022
 ##################################################
 Bug fix for update customer address

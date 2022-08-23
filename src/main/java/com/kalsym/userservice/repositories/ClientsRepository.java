@@ -25,7 +25,7 @@ public interface ClientsRepository extends PagingAndSortingRepository<Client, St
     
     @Query(value = "SELECT DISTINCT(A.id) "
             + "FROM `client` A INNER JOIN `store` B ON A.id=B.clientId  "
-            + "WHERE RIGHT(id,1) = :suffix", nativeQuery = true)
+            + "WHERE RIGHT(A.id,1) = :suffix", nativeQuery = true)
     List<Object[]> getActiveClient(@Param("suffix") String suffix);
     
     @Transactional 

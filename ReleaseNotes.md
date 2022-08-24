@@ -1,5 +1,5 @@
 ##################################################
-# user-service-3.4.3-SNAPSHOT | 22-Aug-2022
+# user-service-3.4.3-SNAPSHOT | 24-Aug-2022
 ##################################################
 New feature : send ping to mobileapp in scheduler
 New api to receive ping response from mobileapp : PUT /clients/{id}/pingresponse/{transactionId}
@@ -13,6 +13,7 @@ ALTER TABLE `client` ADD mobilePingLastResponse DATETIME;
 mobileapp.heartbeat.scheduler.enabled=true
 #sleep between batch during push FCM to mobile app
 mobileapp.heartbeat.scheduler.sleep=1
+
 
 ##################################################
 # user-service-3.4.2-SNAPSHOT | 13-July-2022

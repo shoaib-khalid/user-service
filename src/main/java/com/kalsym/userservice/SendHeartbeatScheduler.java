@@ -61,12 +61,16 @@ public class SendHeartbeatScheduler {
                     //get storeId
                     List<Store> storeList = storeRepository.findByClientId(clientId);
                     if (storeList.size()>0) {
-                        //generate transactionId
-                        String transactionId = DateTimeUtil.currentTimestampString()+"-"+clientId;
-                        Store store = storeList.get(0);
-                        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Sending FCM to clientId:"+clientId+" storeId:"+store.getId());                    
-                        fcmService.sendPushNotification(clientId, store.getId(), transactionId, store.getDomain());
-                        clientRepository.UpdatePingTransactionId(clientId, transactionId);
+                        try {
+                            //generate transactionId
+                            String transactionId = DateTimeUtil.currentTimestampString()+"-"+clientId;
+                            Store store = storeList.get(0);
+                            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Sending FCM to clientId:"+clientId+" storeId:"+store.getId());                    
+                            fcmService.sendPushNotification(clientId, store.getId(), transactionId, store.getDomain());
+                            clientRepository.UpdatePingTransactionId(clientId, transactionId);
+                        } catch (Exception ex) {
+                            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Exception while sending FCM for clientId:"+clientId+" -> "+ex.getMessage());                    
+                        }
                     }
                
                 }

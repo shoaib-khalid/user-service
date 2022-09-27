@@ -68,11 +68,13 @@ public class SendHeartbeatScheduler {
                             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Sending FCM to clientId:"+clientId+" storeId:"+store.getId());                    
                             fcmService.sendPushNotification(clientId, store.getId(), transactionId, store.getDomain());
                             clientRepository.UpdatePingTransactionId(clientId, transactionId);
-                            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "FCM Sent ["+j+"/"+storeList.size()+"]");                    
+                            
                         } catch (Exception ex) {
                             Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Exception while sending FCM for clientId:"+clientId+" -> "+ex.getMessage());                    
                         }                    
                     }
+                    
+                    Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "FCM Sent ["+i+"/"+userList.size()+"]");                    
                
                 }
                 

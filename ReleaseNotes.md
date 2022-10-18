@@ -1,4 +1,21 @@
 ##################################################
+# user-service-3.4.4-SNAPSHOT | 18-Oct-2022
+##################################################
+New API : to receive error from mobile app to store in db
+POST /clients/logerror
+
+##DB Changes
+CREATE TABLE application_error (
+id BIGINT PRIMARY KEY AUTO_INCREMENT,
+clientId VARCHAR(50),
+severity VARCHAR(50),
+errorMsg TEXT,
+created DATETIME,
+updated DATETIME
+);
+
+
+##################################################
 # user-service-3.4.3-SNAPSHOT | 24-Aug-2022
 ##################################################
 New feature : send ping to mobileapp in scheduler

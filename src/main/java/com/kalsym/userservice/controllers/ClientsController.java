@@ -6,6 +6,7 @@ import com.kalsym.userservice.models.storeagent.CustomFields;
 import com.kalsym.userservice.models.storeagent.LiveChatStoreAgent;
 import com.kalsym.userservice.UserServiceApplication;
 import com.kalsym.userservice.models.Auth;
+import com.kalsym.userservice.models.daos.ApplicationError;
 import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.ChangePassword;
 import com.kalsym.userservice.models.daos.RoleAuthority;
@@ -15,6 +16,7 @@ import com.kalsym.userservice.models.requestbodies.AuthenticationBody;
 import com.kalsym.userservice.models.requestbodies.TempTokenRequest;
 import com.kalsym.userservice.models.requestbodies.ValidateOauthRequest;
 import com.kalsym.userservice.models.storeagent.LiveChatResponse;
+import com.kalsym.userservice.repositories.ApplicationErrorRepository;
 import com.kalsym.userservice.repositories.RoleAuthoritiesRepository;
 import com.kalsym.userservice.repositories.ClientSessionsRepository;
 import com.kalsym.userservice.repositories.ClientsRepository;
@@ -95,6 +97,9 @@ public class ClientsController {
 
     @Autowired
     StoreRepository storeRepository;
+    
+    @Autowired
+    ApplicationErrorRepository applicationErrorRepository;
 
     @Value("${session.expiry:3600}")
     private int expiry;
@@ -959,6 +964,20 @@ public class ClientsController {
         client = clientsRepository.save(client);
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(client);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+    
+    
+    @PostMapping(path = {"/logerror"}, name = "clients-get-by-id")
+    //@PreAuthorize("hasAnyAuthority('clients-get-by-id', 'all')")
+    public ResponseEntity<HttpReponse> logError(HttpServletRequest request,
+            @RequestBody ApplicationError bodyError) {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Applicatin Error received : "+bodyError.toString());
+        bodyError.setCreated(new Date());
+        applicationErrorRepository.save(bodyError);
+        response.setStatus(HttpStatus.ACCEPTED);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
     

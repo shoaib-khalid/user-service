@@ -1,4 +1,14 @@
 ##################################################
+# user-service-3.4.5-SNAPSHOT | 20-Oct-2022
+##################################################
+New API : 
+PUT /guest/updateSessionEmail
+
+##DB Changes
+ALTER TABLE guest_session ADD email VARCHAR(255);
+
+
+##################################################
 # user-service-3.4.4-SNAPSHOT | 18-Oct-2022
 ##################################################
 New API : to receive error from mobile app to store in db

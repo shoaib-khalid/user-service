@@ -30,6 +30,7 @@ public class GuestSession implements Serializable {
     private String ip;
     private String os;
     private String device;
+    private String email;
     
     @CreationTimestamp
     private Date created;

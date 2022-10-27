@@ -1,4 +1,13 @@
 ##################################################
+# user-service-3.4.6-SNAPSHOT | 27-Oct-2022
+##################################################
+New parameter in pingresponse : deviceModel
+
+##DB Changes
+ALTER TABLE client ADD deviceModel VARCHAR(255);
+
+
+##################################################
 # user-service-3.4.5-SNAPSHOT | 20-Oct-2022
 ##################################################
 New API : 

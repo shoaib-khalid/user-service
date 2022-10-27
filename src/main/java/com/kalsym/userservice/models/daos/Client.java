@@ -58,7 +58,8 @@ public class Client implements Serializable {
     private Boolean locked;
     private Boolean deactivated;
     private String countryId;
-   
+    private String deviceModel;
+    
     @CreationTimestamp
     Date created;
 

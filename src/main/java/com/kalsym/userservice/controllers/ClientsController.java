@@ -939,7 +939,8 @@ public class ClientsController {
     public ResponseEntity<HttpReponse> putClientPingResponse(HttpServletRequest request,
             @PathVariable String id,
             @PathVariable String transactionId,
-            @RequestParam(required = false) String deviceModel) {
+            @RequestBody(required = false) Client clientBody
+    ) {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
@@ -962,7 +963,9 @@ public class ClientsController {
         
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "TransactionId found", "Update mobilePingLastResponse for clientId:"+client.getId()+" clientName:"+client.getName());
         client.setMobilePingLastResponse(new Date());
-        client.setDeviceModel(deviceModel);
+        if (clientBody!=null) {
+            client.setDeviceModel(clientBody.getDeviceModel());
+        }
         client = clientsRepository.save(client);
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(client);

@@ -200,6 +200,40 @@ public class CustomersController {
         response.setStatus(HttpStatus.OK);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+    
+    @PutMapping(path = {"/deactivate/{id}"}, name = "customers-delete-by-id")
+    @PreAuthorize("hasAnyAuthority('customers-delete-by-id', 'all')")
+    public ResponseEntity<HttpReponse> deactivateCustomerById(HttpServletRequest request, @PathVariable String id) {
+        String logprefix = request.getRequestURI();
+        String location = Thread.currentThread().getStackTrace()[1].getMethodName();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "deactivateCustomerById()", "");
+
+        Optional<Customer> optCustomer = customersRepository.findById(id);
+
+        if (!optCustomer.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer found", "");
+        
+        Customer customer = optCustomer.get();
+        String originalUsername = customer.getUsername();
+        String newUsername = "deleted_"+originalUsername;
+        customer.setDeactivated(Boolean.TRUE);
+        customer.setIsActivated(Boolean.FALSE);
+        customer.setUpdated(new Date());
+        customer.setOriginalUsername(originalUsername);
+        customer.setUsername(newUsername);
+        customersRepository.save(customer);
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer deactivated", "");
+        response.setStatus(HttpStatus.OK);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
     @PutMapping(path = {"/{id}"}, name = "customers-put-by-id")
     @PreAuthorize("hasAnyAuthority('customers-put-by-id', 'all')")

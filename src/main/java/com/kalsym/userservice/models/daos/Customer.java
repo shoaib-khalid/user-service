@@ -71,6 +71,8 @@ public class Customer implements Serializable {
     private String channel;   
     
     private String originalUsername;
+    
+    private String originalEmail;
         
     public void update(Customer user) {
         if (null != user.getEmail()) {

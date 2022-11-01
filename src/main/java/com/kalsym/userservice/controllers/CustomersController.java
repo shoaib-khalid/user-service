@@ -222,12 +222,16 @@ public class CustomersController {
         
         Customer customer = optCustomer.get();
         String originalUsername = customer.getUsername();
+        String originalEmail = customer.getEmail();
         String newUsername = "deleted_"+originalUsername;
+        String newEmail = "deleted_"+originalUsername;
         customer.setDeactivated(Boolean.TRUE);
         customer.setIsActivated(Boolean.FALSE);
         customer.setUpdated(new Date());
         customer.setOriginalUsername(originalUsername);
+        customer.setOriginalEmail(originalEmail);
         customer.setUsername(newUsername);
+        customer.setEmail(newEmail);
         customersRepository.save(customer);
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer deactivated", "");

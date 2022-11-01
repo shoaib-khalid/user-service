@@ -1,5 +1,5 @@
 ##################################################
-# user-service-3.4.6-SNAPSHOT | 27-Oct-2022
+# user-service-3.4.6-SNAPSHOT | 1-Nov-2022
 ##################################################
 New parameter in pingresponse : deviceModel
 New API : deactivateCustomerById()
@@ -7,6 +7,7 @@ New API : deactivateCustomerById()
 ##DB Changes
 ALTER TABLE client ADD deviceModel VARCHAR(255);
 ALTER TABLE customer ADD originalUsername VARCHAR(255);
+ALTER TABLE customer ADD originalEmail VARCHAR(255);
 
 
 ##################################################

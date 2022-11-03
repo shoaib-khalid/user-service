@@ -1018,4 +1018,48 @@ public class CustomersController {
         response.setData(customersRepository.save(customer));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
+    
+    
+    @PutMapping(path = {"/{id}/validatepassword"}, name = "customers-put-by-id")
+    @PreAuthorize("hasAnyAuthority('customers-put-by-id', 'all')")
+    public ResponseEntity<HttpReponse> validatePasswordCustomerById(HttpServletRequest request, @PathVariable String id, @RequestBody String password) {
+        String logprefix = request.getRequestURI();
+
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "validatePasswordCustomerById()", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Password:"+password, "");
+
+        Optional<Customer> optCustomer = customersRepository.findById(id);
+
+        if (!optCustomer.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Customer not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Customer found", "");
+        Customer customer = optCustomer.get();
+        List<String> errors = new ArrayList<>();
+        
+        //verify current password
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(customer.getUsername()+",CUSTOMER", password)
+            );
+        } catch (BadCredentialsException e) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "BadCredentialsException exception", e);
+            response.setStatus(HttpStatus.FORBIDDEN, "Bad Credentials");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        } catch (AuthenticationException e) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "AuthenticationException exception ", e);
+            response.setStatus(HttpStatus.FORBIDDEN, e.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }        
+        
+        
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Customer password verified for id: " + id, "");
+        response.setStatus(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

@@ -1,4 +1,11 @@
 ##################################################
+# user-service-3.4.7-SNAPSHOT | 3-Nov-2022
+##################################################
+New API to validate password :
+PUT /{id}/validatepassword
+
+
+##################################################
 # user-service-3.4.6-SNAPSHOT | 1-Nov-2022
 ##################################################
 New parameter in pingresponse : deviceModel

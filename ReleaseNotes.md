@@ -1,4 +1,15 @@
 ##################################################
+# user-service-3.4.8-SNAPSHOT | 15-Nov-2022
+##################################################
+Add guest session expiry datetime in response of generateSession
+
+##DB Changes:
+ALTER TABLE guest_session ADD expiryTime DATETIME;
+
+##Config Changes:
+guest.session.expiry=1800 (1800 second)
+
+##################################################
 # user-service-3.4.7-SNAPSHOT | 3-Nov-2022
 ##################################################
 New API to validate password :

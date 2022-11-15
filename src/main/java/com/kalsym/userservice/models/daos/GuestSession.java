@@ -37,6 +37,8 @@ public class GuestSession implements Serializable {
 
     @UpdateTimestamp
     private Date updated;
+    
+    private Date expiryTime;
   
 
 }

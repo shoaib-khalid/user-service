@@ -9,12 +9,14 @@ import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.daos.GuestSession;
 import com.kalsym.userservice.repositories.GuestSessionsRepository;
 import com.kalsym.userservice.utils.Logger;
+import com.kalsym.userservice.utils.DateTimeUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +37,9 @@ public class GuestController {
     @Autowired
     GuestSessionsRepository guestSessionRepository;
     
+    @Value("${guest.session.expiry:1800}")
+    private int sessionValidityInSecond;
+    
     @PostMapping(path = {"/generateSession"}, name = "generate-session")    
     public ResponseEntity<HttpReponse> generateSession(HttpServletRequest request, @Valid @RequestBody GuestSession body) throws Exception {
         String logprefix = request.getRequestURI();
@@ -51,10 +56,12 @@ public class GuestController {
                 body = guestSessionRepository.save(session);        
             } else {
                 //create new
+                body.setExpiryTime(DateTimeUtil.expiryTimestamp(sessionValidityInSecond));
                 body = guestSessionRepository.save(body); 
             }
         } else {
             //create new
+            body.setExpiryTime(DateTimeUtil.expiryTimestamp(sessionValidityInSecond));
             body = guestSessionRepository.save(body);        
         }
                 

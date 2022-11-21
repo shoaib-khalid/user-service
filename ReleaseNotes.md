@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.4.9-SNAPSHOT | 21-Nov-2022
+##################################################
+Allow customer to login using email or password
+
+
+##################################################
 # user-service-3.4.8-SNAPSHOT | 15-Nov-2022
 ##################################################
 Add guest session expiry datetime in response of generateSession

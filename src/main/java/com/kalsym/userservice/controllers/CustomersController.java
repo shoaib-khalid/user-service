@@ -463,10 +463,22 @@ public class CustomersController {
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "body: " + body);
-
+        
+        //find what is username using email/phone
+        List<Customer> customerInfo = customersRepository.findByEmail(body.getUsername());
+        String username = "";
+        if (customerInfo!=null && !customerInfo.isEmpty()) {
+            username = customerInfo.get(0).getUsername();
+        } else {
+            customerInfo = customersRepository.findByPhoneNumber(body.getUsername());
+            if (customerInfo!=null && !customerInfo.isEmpty()) {
+                username = customerInfo.get(0).getUsername();
+            }
+        }
+        
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(body.getUsername()+",CUSTOMER", body.getPassword())
+                    new UsernamePasswordAuthenticationToken(username+",CUSTOMER", body.getPassword())
             );
 
         } catch (BadCredentialsException e) {

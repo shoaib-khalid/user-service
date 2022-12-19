@@ -23,6 +23,8 @@ public interface ClientsRepository extends PagingAndSortingRepository<Client, St
   
     Client findByUsernameAndPasswordAndId(String userName, String password, String id);
     
+    Client findByNameAndStoreIdAndRoleId(String name, String storeId, String roleId);
+    
     @Query(value = "SELECT DISTINCT(A.id) "
             + "FROM `client` A INNER JOIN `store` B ON A.id=B.clientId  "
             + "WHERE RIGHT(A.id,1) = :suffix", nativeQuery = true)

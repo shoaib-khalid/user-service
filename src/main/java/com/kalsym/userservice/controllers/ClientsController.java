@@ -12,6 +12,7 @@ import com.kalsym.userservice.models.ChangePassword;
 import com.kalsym.userservice.models.daos.RoleAuthority;
 import com.kalsym.userservice.models.daos.ClientSession;
 import com.kalsym.userservice.models.daos.Client;
+import com.kalsym.userservice.models.Waiter;
 import com.kalsym.userservice.models.requestbodies.AuthenticationBody;
 import com.kalsym.userservice.models.requestbodies.TempTokenRequest;
 import com.kalsym.userservice.models.requestbodies.ValidateOauthRequest;
@@ -986,6 +987,45 @@ public class ClientsController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
     
+    @PostMapping(path = "/registerwaiter", name = "clients-post")
+    //@PreAuthorize("hasAnyAuthority('clients-post', 'all')")
+    public ResponseEntity<HttpReponse> registerWaiter(HttpServletRequest request,
+            @Valid @RequestBody Waiter body) throws Exception {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        try {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
+
+            Client client = clientsRepository.findByNameAndStoreIdAndRoleId(body.getName(), body.getStoreId(), "STORE_WAITER");
+            
+            if (client!=null) {
+                //already exist
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Exsiting Client : " + client.getId(), "");
+            } else {
+                //register new
+                client.setName(body.getName());
+                client.setStoreId(body.getStoreId());
+                client.setLocked(false);
+                client.setDeactivated(false);
+                client.setRoleId("STORE_WAITER");
+                client = clientsRepository.save(client);
+                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "New Client created : " + client, "");
+            }
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Client id:"+client.getId()+" RoleId: " + client.getRoleId(), "");
+            
+            response.setStatus(HttpStatus.CREATED);
+            response.setData(client);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        } catch (Exception e) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "error creating client", "", e);
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setError(e.toString());
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+    }    
     
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {

@@ -6,12 +6,14 @@ import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.daos.RoleAuthority;
 import com.kalsym.userservice.models.daos.StoreUserSession;
 import com.kalsym.userservice.models.daos.StoreUser;
+import com.kalsym.userservice.models.Store;
 import com.kalsym.userservice.models.email.AccountVerificationEmailBody;
 import com.kalsym.userservice.models.email.Email;
 import com.kalsym.userservice.models.requestbodies.AuthenticationBody;
 import com.kalsym.userservice.repositories.RoleAuthoritiesRepository;
 import com.kalsym.userservice.repositories.StoreUserSessionsRepository;
 import com.kalsym.userservice.repositories.StoreUsersRepository;
+import com.kalsym.userservice.repositories.StoreRepository;
 import com.kalsym.userservice.services.EmaiVerificationlHandler;
 import com.kalsym.userservice.utils.DateTimeUtil;
 import com.kalsym.userservice.utils.Logger;
@@ -65,6 +67,9 @@ public class StoreUsersController {
 
     @Autowired
     StoreUsersRepository storeUsersRepository;
+    
+    @Autowired
+    StoreRepository storeRepository;
 
     @Autowired
     RoleAuthoritiesRepository roleAuthoritiesRepository;
@@ -81,7 +86,7 @@ public class StoreUsersController {
     @Value("${symplified.whatsapp.service.url:http://209.58.160.20:2001}")
     private String whatsappServiceUrl;
         
-    @Value("${session.expiry:3600}")
+    @Value("${store.staff.session.expiry:3600}")
     private int expiry;
 
     @GetMapping(path = {"/"}, name = "store-users-get")
@@ -259,49 +264,42 @@ public class StoreUsersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, body.toString(), "");
 
         List<String> errors = new ArrayList<>();
-
-        List<StoreUser> customers = storeUsersRepository.findByStoreId(storeId);
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "this store has " + customers.size() + " customers", "");
-
-        for (StoreUser existingCustomer : customers) {
-            if (existingCustomer.getUsername() != null && existingCustomer.getUsername().equals(body.getUsername())) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
-                response.setStatus(HttpStatus.CONFLICT);
-                errors.add("username already exists");
-                response.setData(errors);
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-            }
-            if (existingCustomer.getEmail() != null && existingCustomer.getEmail().equals(body.getEmail())) {
-                Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "email already exists", "");
-                response.setStatus(HttpStatus.CONFLICT);
-                errors.add("email already exists");
-                response.setData(errors);
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-            }
+        
+        Optional<Store> storeOpt = storeRepository.findById(storeId);
+        if (!storeOpt.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Store not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
         }
         
-        String password = "";
-        if (body.getPassword() != null) {
-            password = body.getPassword();
-            body.setPassword(bcryptEncoder.encode(password));
-        } else {
-            //generate password
-            password = Utils.generateCode();
-            body.setPassword(bcryptEncoder.encode(password));
+        Store store = storeOpt.get();
+        
+        String username = store.getStorePrefix()+body.getUsername();
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Username to register:"+username);
+        StoreUser existingUser = storeUsersRepository.findByUsernameAndStoreId(storeId, username);
+        if (existingUser!=null) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
+            response.setStatus(HttpStatus.CONFLICT);
+            errors.add("username already exists");
+            response.setData(errors);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
+            
+        body.setPassword(bcryptEncoder.encode(body.getPassword()));        
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
         body.setLocked(false);
         body.setDeactivated(false);
-
+        body.setRoleId("STORE_WAITER");
+        
         body = storeUsersRepository.save(body);
         body.setPassword(null);
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user created with id: " + body.getId(), "");
         
         //send password in Whatsapp
-        String[] recipients = {body.getPhoneNumber()};
-        String[] message = {body.getPhoneNumber(), password};
-        Utils.sendWhatsappMessage(whatsappServiceUrl, recipients, message);
+        //String[] recipients = {body.getPhoneNumber()};
+        //String[] message = {body.getPhoneNumber(), password};
+        //Utils.sendWhatsappMessage(whatsappServiceUrl, recipients, message);
         
         response.setStatus(HttpStatus.CREATED);
         response.setData(body);
@@ -322,7 +320,7 @@ public class StoreUsersController {
         StoreUser user = null;
         try {
 
-            user = storeUsersRepository.findByUsernameAndStoreId(body.getUsername(), storeId);
+            user = storeUsersRepository.findByUsername(body.getUsername());
 //            auth = authenticationManager.authenticate(
 //                    new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
 //            );

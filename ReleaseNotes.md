@@ -2,18 +2,11 @@
 # user-service-3.5.0-SNAPSHOT | 19-Dec-2022
 ##################################################
 New user roles : STORE_WAITER
-New API in client controller : registerWaiter()
-Register waiter using qr code 
-	-admin portal generate qr code : include storeId
-	-mobile app scan qr code
-	-customer enter name
-	-mobile app call api registerWaiter(), pass in : storeId, name
-	-if name already exist for current store, use existing account
-	-if name not exist for current store, register as new waiter
+Use store user to register waiter
 	
 ##DB Changes:
 INSERT INTO role VALUES ('STORE_WAITER',1,'Store Waiter','Store Waiter to take order from customer','STORE_OWNER');
-
+ALTER TABLE store ADD storePrefix VARCHAR(10) comment 'prefix to append in staff username & invoice no';
 
 ##################################################
 # user-service-3.4.9-SNAPSHOT | 21-Nov-2022

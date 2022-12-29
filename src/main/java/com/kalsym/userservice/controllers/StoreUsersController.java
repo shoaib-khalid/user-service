@@ -86,7 +86,7 @@ public class StoreUsersController {
     @Value("${symplified.whatsapp.service.url:http://209.58.160.20:2001}")
     private String whatsappServiceUrl;
         
-    @Value("${store.staff.session.expiry:3600}")
+    @Value("${store.staff.session.expiry:36000}")
     private int expiry;
 
     @GetMapping(path = {"/"}, name = "store-users-get")

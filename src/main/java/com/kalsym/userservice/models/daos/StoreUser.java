@@ -43,10 +43,8 @@ public class StoreUser implements Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @NotBlank(message = "name is required")
     private String name;
     
-    @NotBlank(message = "phoneNumber is required")
     private String phoneNumber;
     
     private String email;
@@ -56,7 +54,6 @@ public class StoreUser implements Serializable {
     Date created;
     Date updated;
 
-    @NotBlank(message = "role is required")
     private String roleId;
 
     public void update(StoreUser user) {

@@ -41,9 +41,13 @@ public interface StoreShiftSummaryRepository extends JpaRepository<StoreShiftSum
     
     @Transactional 
     @Modifying
-    @Query(value = "UPDATE `order` SET isShiftEnd=1 WHERE id = :orderId", nativeQuery = true) 
+    @Query(value = "UPDATE `order` "
+            + "SET isShiftEnd=1 "
+            + "WHERE staffId=:staffId "
+            + "AND isShiftEnd=0 "
+            + "AND created > DATE_SUB(NOW(),INTERVAL 24 HOUR)", nativeQuery = true) 
     void UpdateOrderClose(
-            @Param("orderId") String orderId
+            @Param("staffId") String staffId
             );
       
 }

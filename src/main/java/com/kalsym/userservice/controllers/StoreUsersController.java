@@ -442,7 +442,7 @@ public class StoreUsersController {
 
     
     //authentication
-    @PostMapping(path = "/endshift", name = "store-users-post")
+    @PostMapping(path = "/endShift", name = "store-users-post")
     public ResponseEntity endShift(@Valid @RequestBody ShiftBody body,
             @PathVariable String storeId,
             HttpServletRequest request) throws Exception {
@@ -496,6 +496,9 @@ public class StoreUsersController {
                 summaryDetails.setPaymentChannel(paymentChannel);
                 storeShiftSummaryDetailsRepository.save(summaryDetails);
             }
+            
+            //close order
+            storeShiftSummaryRepository.UpdateOrderClose(staffId);
         }
         
         //send push notification to staff app

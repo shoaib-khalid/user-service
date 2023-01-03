@@ -487,12 +487,12 @@ public class StoreUsersController {
             List<Object[]> itemList = storeShiftSummaryRepository.getOrderSummary(staffId);
             for (int i=0;i<itemList.size();i++) {
                 Object[] order = itemList.get(i);
-                Double totalSales = (Double)order[0];
+                BigDecimal totalSales = (BigDecimal)order[0];
                 String paymentChannel = (String)order[1];            
                 //insert shift summary details
                 StoreShiftSummaryDetails summaryDetails = new StoreShiftSummaryDetails();
                 summaryDetails.setSummaryId(summaryData.getId());
-                summaryDetails.setSaleAmount(totalSales);
+                summaryDetails.setSaleAmount(totalSales.doubleValue());
                 summaryDetails.setPaymentChannel(paymentChannel);
                 storeShiftSummaryDetailsRepository.save(summaryDetails);
             }

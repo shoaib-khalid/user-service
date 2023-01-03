@@ -6,18 +6,26 @@ import com.kalsym.userservice.models.HttpReponse;
 import com.kalsym.userservice.models.daos.RoleAuthority;
 import com.kalsym.userservice.models.daos.StoreUserSession;
 import com.kalsym.userservice.models.daos.StoreUser;
+import com.kalsym.userservice.models.daos.StoreShiftSummary;
+import com.kalsym.userservice.models.daos.StoreShiftSummaryDetails;
 import com.kalsym.userservice.models.Store;
 import com.kalsym.userservice.models.email.AccountVerificationEmailBody;
 import com.kalsym.userservice.models.email.Email;
 import com.kalsym.userservice.models.requestbodies.AuthenticationBody;
+import com.kalsym.userservice.models.requestbodies.ShiftBody;
 import com.kalsym.userservice.repositories.RoleAuthoritiesRepository;
 import com.kalsym.userservice.repositories.StoreUserSessionsRepository;
 import com.kalsym.userservice.repositories.StoreUsersRepository;
 import com.kalsym.userservice.repositories.StoreRepository;
+import com.kalsym.userservice.repositories.StoreShiftSummaryRepository;
+import com.kalsym.userservice.repositories.StoreShiftSummaryDetailsRepository;
 import com.kalsym.userservice.services.EmaiVerificationlHandler;
+import com.kalsym.userservice.services.FCMService;
 import com.kalsym.userservice.utils.DateTimeUtil;
 import com.kalsym.userservice.utils.Logger;
 import com.kalsym.userservice.utils.Utils;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -76,7 +84,13 @@ public class StoreUsersController {
 
     @Autowired
     StoreUserSessionsRepository storeUserSessionsRepository;
-
+    
+    @Autowired
+    StoreShiftSummaryRepository storeShiftSummaryRepository;
+    
+    @Autowired
+    StoreShiftSummaryDetailsRepository storeShiftSummaryDetailsRepository;
+    
     @Autowired
     private PasswordEncoder bcryptEncoder;
 
@@ -85,6 +99,9 @@ public class StoreUsersController {
     
     @Value("${symplified.whatsapp.service.url:http://209.58.160.20:2001}")
     private String whatsappServiceUrl;
+    
+    @Autowired
+    FCMService fcmService;
         
     @Value("${store.staff.session.expiry:36000}")
     private int expiry;
@@ -384,6 +401,76 @@ public class StoreUsersController {
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
+    
+    
+    //authentication
+    @PostMapping(path = "/endshift", name = "store-users-post")
+    public ResponseEntity endShift(@Valid @RequestBody ShiftBody body,
+            @PathVariable String storeId,
+            HttpServletRequest request) throws Exception {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        
+        Optional<Store> storeOpt = storeRepository.findById(storeId);
+        if (!storeOpt.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Store not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+        
+        Store store = storeOpt.get();
+        StoreShiftSummary summaryData = new StoreShiftSummary();
+        String staffId = body.getUserId();
+        
+        //get first order
+        List<Object[]> firstOrder = storeShiftSummaryRepository.getFirstOrder(staffId);
+        if (firstOrder.size()>0) {
+            Object[] orderDetails = firstOrder.get(0);
+            //create shift summary data
+            summaryData.setUserId(staffId);
+            summaryData.setFirstOrderId((String)orderDetails[0]);
+            Timestamp ts = (java.sql.Timestamp)orderDetails[1];
+            summaryData.setFirstOrderTime(ts);
+            
+            //get last order
+            List<Object[]> lastOrder = storeShiftSummaryRepository.getLastOrder(staffId);
+            if (lastOrder.size()>0) {
+                Object[] lastOrderDetails = firstOrder.get(0);
+                summaryData.setLastOrderId((String)lastOrderDetails[0]);
+                Timestamp lastTs = (java.sql.Timestamp)lastOrderDetails[1];
+                summaryData.setLastOrderTime(lastTs);
+            }
+            
+            summaryData = storeShiftSummaryRepository.save(summaryData);
+
+            //calculate total sales for current user        
+            List<Object[]> itemList = storeShiftSummaryRepository.getOrderSummary(staffId);
+            for (int i=0;i<itemList.size();i++) {
+                Object[] order = itemList.get(i);
+                Double totalSales = (Double)order[0];
+                String paymentChannel = (String)order[1];            
+                //insert shift summary details
+                StoreShiftSummaryDetails summaryDetails = new StoreShiftSummaryDetails();
+                summaryDetails.setSummaryId(summaryData.getId());
+                summaryDetails.setSaleAmount(totalSales);
+                summaryDetails.setPaymentChannel(paymentChannel);
+                storeShiftSummaryDetailsRepository.save(summaryDetails);
+            }
+        }
+        
+        //send push notification to staff app
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Sending FCM to staffId:"+staffId+" storeId:"+store.getId());                    
+        fcmService.sendLogoutNotification(staffId, storeId, store.getDomain());        
+        
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "summaryData:"+summaryData, "");
+
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setData(summaryData);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+    
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {

@@ -65,5 +65,46 @@ public class FCMService {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " res: " + res);
 
     }
+    
+    
+    public void sendLogoutNotification(String staffId, String storeId, String domain) {
+        String logprefix = "sendLogoutNotification";
+        RestTemplate restTemplate = new RestTemplate();
+        FCMNotification fcmNotification = new FCMNotification();
+        fcmNotification.setTo("/topics/" + storeId);
+        fcmNotification.setPriority("low");
+        FCMNotificationData fcmNotificationData = new FCMNotificationData();
+        fcmNotificationData.setTitle("endshift");
+        fcmNotificationData.setStoreName("");
+        fcmNotificationData.setBody(staffId);
+        fcmNotification.setData(fcmNotificationData);
+        
+        String fcmToken = fcmTokenDeliverIn;
+        if (domain.contains("deliverin")) {
+            fcmToken = fcmTokenDeliverIn;
+        } else if (domain.contains("easydukan")) {
+            fcmToken = fcmTokenEasyDukan;
+        } else if (domain.contains("dev-my")) {
+            fcmToken = fcmTokenDeliverIn;
+        } else if (domain.contains("dev-pk")) {
+            fcmToken = fcmTokenEasyDukan;
+        } else {
+            fcmToken = fcmTokenDeliverIn;
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", fcmToken);
+
+        HttpEntity<FCMNotification> entity = new HttpEntity<>(fcmNotification, headers);
+
+        String url = fcmUrl;
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " url: " + url);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " entity: " + entity);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Sending FCM to clientId:"+staffId);
+        
+        ResponseEntity<String> res = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, " res: " + res);
+
+    }
 
 }

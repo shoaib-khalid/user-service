@@ -1,12 +1,39 @@
 ##################################################
-# user-service-3.5.0-SNAPSHOT | 19-Dec-2022
+# user-service-3.5.0-SNAPSHOT | 03-Jan-2023
 ##################################################
 New user roles : STORE_WAITER
 Use store user to register waiter
+
+
+New API : store_user/endShift
+	-insert into store_shift_summary for total sales by payment channel for that staff for current shift
+	-push logout notification to mobile-app for auto-logout for that staff
+
 	
 ##DB Changes:
 INSERT INTO role VALUES ('STORE_WAITER',1,'Store Waiter','Store Waiter to take order from customer','STORE_OWNER');
 ALTER TABLE store ADD storePrefix VARCHAR(10) comment 'prefix to append in staff username & invoice no';
+ALTER TABLE `order` ADD isClosed TINYINT(1) DEFAULT 0;
+
+CREATE TABLE store_shift_summary (
+	id BIGINT PRIMARY KEY AUTO_INCREMENT,
+	userId VARCHAR(100),
+	firstOrderId VARCHAR(50),
+	lastOrderId VARCHAR(50),
+	firstOrderTime DATETIME,
+	lastOrderTime DATETIME,
+	created DATETIME,
+	updated DATETIME
+);
+
+
+CREATE TABLE store_shift_summary_details (
+	summaryId BIGINT,
+	saleAmount DECIMAL(10,2),
+	paymentChannel VARCHAR(20)
+);
+
+
 
 ##################################################
 # user-service-3.4.9-SNAPSHOT | 21-Nov-2022

@@ -27,7 +27,7 @@ import org.hibernate.annotations.UpdateTimestamp;
  * @author Sarosh
  */
 @Entity
-@Table(name = "@Temporal(TemporalType.TIMESTAMP)")
+@Table(name = "store_shift_summary_details")
 @Getter
 @Setter
 @NoArgsConstructor

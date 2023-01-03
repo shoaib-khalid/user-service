@@ -397,11 +397,48 @@ public class StoreUsersController {
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "generated token", "");
 
+        //update fcm token
+        if (body.getFcmToken()!=null) {
+            user.setFcmToken(body.getFcmToken());
+            storeUsersRepository.save(user);
+        }
+        
         response.setStatus(HttpStatus.ACCEPTED);
         response.setData(authReponse);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
     
+    @PutMapping(path = {"/{id}"}, name = "store-users-put-by-id")
+    @PreAuthorize("hasAnyAuthority('store-users-put-by-id', 'all')")
+    public ResponseEntity<HttpReponse> refreshFcmToken(HttpServletRequest request,
+            @PathVariable String storeId,
+            @PathVariable String id, @RequestBody String fcmToken) {
+        String logprefix = request.getRequestURI();
+
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "FcmToken:"+fcmToken, "");
+
+        Optional<StoreUser> optCustomer = storeUsersRepository.findById(id);
+
+        if (!optCustomer.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
+        StoreUser user = optCustomer.get();
+        
+        user.setFcmToken(fcmToken);            
+        
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user fcm token updated for id: " + id, "");
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setData(storeUsersRepository.save(user));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+
     
     //authentication
     @PostMapping(path = "/endshift", name = "store-users-post")
@@ -461,9 +498,13 @@ public class StoreUsersController {
         }
         
         //send push notification to staff app
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Sending FCM to staffId:"+staffId+" storeId:"+store.getId());                    
-        fcmService.sendLogoutNotification(staffId, storeId, store.getDomain());        
-        
+        Optional<StoreUser> optUser = storeUsersRepository.findById(staffId);
+        if (!optUser.isPresent()) {
+            String staffFcmToken = optUser.get().getFcmToken();
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Sending FCM to staffId:"+staffId+" token:"+staffFcmToken);                    
+            fcmService.sendLogoutNotification(staffId, staffFcmToken, storeId, store.getDomain());                
+        }
+       
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "summaryData:"+summaryData, "");
 
         response.setStatus(HttpStatus.ACCEPTED);

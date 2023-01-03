@@ -67,12 +67,11 @@ public class FCMService {
     }
     
     
-    public void sendLogoutNotification(String staffId, String storeId, String domain) {
+    public void sendLogoutNotification(String staffId, String staffFcmToken, String storeId, String domain) {
         String logprefix = "sendLogoutNotification";
         RestTemplate restTemplate = new RestTemplate();
         FCMNotification fcmNotification = new FCMNotification();
-        fcmNotification.setTo("/topics/" + storeId);
-        fcmNotification.setPriority("low");
+        fcmNotification.setToken(staffFcmToken);
         FCMNotificationData fcmNotificationData = new FCMNotificationData();
         fcmNotificationData.setTitle("endshift");
         fcmNotificationData.setStoreName("");

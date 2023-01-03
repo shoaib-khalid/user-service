@@ -17,7 +17,7 @@ public interface StoreShiftSummaryRepository extends JpaRepository<StoreShiftSum
     
     @Query(value = "SELECT id, created FROM `order` "
             + "WHERE staffId=:staffId "
-            + "AND isClosed=0 "
+            + "AND isShiftEnd=0 "
             + "AND created > DATE_SUB(NOW(),INTERVAL 24 HOUR)"
             + "ORDER BY created LIMIT 1"
             , nativeQuery = true)
@@ -25,7 +25,7 @@ public interface StoreShiftSummaryRepository extends JpaRepository<StoreShiftSum
     
     @Query(value = "SELECT id, created FROM `order` "
             + "WHERE staffId=:staffId "
-            + "AND isClosed=0 "
+            + "AND isShiftEnd=0 "
             + "AND created > DATE_SUB(NOW(),INTERVAL 24 HOUR)"
             + "ORDER BY created DESC LIMIT 1"
             , nativeQuery = true)
@@ -33,7 +33,7 @@ public interface StoreShiftSummaryRepository extends JpaRepository<StoreShiftSum
     
     @Query(value = "SELECT SUM(total), paymentChannel FROM `order` "
             + "WHERE staffId=:staffId "
-            + "AND isClosed=0 "
+            + "AND isShiftEnd=0 "
             + "AND created > DATE_SUB(NOW(),INTERVAL 24 HOUR)"
             + "GROUP BY paymentChannel"
             , nativeQuery = true)
@@ -41,7 +41,7 @@ public interface StoreShiftSummaryRepository extends JpaRepository<StoreShiftSum
     
     @Transactional 
     @Modifying
-    @Query(value = "UPDATE `order` SET isClosed=1 WHERE id = :orderId", nativeQuery = true) 
+    @Query(value = "UPDATE `order` SET isShiftEnd=1 WHERE id = :orderId", nativeQuery = true) 
     void UpdateOrderClose(
             @Param("orderId") String orderId
             );

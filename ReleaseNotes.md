@@ -14,6 +14,7 @@ New API : store_user/endShift
 INSERT INTO role VALUES ('STORE_WAITER',1,'Store Waiter','Store Waiter to take order from customer','STORE_OWNER');
 ALTER TABLE store ADD storePrefix VARCHAR(10) comment 'prefix to append in staff username & invoice no';
 ALTER TABLE `order` ADD isClosed TINYINT(1) DEFAULT 0;
+ALTER TABLE `store_user` ADD fcmToken VARCHAR(200);
 
 CREATE TABLE store_shift_summary (
 	id BIGINT PRIMARY KEY AUTO_INCREMENT,

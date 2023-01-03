@@ -22,4 +22,6 @@ public class AuthenticationBody {
     
     private String domain;
     
+    private String fcmToken;
+    
 }

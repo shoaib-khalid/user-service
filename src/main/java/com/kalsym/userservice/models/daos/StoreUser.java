@@ -55,6 +55,8 @@ public class StoreUser implements Serializable {
     Date updated;
 
     private String roleId;
+    
+    private String fcmToken;
 
     public void update(StoreUser user) {
         if (null != user.getEmail()) {

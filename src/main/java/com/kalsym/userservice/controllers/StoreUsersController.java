@@ -408,7 +408,7 @@ public class StoreUsersController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
     
-    @PutMapping(path = {"/{id}"}, name = "store-users-put-by-id")
+    @PutMapping(path = {"/refreshFcmToken"}, name = "store-users-put-by-id")
     @PreAuthorize("hasAnyAuthority('store-users-put-by-id', 'all')")
     public ResponseEntity<HttpReponse> refreshFcmToken(HttpServletRequest request,
             @PathVariable String storeId,

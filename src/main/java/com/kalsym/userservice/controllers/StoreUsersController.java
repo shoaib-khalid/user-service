@@ -24,6 +24,7 @@ import com.kalsym.userservice.services.FCMService;
 import com.kalsym.userservice.utils.DateTimeUtil;
 import com.kalsym.userservice.utils.Logger;
 import com.kalsym.userservice.utils.Utils;
+import com.kalsym.userservice.models.requestbodies.RefreshTokenRequest;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -412,13 +413,13 @@ public class StoreUsersController {
     @PreAuthorize("hasAnyAuthority('store-users-put-by-id', 'all')")
     public ResponseEntity<HttpReponse> refreshFcmToken(HttpServletRequest request,
             @PathVariable String storeId,
-            @PathVariable String id, @RequestBody String fcmToken) {
+            @PathVariable String id, @RequestBody RefreshTokenRequest req) {
         String logprefix = request.getRequestURI();
 
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "FcmToken:"+fcmToken, "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "FcmToken:"+req.getFcmToken(), "");
 
         Optional<StoreUser> optCustomer = storeUsersRepository.findById(id);
 
@@ -431,7 +432,7 @@ public class StoreUsersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
         StoreUser user = optCustomer.get();
         
-        user.setFcmToken(fcmToken);            
+        user.setFcmToken(req.getFcmToken());            
         
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user fcm token updated for id: " + id, "");
         response.setStatus(HttpStatus.ACCEPTED);

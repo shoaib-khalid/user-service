@@ -148,8 +148,8 @@ public class StoreUsersController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping(path = {"/{id}"}, name = "store-users-get-by-id")
-    @PreAuthorize("hasAnyAuthority('store-users-get-by-id', 'all')")
+    @GetMapping(path = {"/{id}"}, name = "store-users-get")
+    @PreAuthorize("hasAnyAuthority('store-users-get', 'all')")
     public ResponseEntity<HttpReponse> getUsersById(HttpServletRequest request,
             @PathVariable String storeId,
             @PathVariable String id) {
@@ -173,8 +173,8 @@ public class StoreUsersController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @DeleteMapping(path = {"/{id}"}, name = "store-users-delete-by-id")
-    @PreAuthorize("hasAnyAuthority('store-users-delete-by-id', 'all')")
+    @DeleteMapping(path = {"/{id}"}, name = "store-users-delete")
+    @PreAuthorize("hasAnyAuthority('store-users-delete', 'all')")
     public ResponseEntity<HttpReponse> deleteUserById(HttpServletRequest request,
             @PathVariable String storeId,
             @PathVariable String id) {
@@ -200,8 +200,8 @@ public class StoreUsersController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PutMapping(path = {"/{id}"}, name = "store-users-put-by-id")
-    @PreAuthorize("hasAnyAuthority('store-users-put-by-id', 'all')")
+    @PutMapping(path = {"/{id}"}, name = "store-users-put")
+    @PreAuthorize("hasAnyAuthority('store-users-put', 'all')")
     public ResponseEntity<HttpReponse> putUserById(HttpServletRequest request,
             @PathVariable String storeId,
             @PathVariable String id, @RequestBody StoreUser body) {
@@ -271,7 +271,7 @@ public class StoreUsersController {
     }
 
     @PostMapping(path = "/register", name = "store-users-post")
-    //@PreAuthorize("hasAnyAuthority('store-customers-post', 'all')")
+    @PreAuthorize("hasAnyAuthority('store-users-post', 'all')")
     public ResponseEntity<HttpReponse> postUser(HttpServletRequest request,
             @PathVariable String storeId,
             @Valid @RequestBody StoreUser body) throws Exception {
@@ -413,8 +413,8 @@ public class StoreUsersController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
     
-    @PutMapping(path = {"/refreshFcmToken/{id}"}, name = "store-users-put-by-id")
-    @PreAuthorize("hasAnyAuthority('store-users-put-by-id', 'all')")
+    @PutMapping(path = {"/refreshFcmToken/{id}"}, name = "store-users-put")
+    @PreAuthorize("hasAnyAuthority('store-users-put', 'all')")
     public ResponseEntity<HttpReponse> refreshFcmToken(HttpServletRequest request,
             @PathVariable String storeId,
             @PathVariable String id, @RequestBody RefreshTokenRequest req) {
@@ -446,7 +446,8 @@ public class StoreUsersController {
 
     
     //authentication
-    @PostMapping(path = "/endShift", name = "store-users-post")
+    @PostMapping(path = "/endShift", name = "store-users-put")
+    @PreAuthorize("hasAnyAuthority('store-users-put', 'all')")
     public ResponseEntity endShift(@Valid @RequestBody ShiftBody body,
             @PathVariable String storeId,
             HttpServletRequest request) throws Exception {

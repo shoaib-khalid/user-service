@@ -475,7 +475,7 @@ public class StoreUsersController {
             //get last order
             List<Object[]> lastOrder = storeShiftSummaryRepository.getLastOrder(staffId);
             if (lastOrder.size()>0) {
-                Object[] lastOrderDetails = firstOrder.get(0);
+                Object[] lastOrderDetails = lastOrder.get(0);
                 summaryData.setLastOrderId((String)lastOrderDetails[0]);
                 Timestamp lastTs = (java.sql.Timestamp)lastOrderDetails[1];
                 summaryData.setLastOrderTime(lastTs);

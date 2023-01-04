@@ -498,6 +498,7 @@ public class StoreUsersController {
             }
             
             //close order
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Close order");
             storeShiftSummaryRepository.UpdateOrderClose(staffId);
         }
         

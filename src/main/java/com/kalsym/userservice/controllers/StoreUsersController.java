@@ -302,7 +302,8 @@ public class StoreUsersController {
             response.setData(errors);
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
-            
+
+        body.setUsername(username);
         body.setPassword(bcryptEncoder.encode(body.getPassword()));        
         body.setCreated(DateTimeUtil.currentTimestamp());
         body.setUpdated(DateTimeUtil.currentTimestamp());
@@ -332,7 +333,7 @@ public class StoreUsersController {
         String logprefix = request.getRequestURI();
         HttpReponse response = new HttpReponse(request.getRequestURI());
 
-        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "Authenticate username:"+body.getUsername());
 
         Authentication auth = null;
         StoreUser user = null;

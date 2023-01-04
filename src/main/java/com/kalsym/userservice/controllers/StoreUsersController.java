@@ -485,6 +485,7 @@ public class StoreUsersController {
 
             //calculate total sales for current user        
             List<Object[]> itemList = storeShiftSummaryRepository.getOrderSummary(staffId);
+            List<StoreShiftSummaryDetails> summaryDetailsList = new ArrayList();
             for (int i=0;i<itemList.size();i++) {
                 Object[] order = itemList.get(i);
                 BigDecimal totalSales = (BigDecimal)order[0];
@@ -494,8 +495,10 @@ public class StoreUsersController {
                 summaryDetails.setSummaryId(summaryData.getId());
                 summaryDetails.setSaleAmount(totalSales.doubleValue());
                 summaryDetails.setPaymentChannel(paymentChannel);
-                storeShiftSummaryDetailsRepository.save(summaryDetails);
+                summaryDetails = storeShiftSummaryDetailsRepository.save(summaryDetails);
+                summaryDetailsList.add(summaryDetails);
             }
+            summaryData.setSummaryDetails(summaryDetailsList);
             
             //close order
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Close order");

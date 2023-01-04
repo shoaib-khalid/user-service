@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StoreUsersRepository extends PagingAndSortingRepository<StoreUser, String>, JpaRepository<StoreUser, String> {
 
-    StoreUser findByUsername(String userName);
+    StoreUser findByUsername(String username);
     
     StoreUser findByUsernameOrEmail(String userName, String email);
     

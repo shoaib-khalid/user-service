@@ -294,7 +294,7 @@ public class StoreUsersController {
         
         String username = store.getStorePrefix()+body.getUsername();
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Username to register:"+username);
-        StoreUser existingUser = storeUsersRepository.findByUsernameAndStoreId(storeId, username);
+        StoreUser existingUser = storeUsersRepository.findByUsernameAndStoreId(username, storeId);
         if (existingUser!=null) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username already exists", "");
             response.setStatus(HttpStatus.CONFLICT);

@@ -292,7 +292,8 @@ public class StoreUsersController {
         
         Store store = storeOpt.get();
         
-        String username = store.getStorePrefix()+body.getUsername();
+        //String username = store.getStorePrefix()+body.getUsername();
+        String username = body.getUsername();
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Username to register:"+username);
         StoreUser existingUser = storeUsersRepository.findByUsernameAndStoreId(username, storeId);
         if (existingUser!=null) {

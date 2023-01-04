@@ -339,10 +339,12 @@ public class StoreUsersController {
         try {
 
             user = storeUsersRepository.findByUsername(body.getUsername());
-//            auth = authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())
-//            );
-
+            if (user==null) {
+                Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "username not valid");
+                response.setStatus(HttpStatus.UNAUTHORIZED, "Bad Craedentiails");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+        
             boolean match = bcryptEncoder.matches(body.getPassword(), user.getPassword());
 
             if (!match) {

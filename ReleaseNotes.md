@@ -37,6 +37,11 @@ CREATE TABLE store_shift_summary_details (
 );
 
 
+INSERT INTO role_authority VALUES ('STORE_OWNER','store-users-get','user-service');
+INSERT INTO role_authority VALUES ('STORE_OWNER','store-users-post','user-service');
+INSERT INTO role_authority VALUES ('STORE_OWNER','store-users-delete','user-service');
+INSERT INTO role_authority VALUES ('STORE_OWNER','store-users-put','user-service');
+
 
 ##################################################
 # user-service-3.4.9-SNAPSHOT | 21-Nov-2022

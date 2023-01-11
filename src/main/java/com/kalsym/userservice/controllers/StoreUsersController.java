@@ -131,7 +131,8 @@ public class StoreUsersController {
         user.setLocked(locked);
         user.setStoreId(storeId);
         user.setPhoneNumber(phoneNumber);
-
+        user.setDeactivated(false);
+        
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, user + "", "");
         ExampleMatcher matcher = ExampleMatcher
                 .matchingAll()
@@ -193,7 +194,9 @@ public class StoreUsersController {
         }
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
-        storeUsersRepository.delete(optCustomer.get());
+        StoreUser user = optCustomer.get();
+        user.setDeactivated(Boolean.TRUE);
+        storeUsersRepository.save(user);
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user deleted", "");
         response.setStatus(HttpStatus.OK);
@@ -347,6 +350,12 @@ public class StoreUsersController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
         
+            if (user.getDeactivated()) {
+                Logger.application.warn(Logger.pattern, UserServiceApplication.VERSION, logprefix, "User is deactivated");
+                response.setStatus(HttpStatus.UNAUTHORIZED, "Bad Craedentiails");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+            
             boolean match = bcryptEncoder.matches(body.getPassword(), user.getPassword());
 
             if (!match) {

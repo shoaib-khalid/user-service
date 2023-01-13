@@ -196,6 +196,8 @@ public class StoreUsersController {
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user found", "");
         StoreUser user = optCustomer.get();
         user.setDeactivated(Boolean.TRUE);
+        String newUsername = user.getUsername() + "-DEACTIVATED";
+        user.setUsername(newUsername);
         storeUsersRepository.save(user);
 
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "user deleted", "");

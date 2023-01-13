@@ -534,6 +534,72 @@ public class StoreUsersController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
     
+    
+    //authentication
+    @GetMapping(path = "/shiftSummary/{userId}", name = "store-users-put")
+    @PreAuthorize("hasAnyAuthority('store-users-put', 'all')")
+    public ResponseEntity shiftSummary(@PathVariable String userId,
+            @PathVariable String storeId,
+            HttpServletRequest request) throws Exception {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "", "");
+        
+        Optional<Store> storeOpt = storeRepository.findById(storeId);
+        if (!storeOpt.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Store not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+        
+        Store store = storeOpt.get();
+        StoreShiftSummary summaryData = new StoreShiftSummary();
+        String staffId = userId;
+        
+        //get first order
+        List<Object[]> firstOrder = storeShiftSummaryRepository.getFirstOrder(staffId);
+        if (firstOrder.size()>0) {
+            Object[] orderDetails = firstOrder.get(0);
+            //create shift summary data
+            summaryData.setUserId(staffId);
+            summaryData.setFirstOrderId((String)orderDetails[0]);
+            Timestamp ts = (java.sql.Timestamp)orderDetails[1];
+            summaryData.setFirstOrderTime(ts);
+            
+            //get last order
+            List<Object[]> lastOrder = storeShiftSummaryRepository.getLastOrder(staffId);
+            if (lastOrder.size()>0) {
+                Object[] lastOrderDetails = lastOrder.get(0);
+                summaryData.setLastOrderId((String)lastOrderDetails[0]);
+                Timestamp lastTs = (java.sql.Timestamp)lastOrderDetails[1];
+                summaryData.setLastOrderTime(lastTs);
+            }
+            
+            //calculate total sales for current user        
+            List<Object[]> itemList = storeShiftSummaryRepository.getOrderSummary(staffId);
+            List<StoreShiftSummaryDetails> summaryDetailsList = new ArrayList();
+            for (int i=0;i<itemList.size();i++) {
+                Object[] order = itemList.get(i);
+                BigDecimal totalSales = (BigDecimal)order[0];
+                String paymentChannel = (String)order[1];            
+                //insert shift summary details
+                StoreShiftSummaryDetails summaryDetails = new StoreShiftSummaryDetails();
+                summaryDetails.setSaleAmount(totalSales.doubleValue());
+                summaryDetails.setPaymentChannel(paymentChannel);
+                summaryDetailsList.add(summaryDetails);
+            }
+            summaryData.setSummaryDetails(summaryDetailsList);
+                        
+        }
+        
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "summaryData:"+summaryData, "");
+
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setData(summaryData);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+    
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity handleExceptionBadRequestException(HttpServletRequest request, MethodArgumentNotValidException e) {

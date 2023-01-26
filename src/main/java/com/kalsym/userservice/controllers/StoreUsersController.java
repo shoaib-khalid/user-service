@@ -400,14 +400,22 @@ public class StoreUsersController {
 
         session = storeUserSessionsRepository.saveAndFlush(session);        
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session created with id: " + session.getId(), "");
-
-        session.setUpdated(null);
-        session.setStatus(null);
-        session.setRemoteAddress(null);
-        session.setId(null);
-
+       
+        StoreUserSession newSession = new StoreUserSession();
+        newSession.setUsername(session.getUsername());
+        newSession.setExpiry(session.getExpiry());
+        newSession.setCreated(session.getCreated());
+        newSession.setAccessToken(session.getAccessToken());
+        newSession.setRefreshToken(session.getRefreshToken());
+        newSession.setOwnerId(session.getOwnerId());
+        newSession.setUpdated(null);
+        newSession.setStatus(null);
+        newSession.setRemoteAddress(null);
+        newSession.setId(null);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "newSession created with id: " + newSession.getId(), "");
+        
         Auth authReponse = new Auth();
-        authReponse.setSession(session);
+        authReponse.setSession(newSession);
         authReponse.setAuthorities(authorities);
         authReponse.setRole(user.getRoleId());
 

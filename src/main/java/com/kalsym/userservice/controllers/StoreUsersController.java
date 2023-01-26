@@ -415,6 +415,7 @@ public class StoreUsersController {
 
         //update fcm token
         if (body.getFcmToken()!=null) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Update fcm token");
             storeUsersRepository.UpdateFcmToken(user.getId(), body.getFcmToken());
         }
         

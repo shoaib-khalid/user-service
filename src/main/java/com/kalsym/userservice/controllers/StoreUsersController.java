@@ -415,8 +415,7 @@ public class StoreUsersController {
 
         //update fcm token
         if (body.getFcmToken()!=null) {
-            user.setFcmToken(body.getFcmToken());
-            storeUsersRepository.save(user);
+            storeUsersRepository.UpdateFcmToken(user.getId(), body.getFcmToken());
         }
         
         response.setStatus(HttpStatus.ACCEPTED);

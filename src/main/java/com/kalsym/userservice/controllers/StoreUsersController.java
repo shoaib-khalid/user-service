@@ -398,7 +398,7 @@ public class StoreUsersController {
         session.setStatus("ACTIVE");
         session.generateTokens();
 
-        session = storeUserSessionsRepository.save(session);
+        session = storeUserSessionsRepository.saveAndFlush(session);        
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session created with id: " + session.getId(), "");
 
         session.setUpdated(null);

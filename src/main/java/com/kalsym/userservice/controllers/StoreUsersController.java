@@ -525,16 +525,19 @@ public class StoreUsersController {
             summaryData.setSummaryDetails(summaryDetailsList);
             
             //close order
-            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Close order");
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Close order for staffId:"+staffId);
             storeShiftSummaryRepository.UpdateOrderClose(staffId);
         }
         
         //send push notification to staff app
         Optional<StoreUser> optUser = storeUsersRepository.findById(staffId);
-        if (!optUser.isPresent()) {
+        if (optUser.isPresent()) {
             String staffFcmToken = optUser.get().getFcmToken();
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "Sending FCM to staffId:"+staffId+" token:"+staffFcmToken);                    
             fcmService.sendLogoutNotification(staffId, staffFcmToken, storeId, store.getDomain());                
+        } else {
+            //user not found
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "StaffId not found in store_user table");
         }
        
         Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "summaryData:"+summaryData, "");

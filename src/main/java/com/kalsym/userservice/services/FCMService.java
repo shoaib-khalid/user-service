@@ -71,7 +71,7 @@ public class FCMService {
         String logprefix = "sendLogoutNotification";
         RestTemplate restTemplate = new RestTemplate();
         FCMNotification fcmNotification = new FCMNotification();
-        fcmNotification.setToken(staffFcmToken);
+        fcmNotification.setTo(staffFcmToken);
         FCMNotificationData fcmNotificationData = new FCMNotificationData();
         fcmNotificationData.setTitle("endshift");
         fcmNotificationData.setStoreName("");

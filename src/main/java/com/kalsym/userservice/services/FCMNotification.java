@@ -23,6 +23,5 @@ public class FCMNotification implements Serializable {
 
     private String to;
     private String priority;
-    private FCMNotificationData data;
-    private String token;
+    private FCMNotificationData data;    
 }

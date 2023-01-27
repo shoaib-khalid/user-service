@@ -1,5 +1,5 @@
 ##################################################
-# user-service-3.5.1-SNAPSHOT | 26-Jan-2023
+# user-service-3.5.1-SNAPSHOT | 27-Jan-2023
 ##################################################
 Bug fix authenticate store user to update FCM token
 

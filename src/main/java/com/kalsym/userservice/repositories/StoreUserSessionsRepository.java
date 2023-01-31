@@ -10,5 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StoreUserSessionsRepository extends JpaRepository<StoreUserSession, String> {
 
     StoreUserSession findByAccessToken(String accessToken);
-
+    
+    StoreUserSession findByRefreshToken(String refreshToken);
 }

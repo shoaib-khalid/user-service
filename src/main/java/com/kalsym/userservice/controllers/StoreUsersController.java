@@ -432,6 +432,73 @@ public class StoreUsersController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
     
+    
+    @PostMapping(path = "session/refresh", name = "store-users-session-refresh")
+    public ResponseEntity refreshSession(@Valid @RequestBody String refreshToken,
+            HttpServletRequest request) throws Exception {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "refreshToken: [" + refreshToken + "]");
+
+        StoreUserSession session = storeUserSessionsRepository.findByRefreshToken(refreshToken);
+
+        if (null == session) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session not found in storeUserSession", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        Optional<StoreUser> optClient = storeUsersRepository.findById(session.getOwnerId());
+
+        if (!optClient.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "storeUser not found", "");
+            response.setStatus(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+
+        List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(optClient.get().getRoleId());
+        ArrayList<String> authorities = new ArrayList<>();
+        if (null != roleAuthories) {
+
+            for (RoleAuthority roleAuthority : roleAuthories) {
+                authorities.add(roleAuthority.getAuthorityId());
+            }
+        }
+
+        StoreUserSession newSession = new StoreUserSession();
+        newSession.setRemoteAddress(request.getRemoteAddr());
+        newSession.setOwnerId(optClient.get().getId());
+        newSession.setUsername(optClient.get().getUsername());
+        newSession.setCreated(DateTimeUtil.currentTimestamp());
+        newSession.setUpdated(DateTimeUtil.currentTimestamp());
+        newSession.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
+        newSession.setStatus("ACTIVE");
+        newSession.generateTokens();
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session: " + newSession, "");
+
+        newSession = storeUserSessionsRepository.save(newSession);
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session created with id: " + newSession.getId(), "");
+
+        newSession.setUpdated(null);
+        newSession.setStatus(null);
+        newSession.setRemoteAddress(null);
+        newSession.setUsername(null);
+        newSession.setId(null);
+
+        Auth authReponse = new Auth();
+        authReponse.setSession(newSession);
+        authReponse.setAuthorities(authorities);
+        authReponse.setRole(optClient.get().getRoleId());
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "generated token", "");
+
+        response.setStatus(HttpStatus.ACCEPTED);
+        response.setData(authReponse);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+    
+    
     @PutMapping(path = {"/refreshFcmToken/{id}"}, name = "store-users-put")
     @PreAuthorize("hasAnyAuthority('store-users-put', 'all')")
     public ResponseEntity<HttpReponse> refreshFcmToken(HttpServletRequest request,

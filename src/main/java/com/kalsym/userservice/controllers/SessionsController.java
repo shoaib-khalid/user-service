@@ -8,6 +8,7 @@ import com.kalsym.userservice.models.daos.Customer;
 import com.kalsym.userservice.models.daos.Administrator;
 import com.kalsym.userservice.models.daos.ClientSession;
 import com.kalsym.userservice.models.daos.StoreUserSession;
+import com.kalsym.userservice.models.daos.StoreUser;
 import com.kalsym.userservice.models.daos.CustomerSession;
 import com.kalsym.userservice.models.daos.Session;
 import com.kalsym.userservice.models.daos.AdministratorSession;
@@ -16,6 +17,7 @@ import com.kalsym.userservice.repositories.AdministratorSessionsRepository;
 import com.kalsym.userservice.repositories.AdministratorsRepository;
 import com.kalsym.userservice.repositories.ClientSessionsRepository;
 import com.kalsym.userservice.repositories.StoreUserSessionsRepository;
+import com.kalsym.userservice.repositories.StoreUsersRepository;
 import com.kalsym.userservice.repositories.ClientsRepository;
 import com.kalsym.userservice.repositories.CustomerSessionsRepository;
 import com.kalsym.userservice.repositories.CustomersRepository;
@@ -74,7 +76,10 @@ public class SessionsController {
     
     @Autowired
     StoreUserSessionsRepository storeUserSessionsRepository;
-
+    
+    @Autowired
+    StoreUsersRepository storeUserRepository;
+    
     @PostMapping(path = "/details", name = "session-details-client")
     //@PreAuthorize("hasAnyAuthority('session-details-client', 'all')")
     public ResponseEntity<HttpReponse> getSessionDetailsClient(HttpServletRequest request,
@@ -158,10 +163,17 @@ public class SessionsController {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "customer found", "");
             return optCustomer.get().getRoleId();
         }
+        
+        Optional<StoreUser> optStoreUser = storeUserRepository.findById(userId);
 
+        if (optStoreUser.isPresent()) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "StoreUser found", "");
+            return optStoreUser.get().getRoleId();
+        }
+        
         Optional<Administrator> optAdministrator = administratorsRepository.findById(userId);
 
-        if (!optAdministrator.isPresent()) {
+        if (optAdministrator.isPresent()) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "administrator found", "");
             return optAdministrator.get().getRoleId();
         }

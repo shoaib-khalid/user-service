@@ -1,4 +1,10 @@
 ##################################################
+# user-service-3.5.2-SNAPSHOT | 31-Jan-2023
+##################################################
+Bug fix for store user session authentication
+
+
+##################################################
 # user-service-3.5.1-SNAPSHOT | 27-Jan-2023
 ##################################################
 Bug fix authenticate store user to update FCM token

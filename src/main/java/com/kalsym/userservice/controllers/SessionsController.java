@@ -7,6 +7,7 @@ import com.kalsym.userservice.models.daos.Client;
 import com.kalsym.userservice.models.daos.Customer;
 import com.kalsym.userservice.models.daos.Administrator;
 import com.kalsym.userservice.models.daos.ClientSession;
+import com.kalsym.userservice.models.daos.StoreUserSession;
 import com.kalsym.userservice.models.daos.CustomerSession;
 import com.kalsym.userservice.models.daos.Session;
 import com.kalsym.userservice.models.daos.AdministratorSession;
@@ -14,6 +15,7 @@ import com.kalsym.userservice.models.daos.RoleAuthority;
 import com.kalsym.userservice.repositories.AdministratorSessionsRepository;
 import com.kalsym.userservice.repositories.AdministratorsRepository;
 import com.kalsym.userservice.repositories.ClientSessionsRepository;
+import com.kalsym.userservice.repositories.StoreUserSessionsRepository;
 import com.kalsym.userservice.repositories.ClientsRepository;
 import com.kalsym.userservice.repositories.CustomerSessionsRepository;
 import com.kalsym.userservice.repositories.CustomersRepository;
@@ -69,6 +71,9 @@ public class SessionsController {
 
     @Autowired
     RoleAuthoritiesRepository roleAuthoritiesRepository;
+    
+    @Autowired
+    StoreUserSessionsRepository storeUserSessionsRepository;
 
     @PostMapping(path = "/details", name = "session-details-client")
     //@PreAuthorize("hasAnyAuthority('session-details-client', 'all')")
@@ -87,7 +92,12 @@ public class SessionsController {
             session = getCustomerSession(accessToken, logprefix);
             if (session==null) {
                 session = getAdminSession(accessToken, logprefix);
-                if (session!=null) {
+                if (session==null) {
+                    session = getStoreUserSession(accessToken, logprefix);
+                    if (session!=null) {
+                        sessionType="WAITER";
+                    }
+                } else {
                     sessionType="ADMIN";
                 }
             } else {
@@ -165,6 +175,17 @@ public class SessionsController {
         if (null != clientSession) {
             Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client session found", "");
             return clientSession;
+        }
+        
+        return null;
+    }
+    
+    private Session getStoreUserSession(String accessToken, String logprefix) {
+        StoreUserSession storeUserSession = storeUserSessionsRepository.findByAccessToken(accessToken);
+
+        if (null != storeUserSession) {
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "storeuser session found", "");
+            return storeUserSession;
         }
         
         return null;

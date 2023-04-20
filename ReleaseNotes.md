@@ -1,4 +1,14 @@
 ##################################################
+# user-service-3.5.3-SNAPSHOT | 20-Apr-2023
+##################################################
+Add merchantId & apikey in merchant payment details
+
+##DB Changes
+ALTER TABLE `client_payment_detail` ADD ansurMerchantId VARCHAR(100);
+ALTER TABLE `client_payment_detail` ADD ansurApiKey VARCHAR(100);
+
+
+##################################################
 # user-service-3.5.2-SNAPSHOT | 31-Jan-2023
 ##################################################
 Bug fix for store user session authentication

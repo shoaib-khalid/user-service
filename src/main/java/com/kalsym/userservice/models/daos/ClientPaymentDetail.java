@@ -54,6 +54,10 @@ public class ClientPaymentDetail implements Serializable {
     private String docImage;
 
     private String clientId;
+    
+    private String ansurMerchantId;
+    
+    private String ansurApiKey;
 
     @CreationTimestamp
     Date created;
@@ -85,6 +89,14 @@ public class ClientPaymentDetail implements Serializable {
 
         if (null != cpd.getWhtRate()) {
             this.whtRate = cpd.getWhtRate();
+        }
+        
+        if (null != cpd.getAnsurMerchantId()) {
+            this.ansurMerchantId = cpd.getAnsurMerchantId();
+        }
+        
+        if (null != cpd.getAnsurApiKey()) {
+            this.ansurApiKey = cpd.getAnsurApiKey();
         }
     }
 

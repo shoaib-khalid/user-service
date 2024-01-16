@@ -59,6 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers(
                         "/guest/**",
                         "/clients/session/refresh",
+                        "/clients/getToken",
                         "/clients/authenticate",
                         "/clients/loginoauth",
                         "/clients/applecallback/**",

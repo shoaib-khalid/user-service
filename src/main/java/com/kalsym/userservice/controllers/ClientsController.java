@@ -551,6 +551,77 @@ public class ClientsController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    // generate token for user with role = API_USER
+    @PostMapping(path = "/getToken", name = "clients-get-token-for-api-user")
+    public ResponseEntity getTokenForAPIUser(@Valid @RequestParam String clientName, @RequestParam String secretKey,
+                                                HttpServletRequest request) throws Exception  {
+        String logprefix = request.getRequestURI();
+        HttpReponse response = new HttpReponse(request.getRequestURI());
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "params: " + clientName + " , " + secretKey );
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(clientName+",CLIENT", secretKey)
+            );
+        } catch (BadCredentialsException e) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "BadCredentialsException exception", e);
+            response.setStatus(HttpStatus.UNAUTHORIZED);
+            response.setMessage( "Incorrect clientName or secretKey");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        } catch (AuthenticationException e) {
+            Logger.application.error(Logger.pattern, UserServiceApplication.VERSION, logprefix, "AuthenticationException exception ", e);
+            response.setStatus(HttpStatus.UNAUTHORIZED);
+            response.setMessage(e.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "client authenticated", "");
+
+        Client client = clientsRepository.findByUsernameOrEmail(clientName, secretKey);
+
+        if (client.getRoleId() == "API_USER") {
+            List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(client.getRoleId());
+            ArrayList<String> authorities = new ArrayList<>();
+            if (null != roleAuthories) {
+    
+                for (RoleAuthority roleAuthority : roleAuthories) {
+                    authorities.add(roleAuthority.getAuthorityId());
+                }
+            }
+    
+            ClientSession session = new ClientSession();
+            session.setRemoteAddress(request.getRemoteAddr());
+            session.setOwnerId(client.getId());
+            session.setUsername(client.getUsername());
+            session.setCreated(DateTimeUtil.currentTimestamp());
+            session.setUpdated(DateTimeUtil.currentTimestamp());
+            session.setExpiry(DateTimeUtil.expiryTimestamp(expiry));
+            session.setStatus("ACTIVE");
+            session.generateTokens();
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session: " + session, "");
+    
+            session = clientSessionsRepository.save(session);
+            Logger.application.info(Logger.pattern, UserServiceApplication.VERSION, logprefix, "session created with id: " + session.getId(), "");
+    
+            if(session.getAccessToken() != null) {
+                response.setStatus(HttpStatus.OK);
+                response.setMessage("Token generated successfully");
+                response.setData(session.getAccessToken());
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            } else {
+                response.setStatus(HttpStatus.EXPECTATION_FAILED);
+                response.setMessage("Token failed to generate.");
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+            }
+
+        } else {
+            response.setStatus(HttpStatus.FORBIDDEN);
+            response.setMessage("Client's current role is not allowed to use this method.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+
+    }
+
     //authentication
     @PostMapping(path = "/authenticate", name = "clients-authenticate")
     public ResponseEntity authenticateClient(@Valid @RequestBody AuthenticationBody body,

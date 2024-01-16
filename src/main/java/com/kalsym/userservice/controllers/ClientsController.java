@@ -579,7 +579,7 @@ public class ClientsController {
 
         Client client = clientsRepository.findByUsernameOrEmail(clientName, secretKey);
 
-        if (client.getRoleId() == "API_USER") {
+        if (client.getRoleId().equals("API_USER")) {
             List<RoleAuthority> roleAuthories = roleAuthoritiesRepository.findByRoleId(client.getRoleId());
             ArrayList<String> authorities = new ArrayList<>();
             if (null != roleAuthories) {

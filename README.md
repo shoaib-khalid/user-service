@@ -58,6 +58,10 @@ Exit the docker shell
 ```
 
 ## Build Docker Image
+Please make sure you are building the correct app version. There are 2 files `pom.xml` (java version) & `.env` (docker version) that need to be change (for the version).
+
+> Important: both `pom.xml` & `.env` need to be the same version
+
 To build the docker image, simply run `docker compose --profile prod build --push`, to build and push the docker image to docker registry.
 
 ```bash

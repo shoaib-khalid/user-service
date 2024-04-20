@@ -19,7 +19,12 @@ $ mvn clean install
 
 From your local pc run
 ```bash
-[user@localpc]$ docker run -it --rm --platform linux/amd64 -v ./${pwd}:/home/docker/Software -w /home/docker/Software openjdk:8-alpine sh
+# make sure you are in correct working directory
+[user@localpc]$ pwd
+/home/user/path-to-your-project/user-service
+...
+..
+[user@localpc]$ docker run -it --rm --platform linux/amd64 -v ./:/home/docker/Software -w /home/docker/Software openjdk:8-alpine sh
 ```
 
 in docker shell
@@ -52,6 +57,10 @@ Exit the docker shell
 
 ## Build Docker Image
 To build the docker image, simply run `docker compose --profile prod build --push`, to build and push the docker image to docker registry.
+
+```bash
+[user@localpc]$ docker compose --profile prod build --push
+```
 
 > Note: If you having problem pushing docker image to docker registry. See [add docker registry](http://localhost)
 

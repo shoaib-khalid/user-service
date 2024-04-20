@@ -65,7 +65,7 @@ To build the docker image, simply run `docker compose --profile prod build --pus
 > Note: If you having problem pushing docker image to docker registry. See [add docker registry](http://localhost)
 
 ## Container Architecture
-This docker image is based on [openjdk:8-alpine](https://hub.docker.com/_/openjdk) image (see Dockerfile). Since the application only generate Single Page Application (SPA). It only require a web server (httpd:latest) to run the application. For more configuration, see https://hub.docker.com/_/openjdk
+This docker image is based on [openjdk:8-alpine](https://hub.docker.com/_/openjdk) image (see Dockerfile). It only require a web server (httpd:latest) to run the application. For more configuration, see https://hub.docker.com/_/openjdk
 
 ## Deployment
 This project encourange developer to use docker to run the application for production.

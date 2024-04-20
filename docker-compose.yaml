@@ -1,10 +1,28 @@
 version: '3.7'
 
 services:
-  user-service:
+  dev:
+    profiles: [dev]
+    container_name: user-service
     image: kalsym/user-service:$APP_VERSION
     ports:
       - "1201:1201"
+    volumes:
+      - ./src/main/resources/application-dev.properties:/home/docker/Software/application-dev.properties
     build:
       context: .
       dockerfile: Dockerfile
+    platform: "linux/amd64"
+
+  prod:
+    profiles: [prod]
+    container_name: user-service
+    image: kalsym/user-service:$APP_VERSION
+    ports:
+      - "1201:1201"
+    volumes:
+      - ./src/main/resources/application-prod.properties:/home/docker/Software/application-prod.properties
+    build:
+      context: .
+      dockerfile: Dockerfile
+    platform: "linux/amd64"

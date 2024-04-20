@@ -233,6 +233,9 @@ Add new field for customer :latitude & longitude
 ##DB Changes:
 ALTER TABLE customer ADD latitude VARCHAR(20);
 ALTER TABLE customer ADD longitude VARCHAR(20);
+# user-service-3.2.20-HOTFIX | 31-May-2022
+##################################################
+Set different error message for user that not registered yet
 
 
 ##################################################

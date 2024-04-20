@@ -1,0 +1,13 @@
+FROM openjdk:8-alpine
+RUN apk update && apk add curl bash
+
+RUN mkdir -p /home/docker/Software
+COPY target/*.jar /home/docker/Software/
+ADD src/main/resources/application.properties /home/docker/Software/application.properties
+RUN chmod +x /home/docker/Software/*.jar 
+
+WORKDIR /home/docker/Software
+EXPOSE 1201
+CMD java \
+    -Dspring.config.location=/home/docker/Software/ \
+    -jar /home/docker/Software/*.jar

@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  user-service:
+    image: kalsym/user-service:$APP_VERSION
+    ports:
+      - "1201:1201"
+    build:
+      context: .
+      dockerfile: Dockerfile
